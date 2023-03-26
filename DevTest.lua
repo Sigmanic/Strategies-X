@@ -226,10 +226,10 @@ if FeatureConfig["ModdedAS"] then
         if getnamecallmethod() == 'HttpGet' then
             if Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
                 appendlog("Hooked AutoStrat Main Library Using hookmetamethod")
-                Args[1] = "https://gist.githubusercontent.com/Sigmanic/c26d89c898f0ad9d09c23916fc938100/raw/Source1.lua"
+                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/Source1.lua"
             elseif Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
                 appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
-                Args[1] = "https://gist.githubusercontent.com/Sigmanic/43275c83706b8973d9c5077c1969a838/raw/CustomJoiningElevators.lua"
+                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
             end
         end
         return OldNamecall(...,unpack(Args))
@@ -238,10 +238,10 @@ if FeatureConfig["ModdedAS"] then
     OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
         if Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
             appendlog("Hooked AutoStrat Main Library Using hookfunction")
-            Args[1] = "https://gist.githubusercontent.com/Sigmanic/c26d89c898f0ad9d09c23916fc938100/raw/Source1.lua"
+            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/Source1.lua"
         elseif Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
             appendlog("Hooked AutoStrat Joining Library Using hookfunction")
-            Args[1] = "https://gist.githubusercontent.com/Sigmanic/43275c83706b8973d9c5077c1969a838/raw/CustomJoiningElevators.lua"
+            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
         end
         return OldHook(Self, Url, ...)
     end)
@@ -280,7 +280,7 @@ local GetFilesName = function(path,name)
     return tablefilesname
     end
 local GetFullFileName = function(tablefilesname,name)
-    local tablefilesname = type(tablefilesname) == {} and tablefilesname or {}
+    local tablefilesname = type(tablefilesname) == "table" and tablefilesname or {}
     local name = tostring(name) or ""
     for i,v in next, tablefilesname do
         if string.find(v:lower(),name:lower(),1,true) then
@@ -358,7 +358,7 @@ setmetatable(LoadStrat, {
     __index = function(self, key)
         for i,v in next, LoadStrat do
             if string.find(i:lower(),key:lower(),1,true) then
-                return LoadStrat[i]
+                return rawget(LoadStrat, i)
             end
         end
     end
@@ -694,7 +694,7 @@ if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetS
                         }
                         game.StarterGui:SetCore("SendNotification", {
                             Title = "Strat Loader",
-                            Text = "Name: "..PlayerName[i].."\nStrat: "..w.flags.StratFullName;
+                            Text = "Saved Config\nName: "..PlayerName[i].."\nStrat: "..w.flags.StratFullName;
                             Duration = 5;
                         })
                     end
@@ -720,7 +720,7 @@ if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetS
                 return
             end
             w["object"].Parent.Parent:Destroy()
-            loadstring(game:HttpGet("https://gist.githubusercontent.com/Sigmanic/3aa425b9ad96a913f822335d58ad074d/raw/DevTest.lua", true))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/DevTest.lua", true))()
         end
     end)
 
@@ -737,7 +737,7 @@ if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetS
     end)
     w:Button("Re-Execute",function()
         w["object"].Parent.Parent:Destroy()
-        loadstring(game:HttpGet("https://gist.githubusercontent.com/Sigmanic/3aa425b9ad96a913f822335d58ad074d/raw/DevTest.lua", true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/DevTest.lua", true))()
     end)
     w:Button("Delete Gui",function()
         w["object"].Parent.Parent:Destroy()
@@ -834,7 +834,7 @@ end)
 s:Section("Cancel Strat")
 s:Button("Abort Progress",function()
     Config[game:GetService("Players").LocalPlayer.Name].Active = false
-    writefile("StratLoader\\UserConfig\\Config.txt", cloneref(game:GetService("HttpService")):JSONEncode(Config))
+    writefile("StratLoader/UserConfig/Config.txt", cloneref(game:GetService("HttpService")):JSONEncode(Config))
     game:GetService("TeleportService"):Teleport(3260590327)
 end)
 s:Button("Disable Dev-Test",function()

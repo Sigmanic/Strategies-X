@@ -18,8 +18,8 @@ if getgenv().UILibrary and type(getgenv().UILibrary) == "table" then
 else
     UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 end
---loadstring(game:HttpGet("https://gist.githubusercontent.com/Sigmanic/130c3d587221e71d1ae8f4d4d463a18c/raw/ConvertFunc.lua", true))()
-local Patcher = loadstring(game:HttpGet("https://gist.githubusercontent.com/Sigmanic/130c3d587221e71d1ae8f4d4d463a18c/raw/ConvertFunc.lua", true))()
+--loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
 function ParametersPatch(name,...)
     if type(...) == "table" then
         return ...
@@ -639,7 +639,7 @@ function ASLibrary:Loadout(...)
 
     for i,v in next, TotalTowers do
         RemoteEvent:FireServer("Inventory", "Equip", "tower",v)
-        TowersStatus[i].Text = tableinfo[v][1] and "[Golden] " or ""..v
+        TowersStatus[i].Text = tableinfo[v][1] and "[Golden] "..v or ""..v
         if TroopsOwned[v].GoldenPerks and tableinfo[v][1] == false then
             RemoteEvent:FireServer("Inventory", "Unequip", "Golden", v)
         elseif tableinfo[v][1]  then
