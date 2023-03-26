@@ -75,7 +75,7 @@ function EquipTroop(towerequip)
 
     for i,v in next, TotalTowers do
         RemoteEvent:FireServer("Inventory", "Equip", "tower",v)
-        TowersStatus[i].Text = tableinfo[v][1] and "[Golden] " or ""..v
+        TowersStatus[i].Text = tableinfo[v][1] and "[Golden] "..v or ""..v
         if TroopsOwned[v].GoldenPerks and tableinfo[v][1] == false then
             RemoteEvent:FireServer("Inventory", "Unequip", "Golden", v)
         elseif tableinfo[v][1]  then
