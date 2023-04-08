@@ -238,10 +238,10 @@ if FeatureConfig["ModdedAS"] then
     OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
         if Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
             appendlog("Hooked AutoStrat Main Library Using hookfunction")
-            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
+            Url = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
         elseif Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
             appendlog("Hooked AutoStrat Joining Library Using hookfunction")
-            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
+            Url = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
         end
         return OldHook(Self, Url, ...)
     end)
