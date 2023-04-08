@@ -76,12 +76,15 @@ function GetGameInfo()
     if GameInfo then
         return GameInfo
     end
-    for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
-        if v:GetAttribute("TimeScale") and v:FindFirstChild("Health") then
-            GameInfo = v
-            return v
+    repeat
+        for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
+            if v:GetAttribute("TimeScale") then
+                GameInfo = v
+                return v
+            end
         end
-    end
+        task.wait()
+    until GameInfo
 end
 local TimerCheck,TimerConnection = false
 function CheckTimer(bool)
@@ -467,9 +470,9 @@ if not CheckPlace() then
 end
 
 function ASLibrary:Map(...)
-    --[[if getgenv().IsMultiStrat then
+    if getgenv().IsMultiStrat then
         return
-    end]]
+    end
     local tableinfo = ParametersPatch("Map",...)
     local Map = tableinfo["Map"]
     local Solo = tableinfo["Solo"]
@@ -665,7 +668,6 @@ function ASLibrary:Mode(Name)
 end
 getgenv().Placing = false
 getgenv().Upgrading = false
-local TroopInfo = {}
 --[[{
     ["Type"] = "",
     ["TypeIndex"] = ""

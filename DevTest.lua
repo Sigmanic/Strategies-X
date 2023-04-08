@@ -226,7 +226,7 @@ if FeatureConfig["ModdedAS"] then
         if getnamecallmethod() == 'HttpGet' then
             if Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
                 appendlog("Hooked AutoStrat Main Library Using hookmetamethod")
-                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/Source1.lua"
+                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
             elseif Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
                 appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
                 Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
@@ -238,7 +238,7 @@ if FeatureConfig["ModdedAS"] then
     OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
         if Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
             appendlog("Hooked AutoStrat Main Library Using hookfunction")
-            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/Source1.lua"
+            Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
         elseif Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
             appendlog("Hooked AutoStrat Joining Library Using hookfunction")
             Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
@@ -275,10 +275,10 @@ local GetFilesName = function(path,name)
             local str = string.split(v,"\\")
             local filename = str[#str]
             table.insert(tablefilesname,filename)
-    end
+        end
     end
     return tablefilesname
-    end
+end
 local GetFullFileName = function(tablefilesname,name)
     local tablefilesname = type(tablefilesname) == "table" and tablefilesname or {}
     local name = tostring(name) or ""
