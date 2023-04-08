@@ -18,8 +18,8 @@ if getgenv().UILibrary and type(getgenv().UILibrary) == "table" then
 else
     UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 end
---loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
-local Patcher = loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet("hhttps://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
 function ParametersPatch(name,...)
     if type(...) == "table" then
         return ...
@@ -28,7 +28,7 @@ function ParametersPatch(name,...)
 end
 
 rconsoleclear()
-rconsolename("Biet ong Liem khong?")
+rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")
 local Typelist = {"Info","Warn","Error"}
 
 getgenv().ConsolePrint = function(Color,Type,...)
