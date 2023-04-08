@@ -26,8 +26,8 @@ if not LocalPlayer:IsInGroup(4914494) then
     repeat task.wait() until getgenv().BypassGroup
 end
 
---loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
-local Patcher = loadstring(game:HttpGet("https://github.com/Sigmanic/AutoStratModded/blob/main/ConvertFunc.lua", true))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
 function ParametersPatch(name,...)
     if type(...) == "table" then
         return ...
