@@ -16,7 +16,7 @@
 
 ## Highlight Contents
 
-* [Why did you make AutoStratModded?](#Why-did-you-make-AutoStratModded?)
+* [Why did you make AutoStratModded?](#Why%20did%20you%20make%20AutoStratModded?)
 * [Goals](#Goals)
 * [Requirements](#Requirements)
 * [Features (WIP)](#-Features-(WIP))
