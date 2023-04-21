@@ -1,6 +1,6 @@
 <br/>
 <p align="center">
-  <h3 align="center">AutoStrat-Modded</h3>
+  <h3 align="center">AutoStrat-Modded [Alpha]</h3>
 
   <p align="center">
     A Version Inspired By MoneyMaker's AutoStrat, Aims To Be Fully Open-Sourced And More Customization
