@@ -14,13 +14,14 @@
 
 ![Contributors](https://img.shields.io/github/contributors/Sigmanic/AutoStratModded?color=dark-green) ![Forks](https://img.shields.io/github/forks/Sigmanic/AutoStratModded?style=social) ![Stargazers](https://img.shields.io/github/stars/Sigmanic/AutoStratModded?style=social) ![Issues](https://img.shields.io/github/issues/Sigmanic/AutoStratModded) 
 
-## Highlight Contents
+## Highlight
 
 * [Why did you make AutoStratModded?](#why-did-you-make-autostratmodded)
-* [Goals](#Goals)
-* [Requirements](#Requirements)
+* [Goals](#goals)
+* [Requirements](#requirements)
 * [Features (WIP)](#features-wip)
-* [FAQ](#FAQ)
+* [Contributors](#contributors)
+* [FAQ](#faq)
 
 ## Why did you make AutoStratModded?
 
@@ -46,6 +47,10 @@ Or any executors that supported the following librarys:
 * Crypt Library
 
 ## Features (WIP)
+
+## Contributors
+* **Gurt**, for testing script and reporting some bugs.
+* **ThanH**, for testing script.
 
 ## FAQ
 I got a bug, where do I report it?
