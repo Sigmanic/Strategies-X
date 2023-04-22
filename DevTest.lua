@@ -356,7 +356,7 @@ local ErrorFile = {}
 appendlog("Loaded File:")
 for i,v in next,GetFilesName("StratLoader") do
     local strat = GetFilePath("StratLoader",v)
-    if strat and isfile(strat) and tostring(loadfile(strat)) ~= "nil" then
+    if strat and tostring(loadfile(strat)) ~= "nil" then
         --print(v,loadfile(strat))
         appendlog("+ "..tostring(v)..": "..tostring(loadfile(strat)))
         LoadStrat[v] = loadfile(strat)
