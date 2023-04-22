@@ -287,11 +287,11 @@ local GetFilesName = function(path,name)
     local tablefiles = GetFiles(path,name)
     local path = path or ""
     for i,v in next, tablefiles do
-        if isfile(v) then
+        --if isfile(v) then
             local str = string.split(v,"\\")
             local filename = str[#str]
             table.insert(tablefilesname,filename)
-        end
+        --end
     end
     return tablefilesname
 end
