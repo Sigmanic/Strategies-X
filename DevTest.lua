@@ -287,11 +287,11 @@ local GetFilesName = function(path,name)
     local tablefiles = GetFiles(path,name)
     local path = path or ""
     for i,v in next, tablefiles do
-        --if isfile(v) then
+        if isfile(v) then
             local str = string.split(v,"\\")
             local filename = str[#str]
             table.insert(tablefilesname,filename)
-        --end
+        end
     end
     return tablefilesname
 end
@@ -306,7 +306,7 @@ local GetFullFileName = function(tablefilesname,name)
     return ""
 end
 local GetFilePath = function(path,name)
-    return path.."/"..name
+    return path.."\\"..name
 end
 local Time = tostring(os.clock() - OldTime)
 --print("API Library's Loaded:",Time)
@@ -356,14 +356,12 @@ local ErrorFile = {}
 appendlog("Loaded File:")
 for i,v in next,GetFilesName("StratLoader") do
     local strat = GetFilePath("StratLoader",v)
-    if strat and tostring(loadfile(strat)) ~= "nil" then
+    if strat and isfile(strat) and tostring(loadfile(strat)) ~= "nil" then
         --print(v,loadfile(strat))
         appendlog("+ "..tostring(v)..": "..tostring(loadfile(strat)))
         LoadStrat[v] = loadfile(strat)
     else
         table.insert(ErrorFile,tostring(v))
-        --print("Can't Find File Name:",v)
-        --appendlog("Can't Find File Name "..'"'..tostring(v)..'"'.." Or It's Content Has Been Corrupted")
     end
 end
 appendlog("File Failed To Load: \n+ "..table.concat(ErrorFile,"\n+ "))
