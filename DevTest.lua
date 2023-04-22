@@ -127,19 +127,33 @@ do
     end
 end
 repeat wait() until game:GetService("Players").LocalPlayer
-local writelog = function(str)
+local writelog = function(...)
+    local TableText = {...}
     task.spawn(function()
-        print(str)
+        for i,v in next, TableText do
+            if type(v) ~= "string" then
+                TableText[i] = tostring(v)
+            end
+        end
+        local Text = table.concat(TableText, " ")
+        print(Text)
         if Config[game:GetService("Players").LocalPlayer.Name] then
-            return WriteFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(str))
+            return WriteFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text))
         end
     end)
 end
-local appendlog = function(str)
+local appendlog = function(...)
+    local TableText = {...}
     task.spawn(function()
-        print(str)
+        for i,v in next, TableText do
+            if type(v) ~= "string" then
+                TableText[i] = tostring(v)
+            end
+        end
+        local Text = table.concat(TableText, " ")
+        print(Text)
         if Config[game:GetService("Players").LocalPlayer.Name] then
-            return AppendFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(str).."\n")
+            return AppendFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
         end
     end)
 end
@@ -231,6 +245,8 @@ if FeatureConfig["ModdedAS"] then
                 appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
                 Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
             end
+        elseif getnamecallmethod() == 'Kick' then
+            wait(math.huge)
         end
         return OldNamecall(...,unpack(Args))
     end)
@@ -297,9 +313,7 @@ local Time = tostring(os.clock() - OldTime)
 appendlog("Library's API Loaded: "..Time)
 
 getgenv().MinimizeClient = function(boolean)
-    if boolean == nil then
-        boolean = true
-    end
+    local boolean = boolean or (boolean == nil and true)
     if not getgenv().FirstTime then
         getgenv().FirstTime = true
         GlobalShadow = game:GetService("Lighting").GlobalShadows
@@ -356,6 +370,7 @@ appendlog("File Failed To Load: \n+ "..table.concat(ErrorFile,"\n+ "))
 
 setmetatable(LoadStrat, {
     __index = function(self, key)
+        print(LoadStrat, "has indexxed")
         for i,v in next, LoadStrat do
             if string.find(i:lower(),key:lower(),1,true) then
                 return rawget(LoadStrat, i)
@@ -383,12 +398,10 @@ function Loader()
             MinimizeClient(true)
         end
         if StratName then
-            --[[task.spawn(function()
-                game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Anchored = true
-            end)]]
-            StratName()
+            pcall(StratName)
+            --StratName()
             --print("Strat's Time Loaded:",os.clock() - OldTime)
-            appendlog("Strat's Time Loaded: "..tostring(os.clock() - OldTime))
+            appendlog("Strat's Time Loaded: "..tostring(os.clock() - OldTime)..GetFullFileName(GetFilesName("StratLoader"),GetConfig.StratName))
         else
             --warn("Couldn't Find Strat Name "..GetConfig.StratName.." In StratLoader Folder.")
             appendlog("Couldn't Find Strat Name "..GetConfig.StratName.." In StratLoader Folder.")
@@ -505,9 +518,16 @@ function Loader()
                         local Min = FeatureConfig["JoinLessFeature"].MinPlr
                         local Max = FeatureConfig["JoinLessFeature"].MaxPlr
                         --print("Rejoin")
+                        if getgenv().ASLibrary and not getgenv().RejoinLobby then
+                            return
+                        end
                         appendlog("Rejoining JLS After Match")
                         TeleportHandler(3260590327,Min,Max)
                     else
+                        if getgenv().ASLibrary and not getgenv().RejoinLobby then
+                            return
+                        end
+                        appendlog(getgenv().ASLibrary,getgenv().RejoinLobby)
                         appendlog("Rejoining Back To Lobby")
                         game:GetService("TeleportService"):Teleport(3260590327)
                     end
@@ -830,6 +850,7 @@ s:Button("Apply",function()
         }
         writefile("StratLoader/UserConfig/FeatureConfig.txt", cloneref(game:GetService("HttpService")):JSONEncode(FeatureConfig))
     end
+    MinimizeClient(s.flags.gpulimit)
 end)
 s:Section("Cancel Strat")
 s:Button("Abort Progress",function()

@@ -1,10 +1,13 @@
-repeat wait() until game:IsLoaded()
+if not game:IsLoaded() then
+    game['Loaded']:Wait()
+end
 getgenv().ASLibrary = {}
 if getgenv().Executed then return getgenv().ASLibrary end
 
 getgenv().Executed = true
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
+local Version = "Version: 0.1.1 [Aplha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -118,6 +121,7 @@ end
 local CountNum = 0
 local maintab = UILibrary:CreateWindow("Auto Strats")
 maintab:Section("==Modded Version==")
+prints("Checking Group")
 getgenv().BypassGroup = false
 if not LocalPlayer:IsInGroup(4914494) then
     maintab:Section("You Need To Join")
@@ -131,6 +135,8 @@ if not LocalPlayer:IsInGroup(4914494) then
     end)
     repeat task.wait() until getgenv().BypassGroup
 end
+prints("Checking Group Completed")
+maintab:Section(Version)
 maintab:Section("Current Place: "..(CheckPlace() and "Ingame" or "Lobby"))
 
 if CheckPlace() then
@@ -179,6 +185,7 @@ if CheckPlace() then
     end
 
     local utilitiestab = UILibrary:CreateWindow("Utilities")
+    utilitiestab:Toggle("Auto Rejoin To Lobby",{default = true, location = getgenv(), flag = "RejoinLobby"})
 
     task.spawn(function()
         repeat wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -389,6 +396,14 @@ if CheckPlace() then
                 v:Destroy()
             end
         end
+        local GameGui = LocalPlayer.PlayerGui.GameGui
+        GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
+            if not getgenv().RejoinLobby then
+                repeat task.wait() until getgenv().RejoinLobby
+            end
+            task.wait(.5)
+            game:GetService("TeleportService"):Teleport(3260590327)
+        end)
         --[[game:GetService("Lighting").FogStart = 10000000
         game:GetService("Lighting").FogEnd = 10000000
         game:GetService("Lighting").Brightness = 1]]
@@ -470,9 +485,9 @@ if not CheckPlace() then
 end
 
 function ASLibrary:Map(...)
-    if getgenv().IsMultiStrat then
+    --[[if getgenv().IsMultiStrat then
         return
-    end
+    end]]
     local tableinfo = ParametersPatch("Map",...)
     local Map = tableinfo["Map"]
     local Solo = tableinfo["Solo"]
@@ -488,6 +503,9 @@ function ASLibrary:Map(...)
                 return
             end
             ConsoleInfo("Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
+            return
+        end
+        if getgenv().IsMultiStrat then
             return
         end
         local Elevators = {}
