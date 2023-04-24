@@ -37,9 +37,9 @@ Although I considered it as a hobby project, I spent a lot of time making this p
 ## Requirements
 Executors Supported:
 * Synapse X V2
-* Script-Ware
-* Fluxus
-* Krnl
+* Script-Ware **(Console Color Not Worked)**
+* Fluxus **(Console Color Not Worked)**
+* Krnl **(Console Color Not Worked)**
 
 Or any executors that supported the following librarys:
 * Filesystem Functions

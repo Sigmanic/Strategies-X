@@ -1,12 +1,12 @@
 if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
-wait(1)
+task.wait(.9)
 local OldTime = os.clock()
 
 getgenv().ExecDis = true --Don't remove this. It's necessary since the "Built In Auto Exec" can break the strat.
 
 --Below here is the library of Strat Loader
-local Version = "Version: 0.6 Build 1 Dev-Test"
-local Changelog = {"!+[Alpha] Modded AutoStrat","!!Require hookfunction()","Supported Old V2 Format","Fixed Tower Info"}
+local Version = "Version: 0.6 Build 2 Dev-Test"
+local Changelog = {"!+[Alpha] Modded AutoStrat","!!Require hookfunction()","Improved API","Improved JLS","Fixed File Had Special Char"}
 
 local gethiddenproperty = gethiddenproperty or gethiddenprop or get_hidden_property or get_hidden_prop or getpropvalue
 local sethiddenproperty = sethiddenproperty or sethiddenprop or set_hidden_property or set_hidden_prop or setpropvalue
@@ -15,6 +15,12 @@ assert(listfiles, 'Exploit is missing listfiles function')
 assert(isfile, 'Exploit is missing isfile function')
 assert(hookmetamethod, 'Exploit is missing hookmetamethod function')
 assert(hookfunction, 'Exploit is missing hookfunction function')
+
+local IsPlayerInGroup
+task.spawn(function()
+    repeat task.wait() until game:GetService("Players").LocalPlayer
+    IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+end)
 
 getgenv().Config = {}
 getgenv().FeatureConfig = {
@@ -306,7 +312,7 @@ local GetFullFileName = function(tablefilesname,name)
     return ""
 end
 local GetFilePath = function(path,name)
-    return path.."\\"..name
+    return path.."/"..name
 end
 local Time = tostring(os.clock() - OldTime)
 --print("API Library's Loaded:",Time)
@@ -358,7 +364,7 @@ for i,v in next,GetFilesName("StratLoader") do
     local strat = GetFilePath("StratLoader",v)
     if strat and isfile(strat) and tostring(loadfile(strat)) ~= "nil" then
         --print(v,loadfile(strat))
-        appendlog("+ "..tostring(v)..": "..tostring(loadfile(strat)))
+        appendlog("+ "..tostring(v))
         LoadStrat[v] = loadfile(strat)
     else
         table.insert(ErrorFile,tostring(v))
@@ -396,10 +402,9 @@ function Loader()
             MinimizeClient(true)
         end
         if StratName then
-            pcall(StratName)
-            --StratName()
-            --print("Strat's Time Loaded:",os.clock() - OldTime)
-            appendlog("Strat's Time Loaded: "..tostring(os.clock() - OldTime)..GetFullFileName(GetFilesName("StratLoader"),GetConfig.StratName))
+            local Success = pcall(StratName)
+            appendlog(GetFullFileName(GetFilesName("StratLoader"),GetConfig.StratName).." Loaded" ..(Success and "" or " FAILED"))
+            appendlog("Strat's Time Loaded: "..tostring(os.clock() - OldTime))
         else
             --warn("Couldn't Find Strat Name "..GetConfig.StratName.." In StratLoader Folder.")
             appendlog("Couldn't Find Strat Name "..GetConfig.StratName.." In StratLoader Folder.")

@@ -1,13 +1,20 @@
+getgenv().ASLibrary = {}
+if getgenv().Executed then return getgenv().ASLibrary end
+getgenv().Executed = true
+local IsPlayerInGroup = IsPlayerInGroup
+task.spawn(function()
+    if IsPlayerInGroup then
+        return
+    end
+    repeat task.wait() until game:GetService("Players").LocalPlayer
+    IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+end)
 if not game:IsLoaded() then
     game['Loaded']:Wait()
 end
-getgenv().ASLibrary = {}
-if getgenv().Executed then return getgenv().ASLibrary end
-
-getgenv().Executed = true
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
-local Version = "Version: 0.1.1 [Aplha]"
+local Version = "Version: 0.1.2 [Aplha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -29,32 +36,8 @@ function ParametersPatch(name,...)
     end
     return Patcher[name](...)
 end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConsoleLibrary.lua", true))()
 
-rconsoleclear()
-rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")
-local Typelist = {"Info","Warn","Error"}
-
-getgenv().ConsolePrint = function(Color,Type,...)
-    if type(Color) ~= "string" then
-        Color = "WHITE"
-    end
-    if not (type(Type) ~= "string" or table.find(Typelist,Type)) then
-        Type = "Info"
-    end
-    local String = table.concat({...}, ", ")
-    rconsoleprint("@@"..Color.."@@")
-    rconsoleprint("["..os.date("%X").."]["..Type.."] "..String.."\n")
-    getgenv().AppendFile(true,LocalPlayer.Name.."'s log","StratLoader/UserLogs",String.."\n")
-end
-getgenv().ConsoleInfo = function(Text)
-    ConsolePrint("WHITE","Info",Text)
-end
-getgenv().ConsoleWarn = function(Text)
-    ConsolePrint("BROWN","Warn",Text)
-end
-getgenv().ConsoleError = function(Text)
-    ConsolePrint("RED","Error",Text)
-end
 function prints(...)
     local TableText = {...}
     for i,v in next, TableText do
@@ -123,17 +106,21 @@ local maintab = UILibrary:CreateWindow("Auto Strats")
 maintab:Section("==Modded Version==")
 prints("Checking Group")
 getgenv().BypassGroup = false
-if not LocalPlayer:IsInGroup(4914494) then
-    maintab:Section("You Need To Join")
-    maintab:Section("Paradoxum Games Group")
-    local JoinButton = maintab:DropSection("Join The Group")
-    JoinButton:Button("Copy Link Group", function()
-        setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
-    end)
-    JoinButton:Button("Yes, I Just Joined It", function()
-        getgenv().BypassGroup = true
-    end)
-    repeat task.wait() until getgenv().BypassGroup
+if not IsPlayerInGroup then
+    if IsPlayerInGroup  == nil then
+        repeat task.wait() until IsPlayerInGroup ~= nil
+    else
+        maintab:Section("You Need To Join")
+        maintab:Section("Paradoxum Games Group")
+        local JoinButton = maintab:DropSection("Join The Group")
+        JoinButton:Button("Copy Link Group", function()
+            setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
+        end)
+        JoinButton:Button("Yes, I Just Joined It", function()
+            getgenv().BypassGroup = true
+        end)
+        repeat task.wait() until getgenv().BypassGroup
+    end
 end
 prints("Checking Group Completed")
 maintab:Section(Version)
@@ -205,7 +192,7 @@ if CheckPlace() then
 
         LocalPlayer.Character.Humanoid.PlatformStand = true
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 5, 0)
+        LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 3.5, 0)
 
         if getgenv().DefaultCam ~= nil or type(getgenv().DefaultCam) ~= "number" then
             getgenv().DefaultCam = 2
@@ -302,7 +289,7 @@ if CheckPlace() then
         end)
 
         utilitiestab:Button("Teleport Back To Platform",function()
-            LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = Part.CFrame +  Vector3.new(0, 5, 0)
+            LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = Part.CFrame +  Vector3.new(0, 3.5, 0)
         end)
         utilitiestab:Section("==Camera Settings==")
         local modesection = maintab:Section("Mode: Voting")
@@ -358,16 +345,20 @@ if CheckPlace() then
             LocalPlayer.DevCameraOcclusionMode = OldCameraOcclusionMode
             FreeCamEnabled = true
         end)
-        if (type(getgenv().StratCreditsAuthor) == "string" and #getgenv().StratCreditsAuthor > 0) or type(getgenv().StratCreditsAuthor) == "number" then
-            utilitiestab:Section("==Strat Creators==")
-            utilitiestab:Section(tostring(getgenv().StratCreditsAuthor))
-        elseif type(getgenv().StratCreditsAuthor) == "table" then
-            for i,v in next, getgenv().StratCreditsAuthor do
-                if (type(v) == "string" and #v > 0) or type(v) == "number" then
-                    utilitiestab:Section(tostring(v))
+        task.spawn(function()
+            repeat task.wait(.3)
+            until getgenv().StratCreditsAuthor ~= nil
+            if (type(getgenv().StratCreditsAuthor) == "string" and #getgenv().StratCreditsAuthor > 0) or type(getgenv().StratCreditsAuthor) == "number" then
+                utilitiestab:Section("==Strat Creators==")
+                utilitiestab:Section(tostring(getgenv().StratCreditsAuthor))
+            elseif type(getgenv().StratCreditsAuthor) == "table" then
+                for i,v in next, getgenv().StratCreditsAuthor do
+                    if (type(v) == "string" and #v > 0) or type(v) == "number" then
+                        utilitiestab:Section(tostring(v))
+                    end
                 end
             end
-        end
+        end)
 
         repeat wait() until Workspace:FindFirstChild("NPCs")
         task.spawn(function()
@@ -940,5 +931,5 @@ function ASLibrary:SellAllFarms(...)
         end
     end)
 end
-
+ConsoleInfo("Loaded Library")
 return ASLibrary
