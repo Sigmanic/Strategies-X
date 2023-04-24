@@ -27,7 +27,10 @@
 
 I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. The ugly section color of Wally UI V2 makes the main ui look very bad for me. In the first attempt, I use some trick to make the ui source link change into my own ui. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. So I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs and make it more stable.
 
-Although I considered it as a hobby project, I spent a lot of time making this project works. Additionally, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university
+Although I considered it as a hobby project, I spent a lot of time making this project works. Additionally, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university.
+
+**The only way to use AutoStratModded is using DevTest version of StratLoader**
+
 ## Goals
 * Support all current strats (even premium strats).
 * Support Multiplayers.

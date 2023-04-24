@@ -5,9 +5,9 @@ local SpecialFunction = function(v)
     end
     local old_func = rawget(metatable, '__tostring')
     rawset(metatable, '__tostring', nil)
-    local ret = tostring(v)
+    local name = tostring(v)
     rawset(metatable, '__tostring', old_func)
-    return ret
+    return name
 end
 local DataFuncs = {
     ["number"] = function(v)
