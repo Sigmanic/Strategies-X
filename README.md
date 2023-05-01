@@ -16,14 +16,14 @@
 
 ## Highlight
 
-* [Why did you make Strategies X?](#why-did-you-make-Strategies-x)
+* [Why did you make Strategies X?](#why-did-you-make-strategies-x)
 * [Goals](#goals)
 * [Requirements](#requirements)
 * [Features (WIP)](#features-wip)
 * [Contributors](#contributors)
 * [FAQ](#faq)
 
-## Why did you make AutoStratModded?
+## Why did you make Strategies X?
 
 I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. The ugly section color of Wally UI V2 makes the main ui look very bad for me. In the first attempt, I use some trick to make the ui source link change into my own ui. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. So I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs and make it more stable.
 
