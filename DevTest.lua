@@ -5,8 +5,8 @@ local OldTime = os.clock()
 getgenv().ExecDis = true --Don't remove this. It's necessary since the "Built In Auto Exec" can break the strat.
 
 --Below here is the library of Strat Loader
-local Version = "Version: 0.6 Build 2 Dev-Test"
-local Changelog = {"!+[Alpha] Modded AutoStrat","!!Require hookfunction()","Improved API","Improved JLS","Fixed File Had Special Char"}
+local Version = "Version: 0.6 Build 3 Dev-Test"
+local Changelog = {"!+[Alpha] Strategies X","!!Require hookfunction()","Improved API","Improved JLS","Fixed File Had Special Char"}
 
 local gethiddenproperty = gethiddenproperty or gethiddenprop or get_hidden_property or get_hidden_prop or getpropvalue
 local sethiddenproperty = sethiddenproperty or sethiddenprop or set_hidden_property or set_hidden_prop or setpropvalue
@@ -32,7 +32,7 @@ getgenv().FeatureConfig = {
     },
     ["GPULimit"] = false,
     ["CustomLog"] = false,
-    ["ModdedAS"] = false
+    ["StrategiesX"] = false
 }
 
 if not isfolder("StratLoader") then
@@ -171,7 +171,7 @@ writelog("--------------------------- Profile Log ---------------------------"..
 "\n--------------------------- Feature Log ---------------------------"..
 "\nGPU Limit: "..tostring(FeatureConfig["GPULimit"])..
 "\nCustom Log: "..tostring(FeatureConfig["CustomLog"])..
-"\nModded AutoStrat Library: "..tostring(FeatureConfig["ModdedAS"])..
+"\nStrategies X Library: "..tostring(FeatureConfig["StrategiesX"])..
 "\nJoinLessFeature Status: "..tostring(FeatureConfig["JoinLessFeature"].Enabled)..
 "\n+ Active When: "..tostring(FeatureConfig["JoinLessFeature"].ActiveWhen)..
 "\n+ Min Players: "..tostring(FeatureConfig["JoinLessFeature"].MinPlr)..
@@ -239,17 +239,17 @@ local Time = tostring(os.clock() - OldTime)
 --print("TeleportHandler Library's Loaded:",Time)
 appendlog("TeleportHandler Library Loaded: "..Time)
 
-if FeatureConfig["ModdedAS"] then
+if FeatureConfig["StrategiesX"] then
     local OldNamecall
     OldNamecall = hookmetamethod(game, '__namecall', function(...)
         local Self, Args = (...), ({select(2, ...)})
         if getnamecallmethod() == 'HttpGet' then
             if Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
                 appendlog("Hooked AutoStrat Main Library Using hookmetamethod")
-                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
+                Args[1] = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua"
             elseif Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
                 appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
-                Args[1] = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
+                Args[1] = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/CustomJoiningElevators.lua"
             end
         elseif getnamecallmethod() == 'Kick' then
             wait(math.huge)
@@ -260,10 +260,10 @@ if FeatureConfig["ModdedAS"] then
     OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
         if Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
             appendlog("Hooked AutoStrat Main Library Using hookfunction")
-            Url = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/MainSource.lua"
+            Url = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua"
         elseif Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
             appendlog("Hooked AutoStrat Joining Library Using hookfunction")
-            Url = "https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/CustomJoiningElevators.lua"
+            Url = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/CustomJoiningElevators.lua"
         end
         return OldHook(Self, Url, ...)
     end)
@@ -429,7 +429,7 @@ function Loader()
                     return OldIndex(...)
                 end)
                 GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
-                    if readfile("TDS_AutoStrat/Webhook (Logs).txt") ~= "WEBHOOK HERE" then
+                    if readfile("TDS_AutoStrat/Webhook (Logs).txt") ~= "WEBHOOK HERE" and not (type(getgenv().UtilitiesConfig) == "table" and getgenv().UtilitiesConfig.Webhook.DisableCustomLog) then
                         local CheckRequest
                         task.spawn(function()
                             local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -516,6 +516,8 @@ function Loader()
                             CheckRequest = SendRequest(SendData)
                         end)
                         repeat wait() until type(CheckRequest) == "table"
+                    else
+                        task.wait(3)
                     end
                     if FeatureConfig["JoinLessFeature"].Enabled then
                         local Min = FeatureConfig["JoinLessFeature"].MinPlr
@@ -565,7 +567,6 @@ local Time = tostring(os.clock() - OldTime)
 --print("StratLoader Library's Loaded: ",Time)
 appendlog("StratLoader Library's Loaded: "..Time)
 
---repeat wait() until game:IsLoaded()
 if not game:IsLoaded() then
     game['Loaded']:Wait()
 end
@@ -577,11 +578,9 @@ if game.PlaceId == 3260590327 and Config[game:GetService("Players").LocalPlayer.
     return
 end
 local Time = tostring(os.clock() - OldTime)
---print("Library's Time Loaded:",Time)
 appendlog("Library's Time Loaded: "..Time)
 Loader() --Main Core
 
---getgenv().UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetService("Players").LocalPlayer.Name].Active) then
     function GetPlayersList(name)
         if type(name) ~= "table" then
@@ -743,7 +742,7 @@ if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetS
                 return
             end
             w["object"].Parent.Parent:Destroy()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/DevTest.lua", true))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/DevTest.lua", true))()
         end
     end)
 
@@ -760,12 +759,12 @@ if not (Config[game:GetService("Players").LocalPlayer.Name] and Config[game:GetS
     end)
     w:Button("Re-Execute",function()
         w["object"].Parent.Parent:Destroy()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/DevTest.lua", true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/DevTest.lua", true))()
     end)
     w:Button("Delete Gui",function()
         w["object"].Parent.Parent:Destroy()
     end)
-elseif not FeatureConfig["ModdedAS"] then
+elseif not FeatureConfig["StrategiesX"] then
     local Holder1 = UILibrary:CreateWindow('PlaceHolder')
     Holder1["object"].Visible = false
     if game.PlaceId == 5591597781 then
@@ -790,24 +789,8 @@ local s = UILibrary:CreateWindow('Feature Settings')
 local d = UILibrary:CreateWindow('Credits')
 s:Toggle("Enable GPU Limit",{default = FeatureConfig["GPULimit"] or false, flag = "gpulimit"})
 s:Toggle("Enable Custom Log",{default = FeatureConfig["CustomLog"] or false, flag = "customlog"})
-s:Toggle("Enable Modded AutoStrat",{default = FeatureConfig["ModdedAS"] or false, flag = "moddedas"})
---[[s:Section("Join Less Feature")
-s:Toggle("Enable",{default = FeatureConfig["JoinLessFeature"].Enabled or false, flag = "joinlesstoggle"})
-s:Box("Active When Server Is", {
-    default = FeatureConfig["JoinLessFeature"].ActiveWhen;
-    flag = "serverplaying";
-    type = 'number';
-})
-s:Box("Min Players", {
-    default = FeatureConfig["JoinLessFeature"].MinPlr;
-    flag = "minplr";
-    type = 'number';
-})
-s:Box("Max Players", {
-    default = FeatureConfig["JoinLessFeature"].MaxPlr;
-    flag = "maxplr";
-    type = 'number';
-})]]
+s:Toggle("Enable Strategies X",{default = FeatureConfig["StrategiesX"] or false, flag = "strategiesx"})
+
 local JLStab = s:DropSection("Join Less Feature")
 JLStab:Toggle("Enable",{default = FeatureConfig["JoinLessFeature"].Enabled or false, flag = "joinlesstoggle"})
 JLStab:Box("Active When Server Is", {
@@ -849,7 +832,7 @@ s:Button("Apply",function()
             },
             ["GPULimit"] = s.flags.gpulimit or false,
             ["CustomLog"] = s.flags.customlog or false,
-            ["ModdedAS"] = s.flags.moddedas or false,
+            ["StrategiesX"] = s.flags.strategiesx or false,
         }
         writefile("StratLoader/UserConfig/FeatureConfig.txt", cloneref(game:GetService("HttpService")):JSONEncode(FeatureConfig))
     end

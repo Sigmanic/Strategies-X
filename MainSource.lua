@@ -13,8 +13,20 @@ if not game:IsLoaded() then
     game['Loaded']:Wait()
 end
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
+getgenv().UtilitiesConfig = {
+    Camera = tonumber(getgenv().DefaultCam) or 2,
+    Webhook = {
+        Enabled = false,
+        Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
+        HideUser = false,
+        PlayerInfo = true,
+        GameInfo = true,
+        TroopsInfo = true,
+        DisableCustomLog = true,
+    },
+}
 
-local Version = "Version: 0.1.2 [Aplha]"
+local Version = "Version: 0.1.3 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -28,15 +40,15 @@ if getgenv().UILibrary and type(getgenv().UILibrary) == "table" then
 else
     UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 end
---loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
-local Patcher = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(name,...)
     if type(...) == "table" then
         return ...
     end
     return Patcher[name](...)
 end
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConsoleLibrary.lua", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConsoleLibrary.lua", true))()
 
 function prints(...)
     local TableText = {...}
@@ -51,6 +63,19 @@ function prints(...)
     ConsoleInfo(Text)
 end
 
+getgenv().output = function(...)
+    prints(...)
+end
+if isfile("StratLoader/UserConfig/UtilitiesConfig.txt") then
+    getgenv().UtilitiesConfig = cloneref(game:GetService("HttpService")):JSONDecode(readfile("StratLoader/UserConfig/UtilitiesConfig.txt"))
+    if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= getgenv().UtilitiesConfig.Camera then
+        getgenv().UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
+    end
+else
+    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
+end
+ConsolePrint("WHITE","Table",UtilitiesConfig)
+
 function CheckPlace()
     return (game.PlaceId == 5591597781)
 end
@@ -58,7 +83,7 @@ end
 --repeat wait() until game:IsLoaded()
 
 local GameInfo
-function GetGameInfo()
+getgenv().GetGameInfo = function()
     if GameInfo then
         return GameInfo
     end
@@ -102,11 +127,11 @@ function TimeWaveWait(Wave,Min,Sec,InWave)
     task.wait(TimePrecise(Sec))
 end
 local CountNum = 0
-local maintab = UILibrary:CreateWindow("Auto Strats")
-maintab:Section("==Modded Version==")
+local maintab = UILibrary:CreateWindow("Strategies X")
+--maintab:Section("==Modded Version==")
 prints("Checking Group")
 getgenv().BypassGroup = false
-if not IsPlayerInGroup then
+if not IsPlayerInGroup and not CheckPlace() then
     if IsPlayerInGroup  == nil then
         repeat task.wait() until IsPlayerInGroup ~= nil
     else
@@ -172,7 +197,7 @@ if CheckPlace() then
     end
 
     local utilitiestab = UILibrary:CreateWindow("Utilities")
-    utilitiestab:Toggle("Auto Rejoin To Lobby",{default = true, location = getgenv(), flag = "RejoinLobby"})
+    utilitiestab:Toggle("Rejoin Lobby After Match",{default = true, location = getgenv(), flag = "RejoinLobby"})
 
     task.spawn(function()
         repeat wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -193,11 +218,6 @@ if CheckPlace() then
         LocalPlayer.Character.Humanoid.PlatformStand = true
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
         LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 3.5, 0)
-
-        if getgenv().DefaultCam ~= nil or type(getgenv().DefaultCam) ~= "number" then
-            getgenv().DefaultCam = 2
-        end
-        local FreeCamEnabled = (getgenv().DefaultCam == 3 and true) or false
         local UserInputService = game:GetService("UserInputService")
         local Mouse = LocalPlayer:GetMouse()
         local Camera = Workspace.CurrentCamera
@@ -246,7 +266,7 @@ if CheckPlace() then
                 end
             else
                 if InputTyped.UserInputState == Enum.UserInputState.Begin then
-                    if InputTyped.UserInputType == Enum.UserInputType.MouseButton2 and FreeCamEnabled then
+                    if InputTyped.UserInputType == Enum.UserInputType.MouseButton2 and getgenv().UtilitiesConfig.Camera == 3 then
                         rightMouseButtonDown = true
                         lastRightButtonDown = Vector2.new(Mouse.X, Mouse.Y)
                         UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
@@ -276,7 +296,7 @@ if CheckPlace() then
         UserInputService.InputBegan:connect(Input)
         UserInputService.InputEnded:connect(Input)
         game:GetService("RunService").RenderStepped:Connect(function()
-            if FreeCamEnabled then
+            if getgenv().UtilitiesConfig.Camera == 3 then
                 targetMovePosition = movePosition
                 Camera.CoordinateFrame =CFrame.new(Camera.CoordinateFrame.p) *CFrame.fromEulerAnglesYXZ(-targetMovePosition.Y / 300,-targetMovePosition.X / 300,0) *CFrame.new(CalculateMovement() * (({[true] = 3})[sprinting] or .5))
                 Tween(FOV,.1)
@@ -291,10 +311,40 @@ if CheckPlace() then
         utilitiestab:Button("Teleport Back To Platform",function()
             LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = Part.CFrame +  Vector3.new(0, 3.5, 0)
         end)
-        utilitiestab:Section("==Camera Settings==")
+        local WebSetting = utilitiestab:DropSection("Webhook Settings")
+        WebSetting:Toggle("Enabled",{default = getgenv().UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+        if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
+            WebSetting:Toggle("Disable SL's Custom Log",{default = getgenv().UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
+        end
+        WebSetting:Toggle("Hide Username",{default = getgenv().UtilitiesConfig.Webhook.HideUser or false ,flag = "HideUser"})
+        WebSetting:Toggle("Player Info",{default = getgenv().UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
+        WebSetting:Toggle("Game Info",{default = getgenv().UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
+        WebSetting:Toggle("Troops Info",{default = getgenv().UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
+        function SaveUtilitiesConfig()
+            getgenv().UtilitiesConfig = {
+                Camera = tonumber(getgenv().DefaultCam) or 2,
+                Webhook = {
+                    Enabled = WebSetting.flags.Enabled or false,
+                    Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
+                    HideUser = WebSetting.flags.HideUser or false,
+                    PlayerInfo = WebSetting.flags.PlayerInfo or true,
+                    GameInfo = WebSetting.flags.GameInfo or true,
+                    TroopsInfo = WebSetting.flags.TroopsInfo or true,
+                    DisableCustomLog = WebSetting.flags.DisableCustomLog or true,
+                },
+            }
+            writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
+        end
+        task.spawn(function()
+            while true do
+                SaveUtilitiesConfig()
+                task.wait(1)
+            end
+        end)
+
         local modesection = maintab:Section("Mode: Voting")
         task.spawn(function()
-            repeat wait() until GetGameInfo():GetAttribute("Difficulty")
+            repeat task.wait() until GetGameInfo():GetAttribute("Difficulty")
             modesection.Text = "Mode: "..GetGameInfo():GetAttribute("Difficulty")
         end)
         maintab:Section("Map: "..ReplicatedStorage.State.Map.Value)
@@ -302,48 +352,47 @@ if CheckPlace() then
         getgenv().TowerInfo = {}
         for i,v in next, RemoteFunction:InvokeServer("Session","Search","Inventory.Troops") do
             if v.Equipped then
-                TowerInfo[i] = {maintab:Section(i.." : 0"),0}
+                TowerInfo[i] = {maintab:Section(i.." : 0"), 0, i}
             end
         end
         local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
-        local FollowEnemiesCheck = false
-        if getgenv().DefaultCam == 1 then
+        if getgenv().UtilitiesConfig.Camera == 1 then
             LocalPlayer.Character.Humanoid.PlatformStand = false
             LocalPlayer.Character.HumanoidRootPart.Anchored = false
             Camera.CameraSubject = LocalPlayer.Character.Humanoid
             Camera.CameraType = "Follow"
-        elseif getgenv().DefaultCam == 2 then
+        elseif getgenv().UtilitiesConfig.Camera == 2 then
             LocalPlayer.Character.Humanoid.PlatformStand = true
             LocalPlayer.Character.HumanoidRootPart.Anchored = true
             LocalPlayer.DevCameraOcclusionMode = "Invisicam"
             Camera.CameraType = "Follow"
-            FreeCamEnabled = false
-            FollowEnemiesCheck = true
         end
         
-        utilitiestab:Button("Normal Camera",function()
-            FreeCamEnabled = false
-            FollowEnemiesCheck = false
+        local CamSetting = utilitiestab:DropSection("Camera Settings")
+        CamSetting:Button("Normal Camera",function()
+            getgenv().DefaultCam = 1
+            SaveUtilitiesConfig()
             LocalPlayer.Character.Humanoid.PlatformStand = false
             LocalPlayer.Character.HumanoidRootPart.Anchored = false
             Camera.CameraSubject = LocalPlayer.Character.Humanoid
             Camera.CameraType = "Follow"
             LocalPlayer.DevCameraOcclusionMode = OldCameraOcclusionMode
         end)
-        utilitiestab:Button("Follow Enemies (Default)",function()
+        CamSetting:Button("Follow Enemies",function()
+            getgenv().DefaultCam = 2
+            SaveUtilitiesConfig()
             LocalPlayer.Character.Humanoid.PlatformStand = true
             LocalPlayer.Character.HumanoidRootPart.Anchored = true
             LocalPlayer.DevCameraOcclusionMode = "Invisicam"
             Camera.CameraType = "Follow"
-            FreeCamEnabled = false
-            FollowEnemiesCheck = true
         end)
-        utilitiestab:Button("Free Cam",function()
+        CamSetting:Button("Free Camera",function()
+            getgenv().DefaultCam = 3
+            SaveUtilitiesConfig()
             LocalPlayer.Character.HumanoidRootPart.Anchored = true
             LocalPlayer.Character.Humanoid.PlatformStand = true
             Camera.CameraType = Enum.CameraType.Scriptable
             LocalPlayer.DevCameraOcclusionMode = OldCameraOcclusionMode
-            FreeCamEnabled = true
         end)
         task.spawn(function()
             repeat task.wait(.3)
@@ -364,12 +413,12 @@ if CheckPlace() then
         task.spawn(function()
             while true do
                 for i,v in next, Workspace.NPCs:GetChildren() do
-                    if FreeCamEnabled or (not FollowEnemiesCheck) then
-                        repeat wait() until (not FreeCamEnabled) and FollowEnemiesCheck
+                    if getgenv().UtilitiesConfig.Camera ~= 2 then
+                        repeat wait() until getgenv().UtilitiesConfig.Camera == 2
                     end
                     if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("HumanoidRootPart").CFrame.Y > -5 then
                         repeat
-                            if FollowEnemiesCheck and not FreeCamEnabled then
+                            if getgenv().UtilitiesConfig.Camera == 2 then
                                 Camera.CameraSubject = v:FindFirstChild("HumanoidRootPart")
                             end
                             task.wait() 
@@ -382,22 +431,23 @@ if CheckPlace() then
             end
         end) 
 
-        for i,v in pairs(game:GetService("Lighting"):GetChildren()) do
+        for i,v in next, game:GetService("Lighting"):GetChildren() do
             if v.Name ~= "Sky" then
                 v:Destroy()
             end
         end
         local GameGui = LocalPlayer.PlayerGui.GameGui
         GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
             if not getgenv().RejoinLobby then
                 repeat task.wait() until getgenv().RejoinLobby
             end
             task.wait(.5)
+            if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
+                return
+            end
             game:GetService("TeleportService"):Teleport(3260590327)
         end)
-        --[[game:GetService("Lighting").FogStart = 10000000
-        game:GetService("Lighting").FogEnd = 10000000
-        game:GetService("Lighting").Brightness = 1]]
     end)
     function DebugTower(Object)
         wait(1)
@@ -476,9 +526,6 @@ if not CheckPlace() then
 end
 
 function ASLibrary:Map(...)
-    --[[if getgenv().IsMultiStrat then
-        return
-    end]]
     local tableinfo = ParametersPatch("Map",...)
     local Map = tableinfo["Map"]
     local Solo = tableinfo["Solo"]

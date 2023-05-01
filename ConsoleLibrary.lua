@@ -29,12 +29,19 @@ local DataFuncs = {
 local SpecialData = function(v,TypeName)
     return TypeName..".new("..tostring(v)..")"
 end
+local GetIndexs = function(data)
+    local indexs = 0
+    for i,v in next, data do
+        indexs += 1
+    end
+    return indexs
+end
 
 local function BeautyTable(data,tab)
     local str = ""
     local CurrentIndex = 1
     local tab = tab or 1
-    local indexs = #data or 0
+    local indexs = GetIndexs(data)
     if indexs == 0 and typeof(data) == "table" then
         return "{}"
     end
@@ -92,4 +99,7 @@ getgenv().ConsoleWarn = function(Text)
 end
 getgenv().ConsoleError = function(Text)
     ConsolePrint("RED","Error",Text)
+end
+getgenv().ConsoleTable = function(...)
+    ConsolePrint("WHITE","Info",...)
 end

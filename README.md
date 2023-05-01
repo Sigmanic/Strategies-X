@@ -1,18 +1,18 @@
 <br/>
 <p align="center">
-  <h3 align="center">AutoStrat-Modded [Alpha]</h3>
+  <h3 align="center">Strategies X [Alpha]</h3>
 
   <p align="center">
     A Version Inspired By MoneyMaker's AutoStrat, Aims To Be Fully Open-Sourced And More Customization
     <br/>
     <br/>
-    <a href="https://github.com/Sigmanic/AutoStratModded/issues">Report Bug</a>
+    <a href="https://github.com/Sigmanic/Strategies-X/issues">Report Bug</a>
     .
-    <a href="https://github.com/Sigmanic/AutoStratModded/issues">Request Feature</a>
+    <a href="https://github.com/Sigmanic/Strategies-X/issues">Request Feature</a>
   </p>
 </p>
 
-![Contributors](https://img.shields.io/github/contributors/Sigmanic/AutoStratModded?color=dark-green) ![Forks](https://img.shields.io/github/forks/Sigmanic/AutoStratModded?style=social) ![Stargazers](https://img.shields.io/github/stars/Sigmanic/AutoStratModded?style=social) ![Issues](https://img.shields.io/github/issues/Sigmanic/AutoStratModded) 
+![Contributors](https://img.shields.io/github/contributors/Sigmanic/Strategies-X?color=dark-green) ![Forks](https://img.shields.io/github/forks/Sigmanic/Strategies-X?style=social) ![Stargazers](https://img.shields.io/github/stars/Sigmanic/Strategies-X?style=social) ![Issues](https://img.shields.io/github/issues/Sigmanic/Strategies-X) 
 
 ## Highlight
 
@@ -58,7 +58,7 @@ Or any executors that supported the following librarys:
 
 ## FAQ
 I got a bug, where do I report it?
-* You can report it in [Issues](https://github.com/Sigmanic/AutoStratModded/issues).
+* You can report it in [Issues](https://github.com/Sigmanic/Strategies-X/issues).
 
 Can I get banned when using this script?
 * I will make sure that the detection will be low as possible, so you won't get banned.
