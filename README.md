@@ -16,7 +16,7 @@
 
 ## Highlight
 
-* [Why did you make AutoStratModded?](#why-did-you-make-autostratmodded)
+* [Why did you make Strategies X?](#why-did-you-make-Strategies-x)
 * [Goals](#goals)
 * [Requirements](#requirements)
 * [Features (WIP)](#features-wip)

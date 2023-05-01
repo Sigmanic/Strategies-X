@@ -156,7 +156,7 @@ local Data = {
    }
 }
 local SendData = {
-   Url = readfile("TDS_AutoStrat/Webhook (Logs).txt"), 
+   Url = getgenv().UtilitiesConfig.Webhook.Link, 
    Body = game:GetService("HttpService"):JSONEncode(Data), 
    Method = "POST", 
    Headers = {
