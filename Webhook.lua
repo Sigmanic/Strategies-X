@@ -143,7 +143,7 @@ local Data = {
             },
             {
                ["name"] = "Won Experiences:",
-               ["value"] = Content.Rewards.Experience.TextLabel.Text,
+               ["value"] = string.split(Content.Rewards.Experience.TextLabel.Text," XP")[1].." :star:",
                ["inline"] = true
             },
             {
