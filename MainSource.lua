@@ -226,7 +226,7 @@ if CheckPlace() then
     utilitiestab:Toggle("Rejoin Lobby After Match",{default = true, location = getgenv(), flag = "RejoinLobby"})
 
     task.spawn(function()
-        repeat wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
 
         local Part = Instance.new("Part")
         Part.Size = Vector3.new(10, 2, 10)
@@ -404,6 +404,9 @@ if CheckPlace() then
         Folder.Name = "Map"
         utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool)
             if bool then
+                repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+                LocalPlayer.Character.Humanoid.PlatformStand = true
+                LocalPlayer.Character.HumanoidRootPart.Anchored = true
                 for i,v in next, Workspace.Map:GetChildren() do
                     if v.Name ~= "Paths" then
                         v.Parent = Folder
@@ -417,6 +420,9 @@ if CheckPlace() then
             MinimizeClient(bool)
         end)
         if getgenv().PotatoPC or getgenv().UtilitiesConfig.LowGraphics then
+            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+            LocalPlayer.Character.Humanoid.PlatformStand = true
+            LocalPlayer.Character.HumanoidRootPart.Anchored = true
             for i,v in next, Workspace.Map:GetChildren() do
                 if v.Name ~= "Paths" then
                     v.Parent = Folder
@@ -560,7 +566,7 @@ if not CheckPlace() then
     getgenv().TimerLeft = maintab:Section("Time Left: 20")
     getgenv().MapFind = maintab:Section("Map: ")
     getgenv().CurrentPlayer = maintab:Section("Player Joined: 0")
-    
+
     local utilitiestab = UILibrary:CreateWindow("Utilities")
     local WebSetting = utilitiestab:DropSection("Webhook Settings")
     WebSetting:Toggle("Enabled",{default = getgenv().UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
@@ -577,6 +583,9 @@ if not CheckPlace() then
     Folder.Name = "Lobby"
     utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool)
         if bool then
+            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+            LocalPlayer.Character.Humanoid.PlatformStand = true
+            LocalPlayer.Character.HumanoidRootPart.Anchored = true
             for i,v in next, Workspace.Lobby:GetChildren() do
                 v.Parent = Folder
             end
@@ -588,6 +597,9 @@ if not CheckPlace() then
         MinimizeClient(bool)
     end)
     if getgenv().PotatoPC or getgenv().UtilitiesConfig.LowGraphics then
+        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+        LocalPlayer.Character.Humanoid.PlatformStand = true
+        LocalPlayer.Character.HumanoidRootPart.Anchored = true
         for i,v in next, Workspace.Lobby:GetChildren() do
             v.Parent = Folder
         end
