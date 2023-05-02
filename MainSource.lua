@@ -26,7 +26,7 @@ getgenv().UtilitiesConfig = {
     },
 }
 
-local Version = "Version: 0.1.3 [Alpha]"
+local Version = "Version: 0.1.4 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -84,6 +84,9 @@ end
 
 local GameInfo
 getgenv().GetGameInfo = function()
+    if not CheckPlace() then
+        return
+    end
     if GameInfo then
         return GameInfo
     end
@@ -438,7 +441,12 @@ if CheckPlace() then
         end
         local GameGui = LocalPlayer.PlayerGui.GameGui
         GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+            prints("Match Ended")
+            task.wait(1)
+            if getgenv().UtilitiesConfig.Webhook.Enabled then
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+                prints("Sent Webhook Log")
+            end
             if not getgenv().RejoinLobby then
                 repeat task.wait() until getgenv().RejoinLobby
             end
@@ -446,6 +454,7 @@ if CheckPlace() then
             if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
                 return
             end
+            prints("Rejoining To Lobby")
             game:GetService("TeleportService"):Teleport(3260590327)
         end)
     end)

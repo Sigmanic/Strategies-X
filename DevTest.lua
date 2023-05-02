@@ -515,9 +515,9 @@ function Loader()
                             }
                             CheckRequest = SendRequest(SendData)
                         end)
-                        repeat wait() until type(CheckRequest) == "table"
+                        repeat task.wait() until type(CheckRequest) == "table"
                     else
-                        task.wait(3)
+                        repeat task.wait() until type(getgenv().SendCheck) == "table"
                     end
                     if FeatureConfig["JoinLessFeature"].Enabled then
                         local Min = FeatureConfig["JoinLessFeature"].MinPlr

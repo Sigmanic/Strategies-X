@@ -52,7 +52,7 @@ local CommaText = function(string)
 end
 local CheckRewardTable = CheckReward()
 repeat 
-   CheckRewardStr = CheckReward() 
+   CheckRewardTable = CheckReward() 
    task.wait()
 until type(CheckRewardTable) == "table"
 
@@ -163,4 +163,4 @@ local SendData = {
        ["content-type"] = "application/json"
    }
 }
-SendRequest(SendData)
+getgenv().SendCheck = SendRequest(SendData)
