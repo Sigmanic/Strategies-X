@@ -1,4 +1,7 @@
 if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
+if not game:GetService("Players").LocalPlayer then
+    repeat task.wait() until game:GetService("Players").LocalPlayer
+end
 local OldTime = os.clock()
 if not isfolder("StratLoader") then
     makefolder("StratLoader/UserLogs")
