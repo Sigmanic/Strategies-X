@@ -62,9 +62,7 @@ local writelog = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        if Config[game:GetService("Players").LocalPlayer.Name] then
-            return WriteFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text))
-        end
+        return WriteFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text))
     end)
 end
 local appendlog = function(...)
@@ -77,9 +75,7 @@ local appendlog = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        if Config[game:GetService("Players").LocalPlayer.Name] then
-            return AppendFile(Config[game:GetService("Players").LocalPlayer.Name],game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
-        end
+        return AppendFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
     end)
 end
 
