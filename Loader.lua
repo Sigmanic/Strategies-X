@@ -1,25 +1,12 @@
 if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
 local OldTime = os.clock()
 if not isfolder("StratLoader") then
-    makefolder("StratLoader/UserConfig/Source")
     makefolder("StratLoader/UserLogs")
-end
-if not isfolder("StratLoader/UserConfig/Source") then
-    makefolder("StratLoader/UserConfig/Source")
 end
 if not isfolder("StratLoader/UserLogs") then
     makefolder("StratLoader/UserLogs")
 end
-if isfile("StratLoader/UserConfig/Config.txt") then
-    getgenv().Config = cloneref(game:GetService("HttpService")):JSONDecode(readfile("StratLoader/UserConfig/Config.txt"))
-else
-    writefile("StratLoader/UserConfig/Config.txt",cloneref(game:GetService("HttpService")):JSONEncode(Config))
-end
-if isfile("StratLoader/UserConfig/FeatureConfig.txt") then
-    getgenv().FeatureConfig = cloneref(game:GetService("HttpService")):JSONDecode(readfile("StratLoader/UserConfig/FeatureConfig.txt"))
-else
-    writefile("StratLoader/UserConfig/FeatureConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(FeatureConfig))
-end
+
 getgenv().WriteFile = function(check,name,location,str)
     if not check then
         return
@@ -92,6 +79,7 @@ local appendlog = function(...)
         end
     end)
 end
+
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
     local Self, Args = (...), ({select(2, ...)})
