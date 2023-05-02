@@ -156,6 +156,16 @@ function Map(tableinfo)
                         getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
                         getgenv().TimerLeft.Text = "Time Left: "..tostring(numbertime)
                         prints("Time Left: ",numbertime)
+                        if not (LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")) then
+                            print("Event Disconnected 3")
+                            ConnectionEvent:Disconnect()
+                            getgenv().JoiningStatus.Text = "Player Died. Rejoining Elevator"
+                            prints("Player Died. Rejoining Elevator")
+                            RemoteFunction:InvokeServer("Elevators", "Leave")
+                            getgenv().TimerLeft.Text = "Time Left: 20"
+                            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+                            JoiningCheck = false
+                        end
                         if numbertime > 0 and (not table.find(Map,v["MapName"].Value) or (Solo and v["Playing"].Value > 1)) then
                             print("Event Disconnected 1")
                             ConnectionEvent:Disconnect()
