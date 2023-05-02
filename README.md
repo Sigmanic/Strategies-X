@@ -37,7 +37,7 @@ Although I considered it as a hobby project, I spent a lot of time making this p
 * Faster and more stable.
 
 ## How To Use It?
-There are two way to use Strategies X:
+There are two ways to use Strategies X:
 1. Enable Strategies X through StratLoader DevTest Version.
 2. Create a file in your exploit's autoexec and paste this code below in that file:
 ```lua
