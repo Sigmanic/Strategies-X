@@ -321,13 +321,12 @@ appendlog("Library's API Loaded: "..Time)
 getgenv().MinimizeClient = function(boolean)
     local boolean = boolean or (boolean == nil and true)
     if not getgenv().FirstTime then
-        getgenv().FirstTime = true
-        GlobalShadow = game:GetService("Lighting").GlobalShadows
-        PhysicsThrottle = settings().Physics.PhysicsEnvironmentalThrottle
-        OldQuality = settings():GetService("RenderSettings").QualityLevel
-        if gethiddenproperty and not KRNL_LOADED then
-            TechLight = gethiddenproperty(game:GetService("Lighting"), "Technology")
-        end
+        getgenv().FirstTime = {
+            GlobalShadow = game:GetService("Lighting").GlobalShadows,
+            PhysicsThrottle = settings().Physics.PhysicsEnvironmentalThrottle,
+            OldQuality = settings():GetService("RenderSettings").QualityLevel,
+            TechLight = gethiddenproperty(game:GetService("Lighting"), "Technology"),
+        }
     end
     if boolean then
         pcall(function()
@@ -335,7 +334,7 @@ getgenv().MinimizeClient = function(boolean)
         end)
         settings():GetService("RenderSettings").QualityLevel = Enum.QualityLevel.Level01
         settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
-        if sethiddenproperty and not KRNL_LOADED then
+        if sethiddenproperty then
             sethiddenproperty(game:GetService("Lighting"), "Technology",Enum.Technology.Compatibility)
         end
         game:GetService("Lighting").GlobalShadows = boolean
@@ -343,16 +342,16 @@ getgenv().MinimizeClient = function(boolean)
         pcall(function()
             setfpscap(60)
         end)
-        settings():GetService("RenderSettings").QualityLevel = OldQuality
-        settings().Physics.PhysicsEnvironmentalThrottle = PhysicsThrottle
-        if sethiddenproperty and not KRNL_LOADED then
-            sethiddenproperty(game:GetService("Lighting"), "Technology",TechLight)
+        settings():GetService("RenderSettings").QualityLevel = getgenv().FirstTime.OldQuality
+        settings().Physics.PhysicsEnvironmentalThrottle = getgenv().FirstTime.PhysicsThrottle
+        if sethiddenproperty then
+            sethiddenproperty(game:GetService("Lighting"), "Technology", getgenv().FirstTime.TechLight)
         end
-        game:GetService("Lighting").GlobalShadows = GlobalShadow
+        game:GetService("Lighting").GlobalShadows = getgenv().FirstTime.GlobalShadow
     end
     game:GetService("RunService"):Set3dRenderingEnabled(not boolean)
-    for i,v in pairs(game:GetService("Lighting"):GetChildren()) do
-        if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") and v.Enabled == true then
+    for i,v in next, game:GetService("Lighting"):GetChildren() do
+        if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") and v.Enabled ~= not boolean then
             v.Enabled = not boolean
         end
     end
