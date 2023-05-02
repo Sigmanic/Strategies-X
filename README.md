@@ -18,6 +18,7 @@
 
 * [Why did you make Strategies X?](#why-did-you-make-strategies-x)
 * [Goals](#goals)
+* [How To Use It?](#how-to-use-it)
 * [Requirements](#requirements)
 * [Features (WIP)](#features-wip)
 * [Contributors](#contributors)
@@ -29,13 +30,19 @@ I started to use AutoStrat after it got released in 2022. It provides an automat
 
 Although I considered it as a hobby project, I spent a lot of time making this project works. Additionally, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university.
 
-**The only way to use AutoStratModded is using DevTest version of StratLoader**
-
 ## Goals
 * Support all current strats (even premium strats).
 * Support Multiplayers.
 * Have better tools for strat maker.
 * Faster and more stable.
+
+## How To Use It?
+There are two way to use Strategies X:
+1. Enable Strategies X through StratLoader DevTest Version.
+2. Create a file in your exploit's autoexec and paste this code below in that file:
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Loader.lua", true))()
+```
 
 ## Requirements
 Executors Supported:

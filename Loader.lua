@@ -1,3 +1,5 @@
+if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
+local OldTime = os.clock()
 if not isfolder("StratLoader") then
     makefolder("StratLoader/UserConfig/Source")
     makefolder("StratLoader/UserLogs")
