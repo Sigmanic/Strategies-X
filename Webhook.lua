@@ -64,7 +64,7 @@ local Data = {
          ["color"] = CheckColor[CheckStatus()], --decimal
          ["fields"] = {
             {
-               ["name"] = "--------------------- PLAYER INFO --------------------",
+               ["name"] = "-------------------- PLAYER INFO --------------------",
                ["value"] = "",
             },
             {
@@ -113,7 +113,7 @@ local Data = {
                ["inline"] = true
             },
             {
-               ["name"] = "--------------------- GAME INFO ---------------------",
+               ["name"] = "-------------------- GAME INFO ---------------------",
                ["value"] = "",
             },
             {
