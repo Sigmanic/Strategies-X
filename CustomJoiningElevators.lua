@@ -23,7 +23,7 @@ local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
 local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
 
 if not LocalPlayer:IsInGroup(4914494) then
-    repeat task.wait() until getgenv().BypassGroup
+    repeat task.wait() until getgenv().BypassGroup or (getgenv().UtilitiesConfig and getgenv().UtilitiesConfig.BypassGroup)
 end
 
 --loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
