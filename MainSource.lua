@@ -1,12 +1,15 @@
 getgenv().ASLibrary = {}
 if getgenv().Executed then return getgenv().ASLibrary end
 local IsPlayerInGroup = IsPlayerInGroup
+local Success
 task.spawn(function()
     if IsPlayerInGroup then
         return
     end
     repeat task.wait() until game:GetService("Players").LocalPlayer
-    IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+    local Success = pcall(function()
+        IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+    end)
 end)
 if not game:IsLoaded() then
     game['Loaded']:Wait()
@@ -15,6 +18,7 @@ writefile("StratLoader/UserLogs/PrintLog.txt", "")
 getgenv().UtilitiesConfig = {
     Camera = tonumber(getgenv().DefaultCam) or 2,
     LowGraphics = getgenv().PotatoPC or false,
+    BypassGroup = false,
     Webhook = {
         Enabled = false,
         Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
@@ -160,6 +164,7 @@ function SaveUtilitiesConfig()
     getgenv().UtilitiesConfig = {
         Camera = tonumber(getgenv().DefaultCam) or 2,
         LowGraphics = utilitiestable.flags.LowGraphics,
+        BypassGroup = utilitiestable.flags.BypassGroup,
         Webhook = {
             Enabled = utilitiestable.WebSetting.flags.Enabled or false,
             Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
@@ -227,10 +232,24 @@ local maintab = UILibrary:CreateWindow("Strategies X")
 --maintab:Section("==Modded Version==")
 prints("Checking Group")
 getgenv().BypassGroup = false
-if not IsPlayerInGroup and not CheckPlace() then
-    if IsPlayerInGroup  == nil then
-        repeat task.wait() until IsPlayerInGroup ~= nil
-    else
+if not (IsPlayerInGroup and CheckPlace()) then
+    if IsPlayerInGroup == nil then
+        task.spawn(function()
+            repeat task.wait() until Success ~= nil
+            if not Success then
+                maintab:Section("Checking Group Failed")
+                prints("Checking Group Failed")
+                maintab:Button("I Already Joined It", function()
+                    getgenv().BypassGroup = true
+                end)
+            end
+        end)
+        repeat task.wait() until IsPlayerInGroup ~= nil or getgenv().BypassGroup or getgenv().UtilitiesConfig.BypassGroup
+        if getgenv().BypassGroup or getgenv().UtilitiesConfig.BypassGroup then
+            return
+        end
+    end
+    if not IsPlayerInGroup then
         maintab:Section("You Need To Join")
         maintab:Section("Paradoxum Games Group")
         local JoinButton = maintab:DropSection("Join The Group")
@@ -240,10 +259,14 @@ if not IsPlayerInGroup and not CheckPlace() then
         JoinButton:Button("Yes, I Just Joined It", function()
             getgenv().BypassGroup = true
         end)
-        repeat task.wait() until getgenv().BypassGroup
+        repeat task.wait() until getgenv().BypassGroup or getgenv().UtilitiesConfig.BypassGroup
     end
 end
-prints("Checking Group Completed")
+if getgenv().UtilitiesConfig.BypassGroup then
+    prints("Bypassed Group Checking")
+else
+    prints("Checking Group Completed")
+end
 maintab:Section(Version)
 maintab:Section("Current Place: "..(CheckPlace() and "Ingame" or "Lobby"))
 
@@ -461,6 +484,7 @@ if CheckPlace() then
             getgenv().ASLibrary.LowGraphics(bool)
         end)
 
+        utilitiestab:Toggle("Bypass Group Checking",{default = getgenv().UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
         task.spawn(function()
             while true do
                 SaveUtilitiesConfig()
@@ -596,6 +620,8 @@ if not CheckPlace() then
     utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
         getgenv().ASLibrary.LowGraphics(bool)
     end)
+
+    utilitiestab:Toggle("Bypass Group Checking",{default = getgenv().UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
 
     task.spawn(function()
         while true do
