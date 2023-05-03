@@ -71,6 +71,9 @@ if isfile("StratLoader/UserConfig/UtilitiesConfig.txt") then
     if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= getgenv().UtilitiesConfig.Camera then
         getgenv().UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
+    if getgenv().PotatoPC then
+        getgenv().UtilitiesConfig.LowGraphics = true
+    end
 else
     writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
 end
@@ -117,6 +120,57 @@ end
 
 function CheckPlace()
     return (game.PlaceId == 5591597781)
+end
+
+local Folder = Instance.new("Folder")
+Folder.Parent = ReplicatedStorage
+Folder.Name = "Map"
+getgenv().ASLibrary.LowGraphics = function(bool)
+    if bool then
+        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+        LocalPlayer.Character.Humanoid.PlatformStand = true
+        LocalPlayer.Character.HumanoidRootPart.Anchored = true
+        if CheckPlace() then
+            for i,v in next, Workspace.Map:GetChildren() do
+                if v.Name ~= "Paths" then
+                    v.Parent = Folder
+                end
+            end
+        else
+            for i,v in next, Workspace.Lobby:GetChildren() do
+                v.Parent = Folder
+            end
+        end
+    else
+        if not (CheckPlace() and getgenv().DefaultCam ~= 1) then
+            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+            LocalPlayer.Character.Humanoid.PlatformStand = false
+            LocalPlayer.Character.HumanoidRootPart.Anchored = false
+        end
+        for i,v in next, Folder:GetChildren() do
+            v.Parent = Workspace[CheckPlace() and "Map" or "Lobby"]
+        end
+    end
+    MinimizeClient(bool)
+    prints((bool and "Enabled" or "Disabled").." Low Graphics Mode")
+end
+
+function SaveUtilitiesConfig()
+    local utilitiestable = getgenv().utilitiestab
+    getgenv().UtilitiesConfig = {
+        Camera = tonumber(getgenv().DefaultCam) or 2,
+        LowGraphics = utilitiestable.flags.LowGraphics,
+        Webhook = {
+            Enabled = utilitiestable.WebSetting.flags.Enabled or false,
+            Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
+            HideUser = utilitiestable.WebSetting.flags.HideUser or false,
+            PlayerInfo = utilitiestable.WebSetting.flags.PlayerInfo or true,
+            GameInfo = utilitiestable.WebSetting.flags.GameInfo or true,
+            TroopsInfo = utilitiestable.WebSetting.flags.TroopsInfo or true,
+            DisableCustomLog = utilitiestable.WebSetting.flags.DisableCustomLog or true,
+        },
+    }
+    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
 end
 
 --repeat wait() until game:IsLoaded()
@@ -168,7 +222,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave)
     (ReplicatedStorage.State.Timer.Time.Value + 1 == TotalSec(Min,Sec) or ReplicatedStorage.State.Timer.Time.Value == TotalSec(Min,Sec)) and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
     task.wait(TimePrecise(Sec))
 end
-local CountNum = 0
+
 local maintab = UILibrary:CreateWindow("Strategies X")
 --maintab:Section("==Modded Version==")
 prints("Checking Group")
@@ -193,6 +247,7 @@ prints("Checking Group Completed")
 maintab:Section(Version)
 maintab:Section("Current Place: "..(CheckPlace() and "Ingame" or "Lobby"))
 
+local CountNum = 0
 if CheckPlace() then
     if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
         game:GetService("TeleportService"):Teleport(3260590327, LocalPlayer)
@@ -222,7 +277,7 @@ if CheckPlace() then
         end
     end)
 
-    local utilitiestab = UILibrary:CreateWindow("Utilities")
+    getgenv().utilitiestab = UILibrary:CreateWindow("Utilities")
     utilitiestab:Toggle("Rejoin Lobby After Match",{default = true, location = getgenv(), flag = "RejoinLobby"})
 
     task.spawn(function()
@@ -337,12 +392,14 @@ if CheckPlace() then
         utilitiestab:Button("Teleport Back To Platform",function()
             LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = Part.CFrame +  Vector3.new(0, 3.5, 0)
         end)
-        local WebSetting = utilitiestab:DropSection("Webhook Settings")
+        
+        getgenv().utilitiestab.WebSetting = utilitiestab:DropSection("Webhook Settings")
+        local WebSetting = getgenv().utilitiestab.WebSetting
         WebSetting:Toggle("Enabled",{default = getgenv().UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
         if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
             WebSetting:Toggle("Disable SL's Custom Log",{default = getgenv().UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
         end
-        WebSetting:Toggle("Hide Username",{default = getgenv().UtilitiesConfig.Webhook.HideUser or false ,flag = "HideUser"})
+        WebSetting:Toggle("Hide Username",{default = getgenv().UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
         WebSetting:Toggle("Player Info",{default = getgenv().UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
         WebSetting:Toggle("Game Info",{default = getgenv().UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
         WebSetting:Toggle("Troops Info",{default = getgenv().UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
@@ -399,37 +456,17 @@ if CheckPlace() then
             Camera.CameraType = Enum.CameraType.Scriptable
             LocalPlayer.DevCameraOcclusionMode = OldCameraOcclusionMode
         end)
-        local Folder = Instance.new("Folder")
-        Folder.Parent = ReplicatedStorage
-        Folder.Name = "Map"
-        utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool)
-            if bool then
-                repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-                LocalPlayer.Character.Humanoid.PlatformStand = true
-                LocalPlayer.Character.HumanoidRootPart.Anchored = true
-                for i,v in next, Workspace.Map:GetChildren() do
-                    if v.Name ~= "Paths" then
-                        v.Parent = Folder
-                    end
-                end
-            else
-                for i,v in next, Folder:GetChildren() do
-                    v.Parent = Workspace.Map
-                end
-            end
-            MinimizeClient(bool)
+
+        utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
+            getgenv().ASLibrary.LowGraphics(bool)
         end)
-        if getgenv().PotatoPC or getgenv().UtilitiesConfig.LowGraphics then
-            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-            LocalPlayer.Character.Humanoid.PlatformStand = true
-            LocalPlayer.Character.HumanoidRootPart.Anchored = true
-            for i,v in next, Workspace.Map:GetChildren() do
-                if v.Name ~= "Paths" then
-                    v.Parent = Folder
-                end
+
+        task.spawn(function()
+            while true do
+                SaveUtilitiesConfig()
+                task.wait(1)
             end
-            MinimizeClient(bool)
-        end
+        end)
 
         task.spawn(function()
             repeat task.wait(.3)
@@ -443,29 +480,6 @@ if CheckPlace() then
                         utilitiestab:Section(tostring(v))
                     end
                 end
-            end
-        end)
-
-        function SaveUtilitiesConfig()
-            getgenv().UtilitiesConfig = {
-                Camera = tonumber(getgenv().DefaultCam) or 2,
-                LowGraphics = utilitiestab.flags.LowGraphics,
-                Webhook = {
-                    Enabled = WebSetting.flags.Enabled or false,
-                    Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
-                    HideUser = WebSetting.flags.HideUser or false,
-                    PlayerInfo = WebSetting.flags.PlayerInfo or true,
-                    GameInfo = WebSetting.flags.GameInfo or true,
-                    TroopsInfo = WebSetting.flags.TroopsInfo or true,
-                    DisableCustomLog = WebSetting.flags.DisableCustomLog or true,
-                },
-            }
-            writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
-        end
-        task.spawn(function()
-            while true do
-                SaveUtilitiesConfig()
-                task.wait(1)
             end
         end)
 
@@ -567,60 +581,22 @@ if not CheckPlace() then
     getgenv().MapFind = maintab:Section("Map: ")
     getgenv().CurrentPlayer = maintab:Section("Player Joined: 0")
 
-    local utilitiestab = UILibrary:CreateWindow("Utilities")
-    local WebSetting = utilitiestab:DropSection("Webhook Settings")
+    getgenv().utilitiestab = UILibrary:CreateWindow("Utilities")
+    getgenv().utilitiestab.WebSetting = utilitiestab:DropSection("Webhook Settings")
+    local WebSetting = getgenv().utilitiestab.WebSetting
     WebSetting:Toggle("Enabled",{default = getgenv().UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
     if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
         WebSetting:Toggle("Disable SL's Custom Log",{default = getgenv().UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
     end
-    WebSetting:Toggle("Hide Username",{default = getgenv().UtilitiesConfig.Webhook.HideUser or false ,flag = "HideUser"})
+    WebSetting:Toggle("Hide Username",{default = getgenv().UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
     WebSetting:Toggle("Player Info",{default = getgenv().UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
     WebSetting:Toggle("Game Info",{default = getgenv().UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
     WebSetting:Toggle("Troops Info",{default = getgenv().UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
-    local Folder = Instance.new("Folder")
-    Folder.Parent = ReplicatedStorage
-    Folder.Name = "Lobby"
-    utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool)
-        if bool then
-            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-            LocalPlayer.Character.Humanoid.PlatformStand = true
-            LocalPlayer.Character.HumanoidRootPart.Anchored = true
-            for i,v in next, Workspace.Lobby:GetChildren() do
-                v.Parent = Folder
-            end
-        else
-            for i,v in next, Folder:GetChildren() do
-                v.Parent = Workspace.Lobby
-            end
-        end
-        MinimizeClient(bool)
+    utilitiestab:Toggle("Low Graphics Mode",{default = getgenv().UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
+        getgenv().ASLibrary.LowGraphics(bool)
     end)
-    if getgenv().PotatoPC or getgenv().UtilitiesConfig.LowGraphics then
-        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-        LocalPlayer.Character.Humanoid.PlatformStand = true
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        for i,v in next, Workspace.Lobby:GetChildren() do
-            v.Parent = Folder
-        end
-        MinimizeClient(bool)
-    end
-    function SaveUtilitiesConfig()
-        getgenv().UtilitiesConfig = {
-            Camera = tonumber(getgenv().DefaultCam) or 2,
-            LowGraphics = utilitiestab.flags.LowGraphics,
-            Webhook = {
-                Enabled = WebSetting.flags.Enabled or false,
-                Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
-                HideUser = WebSetting.flags.HideUser or false,
-                PlayerInfo = WebSetting.flags.PlayerInfo or true,
-                GameInfo = WebSetting.flags.GameInfo or true,
-                TroopsInfo = WebSetting.flags.TroopsInfo or true,
-                DisableCustomLog = WebSetting.flags.DisableCustomLog or true,
-            },
-        }
-        writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(getgenv().UtilitiesConfig))
-    end
+
     task.spawn(function()
         while true do
             SaveUtilitiesConfig()

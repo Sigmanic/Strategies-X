@@ -128,7 +128,7 @@ local Data = {
             },
             {
                ["name"] = "Wave / Health:",
-               ["value"] = GetGameInfo():GetAttribute("Wave").." / "..tostring(ReplicatedStorage.State.Health.Current.Value),
+               ["value"] = GetGameInfo():GetAttribute("Wave").." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")",
                ["inline"] = true
             },
             {
