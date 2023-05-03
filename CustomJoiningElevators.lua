@@ -22,7 +22,7 @@ local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
 local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
 local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
 
-if not LocalPlayer:IsInGroup(4914494) then
+if not getgenv().IsPlayerInGroup then
     repeat task.wait() until getgenv().BypassGroup or (getgenv().UtilitiesConfig and getgenv().UtilitiesConfig.BypassGroup)
 end
 

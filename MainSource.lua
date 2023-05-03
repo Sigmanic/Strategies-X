@@ -1,6 +1,6 @@
 getgenv().ASLibrary = {}
 if getgenv().Executed then return getgenv().ASLibrary end
-local IsPlayerInGroup = IsPlayerInGroup
+getgenv().IsPlayerInGroup = getgenv().IsPlayerInGroup
 local Success
 task.spawn(function()
     if IsPlayerInGroup then
