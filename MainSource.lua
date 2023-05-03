@@ -233,7 +233,7 @@ local maintab = UILibrary:CreateWindow("Strategies X")
 prints("Checking Group")
 getgenv().BypassGroup = false
 if not (IsPlayerInGroup and CheckPlace()) then
-    if IsPlayerInGroup == nil then
+    if IsPlayerInGroup == nil and not getgenv().UtilitiesConfig.BypassGroup then
         task.spawn(function()
             repeat task.wait() until Success ~= nil
             if not Success then
@@ -529,11 +529,6 @@ if CheckPlace() then
             end
         end) 
 
-        for i,v in next, game:GetService("Lighting"):GetChildren() do
-            if v.Name ~= "Sky" then
-                v:Destroy()
-            end
-        end
         local GameGui = LocalPlayer.PlayerGui.GameGui
         GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
             prints("Match Ended")
@@ -698,7 +693,7 @@ function ASLibrary:Map(...)
                     end
                     if not table.find(Map,v["MapName"].Value) and v["Playing"].Value == 0 and not JoiningCheck then
                         ChangeCheck = true
-                        prints("Changing Elavator",i)
+                        prints("Changing Elevator",i)
                         RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                         task.wait(.9)
                         RemoteFunction:InvokeServer("Elevators", "Leave")
@@ -713,7 +708,7 @@ function ASLibrary:Map(...)
                 getgenv().JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
                 getgenv().MapFind.Text = "Map: "..v["MapName"].Value
                 getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
-                prints("Trying elavator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
+                prints("Trying elevator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
                 if table.find(Map,v["MapName"].Value) and v["Time"].Value > 5 and v["Playing"].Value < 4 then
                     if Solo and v["Playing"].Value ~= 0 then
                         continue
@@ -723,7 +718,7 @@ function ASLibrary:Map(...)
                     end
                     JoiningCheck = true
                     getgenv().JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
-                    prints("Joined Elavator",i)
+                    prints("Joined Elevator",i)
                     RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                     ConnectionEvent = v["Time"].Changed:Connect(function(numbertime)
                         getgenv().MapFind.Text = "Map: "..v["MapName"].Value

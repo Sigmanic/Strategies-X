@@ -122,7 +122,7 @@ function Map(tableinfo)
                     end
                     if not table.find(Map,v["MapName"].Value) and v["Playing"].Value == 0 and not JoiningCheck then
                         ChangeCheck = true
-                        prints("Changing Elavator",i)
+                        prints("Changing Elevator",i)
                         RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                         task.wait(.9)
                         RemoteFunction:InvokeServer("Elevators", "Leave")
@@ -138,7 +138,7 @@ function Map(tableinfo)
                 getgenv().MapFind.Text = "Map: "..v["MapName"].Value
                 getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
                 getgenv().EquipStatus:SetText("Troops Loadout: Loading")
-                prints("Trying elavator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
+                prints("Trying elevator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
                 if table.find(Map,v["MapName"].Value) and v["Time"].Value > 5 and v["Playing"].Value < 4 then
                     if Solo and v["Playing"].Value ~= 0 then
                         continue
@@ -148,7 +148,7 @@ function Map(tableinfo)
                     end
                     JoiningCheck = true
                     getgenv().JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
-                    prints("Joined Elavator",i)
+                    prints("Joined Elevator",i)
                     RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                     EquipTroop(tableinfo[v["MapName"].Value])
                     ConnectionEvent = v["Time"].Changed:Connect(function(numbertime)
