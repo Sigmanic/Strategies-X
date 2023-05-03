@@ -232,8 +232,8 @@ local maintab = UILibrary:CreateWindow("Strategies X")
 --maintab:Section("==Modded Version==")
 prints("Checking Group")
 getgenv().BypassGroup = false
-if not (IsPlayerInGroup and CheckPlace()) then
-    if IsPlayerInGroup == nil and not getgenv().UtilitiesConfig.BypassGroup then
+if not ((IsPlayerInGroup and CheckPlace()) or getgenv().UtilitiesConfig.BypassGroup) then
+    if IsPlayerInGroup == nil then
         task.spawn(function()
             repeat task.wait() until Success ~= nil
             if not Success then
