@@ -21,7 +21,7 @@ getgenv().UtilitiesConfig = {
     BypassGroup = false,
     Webhook = {
         Enabled = false,
-        Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
+        Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
         HideUser = false,
         PlayerInfo = true,
         GameInfo = true,
@@ -167,7 +167,7 @@ function SaveUtilitiesConfig()
         BypassGroup = utilitiestable.flags.BypassGroup,
         Webhook = {
             Enabled = utilitiestable.WebSetting.flags.Enabled or false,
-            Link = readfile("TDS_AutoStrat/Webhook (Logs).txt") or "",
+            Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
             HideUser = utilitiestable.WebSetting.flags.HideUser or false,
             PlayerInfo = utilitiestable.WebSetting.flags.PlayerInfo or true,
             GameInfo = utilitiestable.WebSetting.flags.GameInfo or true,
