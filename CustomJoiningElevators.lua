@@ -41,7 +41,7 @@ function CheckTroop(towerequip)
     end
     local Text = ""
     for i,v in next, towerequip do
-        if not TroopsOwned[v] then
+        if v ~= "nil" and not TroopsOwned[v] then
             Text = Text..v
         end
     end
