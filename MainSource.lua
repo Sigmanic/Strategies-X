@@ -1111,6 +1111,6 @@ function ASLibrary:SellAllFarms(...)
         end
     end)
 end
-ConsoleInfo("Loaded Library")
+prints("Loaded Library")
 getgenv().Executed = true
 return ASLibrary
