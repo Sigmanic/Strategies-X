@@ -50,7 +50,7 @@ function CheckTroop(towerequip)
             local BoughtCheck = true
             getgenv().TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
             for i,v in next, string.split(Text,", ") do
-                if #v > 0 and not TroopsOwned[v] then
+                if #v > 0 and v ~= "nil" and not TroopsOwned[v] then
                     BoughtCheck = false
                     TowersStatus[i].Text = v..": Missing"
                 end
