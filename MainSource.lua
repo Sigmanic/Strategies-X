@@ -18,7 +18,7 @@ writefile("StratLoader/UserLogs/PrintLog.txt", "")
 getgenv().UtilitiesConfig = {
     Camera = tonumber(getgenv().DefaultCam) or 2,
     LowGraphics = getgenv().PotatoPC or false,
-    BypassGroup = false,
+    BypassGroup = true,
     Webhook = {
         Enabled = false,
         Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
