@@ -1,10 +1,21 @@
 local SendRequest = http_request or request or HttpPost or syn.request
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local GameGui = LocalPlayer.PlayerGui.GameGui
-local Content = GameGui.Results.Content
+local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+local Info = MatchGui.content.info
+local Stats = Info.stats
+local Rewards = Info.rewards
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Executor = identifyexecutor()
+
+local CommaText = function(string)
+   return tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+end
+local TimeFormat = function(string)
+   local Time = string.gsub(string,"%D+",":"):gsub(".?$","")
+   return Time
+end
+
 local GameInfo
 local GetGameInfo = getgenv().GetGameInfo or function()
    if GameInfo then
@@ -20,20 +31,21 @@ local GetGameInfo = getgenv().GetGameInfo or function()
       task.wait()
    until GameInfo
 end
+
 local function CheckStatus()
-   for i,v in next,Content.Titles:GetChildren() do
-      if v.Name ~= "Triumph2" and v.Visible == true then
-         return tostring(v.Name)
-      end
-   end
+   return MatchGui.banner.textLabel.Text
 end
 local function CheckReward()
-   for i,v in next,Content.Rewards:GetChildren() do
-      if (v.Name == "Coins" or v.Name == "Gems") and v.Visible == true then
-         return {v.Name,v.TextLabel.Text..((v.Name == "Coins" and " :coin:") or (v.Name == "Gems" and " :gem:") or "")}
-      end
+   local RewardType
+   repeat task.wait() until Rewards[1] and Rewards[2]
+   if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
+      RewardType = "Coins"
+   else
+      RewardType = "Gems"
    end
+   return {RewardType, Rewards[2].content.textLabel.Text..((RewardType == "Coins" and " :coin:") or (RewardType == "Gems" and " :gem:") or "")}
 end
+
 local function CheckTower()
    local str = ""
    local TowerInfo = getgenv().TowerInfo or {}
@@ -44,17 +56,11 @@ local function CheckTower()
 end
 
 local CheckColor = {
-   ["Triumph"] = tonumber(65280),
-   ["Lose"] = tonumber(16711680),
+   ["TRIUMPH!"] = tonumber(65280),
+   ["YOU LOST"] = tonumber(16711680),
 }
-local CommaText = function(string)
-   return tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
-end
-local CheckRewardTable = CheckReward()
-repeat 
-   CheckRewardTable = CheckReward() 
-   task.wait()
-until type(CheckRewardTable) == "table"
+
+local GetReward = CheckReward()
 
 local Data = {
    ["content"] = "",
@@ -133,17 +139,17 @@ local Data = {
             },
             {
                ["name"] = "Game Time:",
-               ["value"] = Content.Stats.Duration.Text,
+               ["value"] = TimeFormat(Stats.duration.Text),
                ["inline"] = true
             },
             {
-               ["name"] = "Won "..CheckReward()[1]..":",
-               ["value"] = CheckReward()[2],
+               ["name"] = "Won "..GetReward[1]..":",
+               ["value"] = GetReward[2],
                ["inline"] = true
             },
             {
                ["name"] = "Won Experiences:",
-               ["value"] = string.split(Content.Rewards.Experience.TextLabel.Text," XP")[1].." :star:",
+               ["value"] = string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:",
                ["inline"] = true
             },
             {

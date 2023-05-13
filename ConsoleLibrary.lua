@@ -58,6 +58,11 @@ end
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+if not rconsoleclear then
+    getgenv().rconsoleclear = function() end
+    getgenv().rconsolename = function() end
+    getgenv().rconsoleprint = function() end
+end
 rconsoleclear()
 rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")
 local Typelist = {"Info","Warn","Error","Table"}
@@ -89,7 +94,18 @@ getgenv().ConsolePrint = function(Color,Type,...)
     end
     rconsoleprint("@@"..Color.."@@")
     rconsoleprint("["..os.date("%X").."]["..Type.."] "..String.."\n")
-    getgenv().AppendFile(true,LocalPlayer.Name.."'s log","StratLoader/UserLogs",String.."\n")
+    if Type == "Info" then
+        print("["..os.date("%X").."]["..Type.."] "..String)
+    elseif Type == "Warn" then
+        pcall(function()
+            warn("["..os.date("%X").."]["..Type.."] "..String)
+        end)
+    elseif Type == "Error" then
+        pcall(function()
+            error("["..os.date("%X").."]["..Type.."] "..String)
+        end)
+    end
+    getgenv().AppendFile(true,LocalPlayer.Name.."'s log","StratLoader/UserLogs","["..os.date("%X").."]["..Type.."] "..String.."\n")
 end
 getgenv().ConsoleInfo = function(Text)
     ConsolePrint("WHITE","Info",Text)
@@ -101,5 +117,5 @@ getgenv().ConsoleError = function(Text)
     ConsolePrint("RED","Error",Text)
 end
 getgenv().ConsoleTable = function(...)
-    ConsolePrint("WHITE","Info",...)
+    ConsolePrint("WHITE","Table",...)
 end

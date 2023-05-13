@@ -7,12 +7,18 @@ local Patcher = {
         }
     end,
     ["Loadout"] = function(...)
+        local OldList = {...}
+        for i,v in next, OldList do
+            if v:lower() == "nil" then
+                v = nil
+            end
+        end
         local TowerList = {}
-        TowerList["TotalTowers"] = {...}
+        TowerList["TotalTowers"] = OldList
         if type(getgenv().GoldenPerks) ~= "table" then
             getgenv().GoldenPerks = {}
         end
-        for i,v in next, {...} do
+        for i,v in next, OldList do
             if type(v) == "string" then
                 TowerList[v] = {table.find(getgenv().GoldenPerks,v) and true or false}
             end
@@ -70,11 +76,12 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
-    ["Target"] = function(troop, wave, min, sec, inbetween)
+    ["Target"] = function(troop, wave, target, min, sec, inbetween)
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
             ["Wave"] = wave,
+            ["Target"] = target,
             ["Minute"] = min,
             ["Second"] = sec,
             ["InBetween"] = inbetween or false,

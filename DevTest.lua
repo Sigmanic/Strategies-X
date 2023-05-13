@@ -417,8 +417,11 @@ function Loader()
                 end
                 local SendRequest = http_request or request or HttpPost or syn.request
                 local LocalPlayer = game:GetService("Players").LocalPlayer
-                local GameGui = LocalPlayer.PlayerGui.GameGui
-                local Content = GameGui.Results.Content
+                local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+                local Info = MatchGui.content.info
+                local Stats = Info.stats
+                local Rewards = Info.rewards
+                local ReplicatedStorage = game:GetService("ReplicatedStorage")
                 local OldIndex
                 OldIndex = hookmetamethod(game,"__index",function(...)
                     local Args = {...}
@@ -427,25 +430,26 @@ function Loader()
                     end
                     return OldIndex(...)
                 end)
-                GameGui.Results:GetPropertyChangedSignal("Visible"):Connect(function()
+                local CommaText = function(string)
+                    return tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+                 end
+                MatchGui:GetPropertyChangedSignal("Visible"):Connect(function()
                     if readfile("TDS_AutoStrat/Webhook (Logs).txt") ~= "WEBHOOK HERE" and not (type(getgenv().UtilitiesConfig) == "table" and getgenv().UtilitiesConfig.Webhook.DisableCustomLog) then
                         local CheckRequest
                         task.spawn(function()
-                            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-                            local function CheckMode()
-                                for i,v in next,Content.Titles:GetChildren() do
-                                    if v.Name ~= "Triumph2" and v.Visible == true then
-                                        return tostring(v.Name)
-                                    end
-                                end
+                            local function CheckStatus()
+                                return MatchGui.banner.textLabel.Text
                             end
                             local function CheckReward()
-                                for i,v in next,Content.Rewards:GetChildren() do
-                                    if (v.Name == "Coins" or v.Name == "Gems") and v.Visible == true then
-                                        return v.Name.." : **"..v.TextLabel.Text
-                                    end
+                                local RewardType
+                                repeat task.wait() until Rewards[1] and Rewards[2]
+                                if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
+                                   RewardType = "Coins"
+                                else
+                                   RewardType = "Gems"
                                 end
-                            end
+                                return {RewardType, Rewards[2].content.textLabel.Text..((RewardType == "Coins" and " :coin:") or (RewardType == "Gems" and " :gem:") or "")}
+                             end
                             local function CheckTower()
                                 local str = ""
                                 local troops = {}
@@ -465,21 +469,13 @@ function Loader()
                                 end
                                 return str
                             end
-                            local function CheckColor()
-                                if CheckMode() == "Triumph" then
-                                    return tonumber(65280)
-                                elseif CheckMode() == "Lose" then
-                                    return tonumber(16711680)
-                                else
-                                    return tonumber(16744448)
-                                end
-                            end
-                            wait(1.25) --Need wait here because CheckReward() need over 1,5s to detect which value is visible
-                            local CheckRewardStr = CheckReward()
-                            repeat 
-                                CheckRewardStr = CheckReward() 
-                                wait() 
-                            until type(CheckRewardStr) == "string"
+                            local CheckColor = {
+                                ["TRIUMPH!"] = tonumber(65280),
+                                ["YOU LOST"] = tonumber(16711680),
+                             }
+                             
+                            wait(2.3) --Need wait here because CheckReward() need over 1,5s to detect which value is visible
+                            local GetReward = CheckReward()
                             local Data = {
                                 ["username"] = "TDS AutoStrat Log",
                                 ["embeds"] = {
@@ -492,15 +488,15 @@ function Loader()
                                         "\n**Triumphs : **" ..LocalPlayer.Triumphs.Value.." :trophy: ** | Loses : **" ..LocalPlayer.Loses.Value.." :skull:"..
                                         "\n**------------------ GAME INFO ------------------**"..
                                         "\n**Mode : **"..ReplicatedStorage.State.Difficulty.Value.."** | Map : ** "..ReplicatedStorage.State.Map.Value..
-                                        "\n**Game Time : **" ..Content.Stats.Duration.Text..
-                                        "\n**Health : **" ..GameGui.Health.Survival.Count.Text.."** | Result : **" ..CheckMode()..
-                                        "\n**Won Experience : **" ..Content.Rewards.Experience.TextLabel.Text..
-                                        "\n**Won " ..CheckRewardStr..
+                                        "\n**Game Time : **" ..Stats.duration.Text..
+                                        "\n**Health : **" ..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")"..
+                                        "\n**Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:"..
+                                        "\n**Won " ..GetReward[1]..": **" ..GetReward[2]..
                                         "\n**----------------- TROOPS INFO -----------------**"..CheckTower()..
                                         "\n**----------------------------------------------------**"
                                         ,
                                         ["type"] = "rich",
-                                        ["color"] = CheckColor(),
+                                        ["color"] = CheckColor[CheckStatus()],
                                     }
                                 }
                             }

@@ -26,7 +26,7 @@
 
 ## Why did you make Strategies X?
 
-I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. The ugly section color of Wally UI V2 makes the main ui look very bad for me. In the first attempt, I use some trick to make the ui source link change into my own ui. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. So I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs and make it more stable.
+I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. But the ugly section color of Wally UI V2 makes the main ui look very bad for me. In the first attempt, I use some trick to make the ui source link change into my own ui. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. And due to some annoying bugs in that time, I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs and make it more stable.
 
 Although I considered it as a hobby project, I spent a lot of time making this project works. Additionally, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university.
 
@@ -46,14 +46,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X
 
 ## Requirements
 Executors Supported:
-* Synapse X V2
-* Script-Ware **(Console Color Not Worked)**
-* Fluxus **(Console Color Not Worked)**
-* Krnl **(Console Color Not Worked)**
+* ~~Synapse X V2~~
+* ~~Script-Ware **(Console Color Not Worked)**~~
+* Fluxus UWP
+* ~~Krnl **(Console Color Not Worked)**~~
 
 Or any executors that supported the following librarys:
 * Filesystem Functions
-* Console Functions
+* Console Functions (Won't required in future due to color ids in each exploit differently and the released of Hyperion)
 * Websocket Library
 * Crypt Library
 

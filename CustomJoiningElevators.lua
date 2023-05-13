@@ -78,7 +78,7 @@ function EquipTroop(towerequip)
         TowersStatus[i].Text = tableinfo[v][1] and "[Golden] "..v or ""..v
         if TroopsOwned[v].GoldenPerks and tableinfo[v][1] == false then
             RemoteEvent:FireServer("Inventory", "Unequip", "Golden", v)
-        elseif tableinfo[v][1]  then
+        elseif tableinfo[v][1] then
             RemoteEvent:FireServer("Inventory", "Equip", "Golden", v)
         end
     end
@@ -155,7 +155,7 @@ function Map(tableinfo)
                         getgenv().MapFind.Text = "Map: "..v["MapName"].Value
                         getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
                         getgenv().TimerLeft.Text = "Time Left: "..tostring(numbertime)
-                        prints("Time Left: ",numbertime)
+                        prints("Time Left:",numbertime)
                         if not (LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")) then
                             print("Event Disconnected 3")
                             ConnectionEvent:Disconnect()
@@ -219,4 +219,5 @@ for i,v in next, getgenv().Maps do
         ConsoleError(i.."Doesn't Contained Any Information About Towers")
     end
 end
+getgenv().Maps["Mode"] = getgenv().MultiStratType or "Survival"
 Map(getgenv().Maps)

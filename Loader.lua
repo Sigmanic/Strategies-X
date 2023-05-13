@@ -1,4 +1,7 @@
 if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
+if getgenv().StrategiesXLoader then
+    return
+end
 if not game:GetService("Players").LocalPlayer then
     repeat task.wait() until game:GetService("Players").LocalPlayer
 end
@@ -81,6 +84,7 @@ local appendlog = function(...)
         return AppendFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
     end)
 end
+writelog("")
 
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
@@ -109,4 +113,5 @@ OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
     end
     return OldHook(Self, Url, ...)
 end)
+getgenv().StrategiesXLoader = true
 appendlog("Local AutoStrat Library Loaded: "..tostring(os.clock() - OldTime))
