@@ -1,6 +1,6 @@
 <br/>
 <p align="center">
-  <h3 align="center">Strategies X [Alpha]</h3>
+  <h3 align="center">Strategies X [Alpha][PATCHED]</h3>
 
   <p align="center">
     A Version Inspired By MoneyMaker's AutoStrat, Aims To Be Fully Open-Sourced And More Customization
