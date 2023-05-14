@@ -53,7 +53,7 @@ Executors Supported:
 
 Or any executors that supported the following librarys:
 * Filesystem Functions
-* Console Functions (Won't required in future due to color ids in each exploit differently and the released of Hyperion)
+* ~~Console Functions~~ (Not Required)
 * Websocket Library
 * Crypt Library
 

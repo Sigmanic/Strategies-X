@@ -31,7 +31,7 @@ if not getgenv().UtilitiesConfig then
     }
 end
 
-local Version = "Version: 0.2.1 [Alpha]"
+local Version = "Version: 0.2.2 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -66,7 +66,9 @@ function prints(...)
     print(Text)
     ConsoleInfo(Text)
 end
-getgenv().output = prints
+getgenv().output = function(Text,Color)
+    ConsolePrint(Color,"Info",Text)
+end
 
 if isfile("StratLoader/UserConfig/UtilitiesConfig.txt") then
     getgenv().UtilitiesConfig = cloneref(game:GetService("HttpService")):JSONDecode(readfile("StratLoader/UserConfig/UtilitiesConfig.txt"))

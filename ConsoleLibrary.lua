@@ -50,30 +50,52 @@ local function BeautyTable(data,tab)
     end
 
     for i,v in next, data do
-        str = str.."\n"..string.rep("  ",tab).."["..DataFuncs[typeof(i)](i).."] = "..format_value(v,type(v) == "table")..(CurrentIndex < indexs and "," or "")
+        str = str.."\n"..string.rep("    ",tab).."["..DataFuncs[typeof(i)](i).."] = "..format_value(v,type(v) == "table")..(CurrentIndex < indexs and "," or "")
         CurrentIndex += 1
     end
-    return "{"..str.."\n"..string.rep("  ",tab-1).."}"
+    return "{"..str.."\n"..string.rep("    ",tab-1).."}"
 end
 
+local ConsoleUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/RBX-ImGui/main/RBXImGuiSource.lua"))()
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-if not rconsoleclear then
+--[[if not rconsoleclear then
     getgenv().rconsoleclear = function() end
     getgenv().rconsolename = function() end
     getgenv().rconsoleprint = function() end
-end
-rconsoleclear()
-rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")
-local Typelist = {"Info","Warn","Error","Table"}
+end]]
+--[[rconsoleclear()
+rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")]]
+
+getgenv().AppendFile = getgenv().AppendFile or function() end
+
+local Window = ConsoleUI.new({
+    text = "Strategies X",
+    size = Vector2.new(650, 370),
+    shadow = 1,
+    rounding = 1,
+    transparency = 0.2,
+    font = Enum.Font.SourceSansBold,
+    position = UDim2.new(0,600,0,220)
+})
+Window.open()
+
+local ConsoleTab = Window.new({
+    text = "Console Output",
+    autoscrolling = true,
+    forcescrollbotom = true,
+    font = Enum.Font.SourceSansBold,
+})
+
+local Typelist = {
+    ["Info"] = Color3.fromRGB(255, 255, 255),
+    ["Warn"] = Color3.fromRGB(255, 230, 30),
+    ["Error"] = Color3.fromRGB(255, 0, 0),
+}
 
 getgenv().ConsolePrint = function(Color,Type,...)
-    if type(Color) ~= "string" then
-        Color = "WHITE"
-    end
-    if not (type(Type) ~= "string" or table.find(Typelist,Type)) then
-        Type = "Info"
-    end
+    local Color = typeof(Color) == "Color3" and Color or Color3.fromRGB(255, 255, 255)
+    local Type = type(Type) == "string" and Type or "Info"
     local String = ""
     if Type == "Table" then
         local TotalIndex = 1
@@ -92,8 +114,15 @@ getgenv().ConsolePrint = function(Color,Type,...)
         end
         String = table.concat({...}, ", ")
     end
-    rconsoleprint("@@"..Color.."@@")
-    rconsoleprint("["..os.date("%X").."]["..Type.."] "..String.."\n")
+    --rconsoleprint("@@"..Color.."@@")
+    --rconsoleprint("["..os.date("%X").."]["..Type.."] "..String.."\n")
+    for i,v in next, string.split(String, "\n") do
+	    ConsoleTab.new("label", {
+	        text = (i == 1 and "["..os.date("%X").."]["..Type.."] " or "")..v,
+	        color = Typelist[Type],
+	        font = Enum.Font.Ubuntu,
+	    })
+	end
     if Type == "Info" then
         print("["..os.date("%X").."]["..Type.."] "..String)
     elseif Type == "Warn" then
@@ -107,15 +136,36 @@ getgenv().ConsolePrint = function(Color,Type,...)
     end
     getgenv().AppendFile(true,LocalPlayer.Name.."'s log","StratLoader/UserLogs","["..os.date("%X").."]["..Type.."] "..String.."\n")
 end
-getgenv().ConsoleInfo = function(Text)
-    ConsolePrint("WHITE","Info",Text)
+getgenv().ConsoleInfo = function(...)
+    local TableText = {...}
+    for i,v in next, TableText do
+        if type(v) ~= "string" then
+            TableText[i] = tostring(v)
+        end
+    end
+    local Text = table.concat(TableText, " ")
+    ConsolePrint(Typelist["Info"],"Info",Text)
 end
-getgenv().ConsoleWarn = function(Text)
-    ConsolePrint("BROWN","Warn",Text)
+getgenv().ConsoleWarn = function(...)
+    local TableText = {...}
+    for i,v in next, TableText do
+        if type(v) ~= "string" then
+            TableText[i] = tostring(v)
+        end
+    end
+    local Text = table.concat(TableText, " ")
+    ConsolePrint(Typelist["Warn"],"Warn",Text)
 end
-getgenv().ConsoleError = function(Text)
-    ConsolePrint("RED","Error",Text)
+getgenv().ConsoleError = function(...)
+    local TableText = {...}
+    for i,v in next, TableText do
+        if type(v) ~= "string" then
+            TableText[i] = tostring(v)
+        end
+    end
+    local Text = table.concat(TableText, " ")
+    ConsolePrint(Typelist["Error"],"Error",Text)
 end
 getgenv().ConsoleTable = function(...)
-    ConsolePrint("WHITE","Table",...)
+    ConsolePrint(Typelist["Info"],"Table",...)
 end
