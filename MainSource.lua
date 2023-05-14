@@ -959,7 +959,7 @@ function StratXLibrary:Upgrade(...)
         until CheckUpgraded or SkipCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         if SkipCheck and not CheckUpgraded then
-            ConsoleError(tostring(CheckUpgraded).." "..tostring(SkipCheck).."Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+            ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")\n CheckUpgraded: "tostring(CheckUpgraded)..", CheckUpgraded: "..tostring(SkipCheck))
             return
         end
         ConsoleInfo(tostring(CheckUpgraded).." "..tostring(SkipCheck).." ".."Upgraded Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
