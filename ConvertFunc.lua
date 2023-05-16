@@ -49,7 +49,7 @@ local Patcher = {
     end,
     ["Sell"] = function(troop, wave, min, sec, inbetween)
         return {
-            ["TowerIndex"] = tostring(troop),
+            ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
             ["Wave"] = wave,
             ["Minute"] = min,
