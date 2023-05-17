@@ -228,13 +228,12 @@ function TowersCheckHandler(...)
             end)
             if not TowersContained[Id] then
                 ConsoleWarn("Tower Index: "..Id.." Hasn't Created Yet")
-                repeat task.wait() until TowersContained[Id]
+                repeat task.wait() until TowersContained[Id] or SkipTowerCheck
             end
-            if TowersContained[Id].Placed == false then
+            if TowersContained[Id].Placed == false and not SkipTowerCheck then
                 ConsoleWarn("Tower Index: "..Id.." Hasn't Been Placed Yet. Waiting It To Be Placed")
-                repeat task.wait() until TowersContained[Id].Instance and TowersContained[Id].Placed
+                repeat task.wait() until (TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
             end
-            repeat task.wait() until (TowersContained[Id] and TowersContained[Id].Instance) or SkipTowerCheck
             if SkipTowerCheck then
                 ConsoleWarn("Can't Find Tower Index: "..Id)
             end
