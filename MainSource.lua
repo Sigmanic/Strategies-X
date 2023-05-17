@@ -222,6 +222,10 @@ function TowersCheckHandler(...)
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
+            task.spawn(function()
+                task.wait(15)
+                SkipTowerCheck = true
+            end)
             if not TowersContained[Id] then
                 ConsoleWarn("Tower Index: "..Id.." Hasn't Created Yet")
                 repeat task.wait() until TowersContained[Id]
@@ -229,12 +233,7 @@ function TowersCheckHandler(...)
             if TowersContained[Id].Placed == false then
                 ConsoleWarn("Tower Index: "..Id.." Hasn't Been Placed Yet. Waiting It To Be Placed")
                 repeat task.wait() until TowersContained[Id].Instance and TowersContained[Id].Placed
-                return
             end
-            task.spawn(function()
-                task.wait(15)
-                SkipTowerCheck = true
-            end)
             repeat task.wait() until (TowersContained[Id] and TowersContained[Id].Instance) or SkipTowerCheck
             if SkipTowerCheck then
                 ConsoleWarn("Can't Find Tower Index: "..Id)
