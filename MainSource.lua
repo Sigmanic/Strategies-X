@@ -31,7 +31,7 @@ if not getgenv().UtilitiesConfig then
     }
 end
 
-local Version = "Version: 0.2.3 [Alpha]"
+local Version = "Version: 0.2.4 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -57,7 +57,7 @@ StratXLibrary["ActionInfo"] = {
 --loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 local Patcher = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(name,...)
-    if type(...) == "table" then
+    if type(...) == "table" and select("#",...) == 1 then
         return ...
     end
     return Patcher[name](...)
@@ -222,6 +222,10 @@ function TowersCheckHandler(...)
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
+            if not TowersContained[Id] then
+                ConsoleWarn("Tower Index: "..Id.." Hasn't Created Yet")
+                repeat task.wait() until TowersContained[Id]
+            end
             if TowersContained[Id].Placed == false then
                 ConsoleWarn("Tower Index: "..Id.." Hasn't Been Placed Yet. Waiting It To Be Placed")
                 repeat task.wait() until TowersContained[Id].Instance and TowersContained[Id].Placed
@@ -248,7 +252,10 @@ function GetTypeIndex(string,Id)
     return string
 end
 
-function TimeWaveWait(Wave,Min,Sec,InWave)
+function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
+    if Debug then
+        return
+    end
     repeat 
         task.wait() 
     until tonumber(GetGameInfo():GetAttribute("Wave")) == Wave and CheckTimer(InWave)
@@ -1037,20 +1044,26 @@ function StratXLibrary:Sell(...)
     if not CheckPlace() then
         return
     end
-    SetActionInfo("Sell","Total")
+    for i = 1, #Tower do
+        SetActionInfo("Sell","Total")
+    end
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave)
-        TowersCheckHandler(Tower)
-        local CheckSold
-        repeat
-            CheckSold = RemoteFunction:InvokeServer("Troops","Sell",{
-                ["Troop"] = TowersContained[Tower].Instance
-            })
-            wait()
-        until CheckSold
-        local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
-        SetActionInfo("Sell")
-        ConsoleInfo("Sold Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
+        TowersCheckHandler(unpack(Tower))
+        for i,v in next, Tower do
+            task.spawn(function()
+                local CheckSold
+                repeat
+                    CheckSold = RemoteFunction:InvokeServer("Troops","Sell",{
+                        ["Troop"] = TowersContained[v].Instance
+                    })
+                    wait()
+                until CheckSold
+                local TowerType = GetTypeIndex(tableinfo["TypeIndex"],v)
+                SetActionInfo("Sell")
+                ConsoleInfo("Sold Tower Index: "..v..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+            end)
+        end
     end)
 end
 

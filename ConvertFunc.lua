@@ -48,6 +48,10 @@ local Patcher = {
         }
     end,
     ["Sell"] = function(troop, wave, min, sec, inbetween)
+        local troop = type(troop) == "table" and troop or {troop}
+        --[[for i,v in next , troop then
+            troop[i] = {v}
+        end]]
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
