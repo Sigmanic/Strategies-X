@@ -7,9 +7,12 @@ local Stats = Info.stats
 local Rewards = Info.rewards
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Executor = identifyexecutor()
+local UtilitiesConfig = StratXLibrary.UtilitiesConfig
+
 
 local CommaText = function(string)
-   return tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+   local String = tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+   return String
 end
 local TimeFormat = function(string)
    local Time = string.gsub(string,"%D+",":"):gsub(".?$","")
@@ -48,7 +51,7 @@ end
 
 local function CheckTower()
    local str = ""
-   local TowerInfo = getgenv().TowerInfo or {}
+   local TowerInfo = StratXLibrary.TowerInfo or {}
    for i,v in next, TowerInfo do
       str = str.."\n"..v[3].." : "..tostring(v[2])
    end
@@ -75,12 +78,12 @@ local Data = {
             },
             {
                ["name"] = "Username:",
-               ["value"] = (getgenv().UtilitiesConfig.Webhook.HideUser and "Anonymous") or LocalPlayer.Name,
+               ["value"] = (UtilitiesConfig.Webhook.HideUser and "Anonymous") or LocalPlayer.Name,
                ["inline"] = true
             },
             {
                ["name"] = "Display Name:",
-               ["value"] = (getgenv().UtilitiesConfig.Webhook.HideUser and "Anonymous") or LocalPlayer.DisplayName,
+               ["value"] = (UtilitiesConfig.Webhook.HideUser and "Anonymous") or LocalPlayer.DisplayName,
                ["inline"] = true
             },
             {
@@ -162,7 +165,7 @@ local Data = {
    }
 }
 local SendData = {
-   Url = getgenv().UtilitiesConfig.Webhook.Link, 
+   Url = UtilitiesConfig.Webhook.Link, 
    Body = game:GetService("HttpService"):JSONEncode(Data), 
    Method = "POST", 
    Headers = {

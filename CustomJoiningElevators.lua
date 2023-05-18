@@ -35,6 +35,11 @@ function ParametersPatch(name,...)
     return Patcher[name](...)
 end
 
+if not (StratXLibrary and StratXLibrary.Executed) then
+    repeat task.wait() until StratXLibrary and StratXLibrary.Executed
+end
+local UI = StratXLibrary.UI
+
 function CheckTroop(towerequip)
     if not (type(towerequip) == "table" and type(TroopsOwned) == "table") then
         return prints("Cant Find Any Information About Towers To Equip Or Towers Owned")
@@ -42,17 +47,18 @@ function CheckTroop(towerequip)
     local Text = ""
     for i,v in next, towerequip do
         if v ~= "nil" and not TroopsOwned[v] then
-            Text = Text..v
+            Text = Text..v..", "
         end
     end
     if #Text ~= 0 then
+        UI.EquipStatus:SetText("Troops Loadout: Missing")
         repeat
             local BoughtCheck = true
-            getgenv().TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+            TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
             for i,v in next, string.split(Text,", ") do
                 if #v > 0 and v ~= "nil" and not TroopsOwned[v] then
                     BoughtCheck = false
-                    TowersStatus[i].Text = v..": Missing"
+                    UI.TowersStatus[i].Text = v..": Missing"
                 end
             end
             task.wait(5)
@@ -66,7 +72,7 @@ function EquipTroop(towerequip)
     end
     local tableinfo = ParametersPatch("Loadout",unpack(towerequip))
     local TotalTowers = tableinfo["TotalTowers"]
-    getgenv().EquipStatus:SetText("Troops Loadout: Equipping")
+    UI.EquipStatus:SetText("Troops Loadout: Equipping")
     for i,v in next, TroopsOwned do
         if v.Equipped then
             RemoteEvent:FireServer("Inventory","Unequip","Tower",i)
@@ -75,14 +81,14 @@ function EquipTroop(towerequip)
 
     for i,v in next, TotalTowers do
         RemoteEvent:FireServer("Inventory", "Equip", "tower",v)
-        TowersStatus[i].Text = tableinfo[v][1] and "[Golden] "..v or ""..v
+        UI.TowersStatus[i].Text = (tableinfo[v][1] and "[Golden] " or "")..v
         if TroopsOwned[v].GoldenPerks and tableinfo[v][1] == false then
             RemoteEvent:FireServer("Inventory", "Unequip", "Golden", v)
         elseif tableinfo[v][1] then
             RemoteEvent:FireServer("Inventory", "Equip", "Golden", v)
         end
     end
-    getgenv().EquipStatus:SetText("Troops Loadout: Equipped")
+    UI.EquipStatus:SetText("Troops Loadout: Equipped")
     ConsoleInfo("Loadout Selected: \""..table.concat(TotalTowers, "\", \"").."\"")
 end
 --function Map(name, solo, mode)
@@ -134,10 +140,10 @@ function Map(tableinfo)
         end)
         while true do
             for i,v in next, Elevators do
-                getgenv().JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
-                getgenv().MapFind.Text = "Map: "..v["MapName"].Value
-                getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
-                getgenv().EquipStatus:SetText("Troops Loadout: Loading")
+                UI.JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
+                UI.MapFind.Text = "Map: "..v["MapName"].Value
+                UI.CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
+                UI.EquipStatus:SetText("Troops Loadout: Loading")
                 prints("Trying elevator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
                 if table.find(Map,v["MapName"].Value) and v["Time"].Value > 5 and v["Playing"].Value < 4 then
                     if Solo and v["Playing"].Value ~= 0 then
@@ -147,22 +153,22 @@ function Map(tableinfo)
                         repeat task.wait() until JoiningCheck == false and ChangeCheck == false
                     end
                     JoiningCheck = true
-                    getgenv().JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
+                    UI.JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
                     prints("Joined Elevator",i)
                     RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                     EquipTroop(tableinfo[v["MapName"].Value])
                     ConnectionEvent = v["Time"].Changed:Connect(function(numbertime)
-                        getgenv().MapFind.Text = "Map: "..v["MapName"].Value
-                        getgenv().CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
-                        getgenv().TimerLeft.Text = "Time Left: "..tostring(numbertime)
-                        prints("Time Left:",numbertime)
+                        UI.MapFind.Text = "Map: "..v["MapName"].Value
+                        UI.CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
+                        UI.TimerLeft.Text = "Time Left: "..tostring(numbertime)
+                        prints("Time Left: ",numbertime)
                         if not (LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")) then
                             print("Event Disconnected 3")
                             ConnectionEvent:Disconnect()
-                            getgenv().JoiningStatus.Text = "Player Died. Rejoining Elevator"
+                            UI.JoiningStatus.Text = "Player Died. Rejoining Elevator"
                             prints("Player Died. Rejoining Elevator")
                             RemoteFunction:InvokeServer("Elevators", "Leave")
-                            getgenv().TimerLeft.Text = "Time Left: 20"
+                            UI.TimerLeft.Text = "Time Left: 20"
                             repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
                             JoiningCheck = false
                         end
@@ -172,21 +178,21 @@ function Map(tableinfo)
                             local Text = (not table.find(Map,v["MapName"].Value) and "Map Has Been Changed") or ((Solo and v["Playing"].Value > 1) and "Someone Has Joined") or "Error"
                             RemoteFunction:InvokeServer("Elevators", "Leave")
                             
-                            getgenv().JoiningStatus.Text = Text..", Leaving Elevator "..tostring(i)
+                            UI.JoiningStatus.Text = Text..", Leaving Elevator "..tostring(i)
                             prints(Text..", Leaving Elevator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
-                            getgenv().TimerLeft.Text = "Time Left: 20"
+                            UI.TimerLeft.Text = "Time Left: 20"
                             JoiningCheck = false
                             return
                         end
                         if numbertime == 0 then
                             print("Event Disconnected 2")
                             ConnectionEvent:Disconnect()
-                            getgenv().JoiningStatus.Text = "Teleporting To A Match"
-                            wait(60)
-                            getgenv().JoiningStatus.Text = "Rejoining Elevator"
+                            UI.JoiningStatus.Text = "Teleporting To A Match"
+                            task.wait(60)
+                            UI.JoiningStatus.Text = "Rejoining Elevator"
                             prints("Rejoining Elevator")
                             RemoteFunction:InvokeServer("Elevators", "Leave")
-                            getgenv().TimerLeft.Text = "Time Left: 20"
+                            UI.TimerLeft.Text = "Time Left: 20"
                             JoiningCheck = false
                             return
                         end
