@@ -2,6 +2,7 @@ if game.PlaceId ~= 3260590327 and game.PlaceId ~= 5591597781 then return end
 if getgenv().StrategiesXLoader then
     return
 end
+getgenv().ExecDis = true
 if not game:GetService("Players").LocalPlayer then
     repeat task.wait() until game:GetService("Players").LocalPlayer
 end
@@ -11,8 +12,7 @@ end
 local OldTime = os.clock()
 if not isfolder("StratLoader") then
     makefolder("StratLoader/UserLogs")
-end
-if not isfolder("StratLoader/UserLogs") then
+elseif not isfolder("StratLoader/UserLogs") then
     makefolder("StratLoader/UserLogs")
 end
 
