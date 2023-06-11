@@ -12,8 +12,11 @@ end
 local OldTime = os.clock()
 if not isfolder("StratLoader") then
     makefolder("StratLoader/UserLogs")
+    makefolder("StratLoader/UserConfig")
 elseif not isfolder("StratLoader/UserLogs") then
     makefolder("StratLoader/UserLogs")
+elseif not isfolder("StratLoader/UserConfig") then
+    makefolder("StratLoader/UserConfig")
 end
 
 getgenv().WriteFile = function(check,name,location,str)
