@@ -10,7 +10,7 @@ local Patcher = {
         local OldList = {...}
         for i,v in next, OldList do
             if v:lower() == "nil" then
-                v = nil
+                OldList[i] = nil
             end
         end
         local TowerList = {}
