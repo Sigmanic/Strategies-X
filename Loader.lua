@@ -11,6 +11,7 @@ if getgenv().Config then
 end
 local OldTime = os.clock()
 if not isfolder("StratLoader") then
+    makefolder("StratLoader")
     makefolder("StratLoader/UserLogs")
     makefolder("StratLoader/UserConfig")
 elseif not isfolder("StratLoader/UserLogs") then
