@@ -118,4 +118,4 @@ OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
     return OldHook(Self, Url, ...)
 end)
 getgenv().StrategiesXLoader = true
-appendlog("Local AutoStrat Library Loaded: "..tostring(os.clock() - OldTime))
+appendlog("Strategies X Loader Loaded: "..tostring(os.clock() - OldTime))
