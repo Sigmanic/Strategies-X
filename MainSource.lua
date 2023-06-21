@@ -961,7 +961,7 @@ function StratXLibrary:Place(...)
         }
         local CheckPlaced
         task.delay(15, function()
-            if not CheckPlaced then
+            if typeof(CheckPlaced) ~= "Instance" then
                 ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 15 Seconds. Check Again Its Arguments And Order.")
             end
         end)
