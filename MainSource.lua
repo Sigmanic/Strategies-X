@@ -1,4 +1,4 @@
-if getgenv().Executed then return getgenv().StratXLibrary end
+if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then return getgenv().StratXLibrary end
 getgenv().IsPlayerInGroup = getgenv().IsPlayerInGroup
 local Success
 task.spawn(function()
@@ -1252,5 +1252,5 @@ game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(func
     end
 end)
 prints("Loaded Library")
-getgenv().Executed = true
+getgenv().StratXLibrary.Executed = true
 return StratXLibrary
