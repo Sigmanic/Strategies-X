@@ -237,11 +237,11 @@ function TowersCheckHandler(...)
                 repeat task.wait() until TowersContained[Id] or SkipTowerCheck
             end
             if TowersContained[Id].Placed == false and not SkipTowerCheck then
-                ConsoleWarn("Tower Index: "..Id.." Hasn't Been Placed Yet. Waiting It To Be Placed")
+                ConsoleWarn("Tower Index: "..Id..", Type: \""..TowersContained[Id].TowerName.."\" Hasn't Been Placed Yet. Waiting It To Be Placed")
                 repeat task.wait() until (TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
             end
             if SkipTowerCheck then
-                ConsoleWarn("Can't Find Tower Index: "..Id)
+                ConsoleWarn("Can't Find Tower Index: "..Id..". Maybe Its Arguments Have Been Wrong?")
             end
         --[[else
             ConsoleInfo("Tower Index: "..Id.." Existed")]]
@@ -955,9 +955,16 @@ function StratXLibrary:Place(...)
         CountNum += 1
         local TempNum = CountNum
         TowersContained[TempNum] = {
+            ["TowerName"] = Tower,
             ["Placed"] = false,
+            ["TypeIndex"] = "Nil",
         }
         local CheckPlaced
+        task.delay(15, function()
+            if not CheckPlaced then
+                ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 15 Seconds. Check Again Its Arguments And Order.")
+            end
+        end)
         repeat
             CheckPlaced = RemoteFunction:InvokeServer("Troops","Place",Tower,{
                 ["Position"] = Position,
@@ -1020,11 +1027,11 @@ function StratXLibrary:Upgrade(...)
         until CheckUpgraded or SkipCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         if SkipCheck and not CheckUpgraded then
-            ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", CheckUpgraded: "..tostring(SkipCheck))
+            ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", SkipCheck: "..tostring(SkipCheck))
             return
         end
         SetActionInfo("Upgrade")
-        ConsoleInfo("Upgraded Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", CheckUpgraded: "..tostring(SkipCheck))
+        ConsoleInfo("Upgraded Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", SkipCheck: "..tostring(SkipCheck))
     end)
 end
 
