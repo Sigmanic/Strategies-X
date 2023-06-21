@@ -21,9 +21,13 @@ local ReplicatedStorage = game:WaitForChild("ReplicatedStorage")
 local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
 local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
 local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+if not (StratXLibrary and StratXLibrary.Executed) then
+    repeat task.wait() until StratXLibrary and StratXLibrary.Executed
+end
+local UI = StratXLibrary.UI
 
 if not getgenv().IsPlayerInGroup then
-    repeat task.wait() until getgenv().BypassGroup or (getgenv().UtilitiesConfig and getgenv().UtilitiesConfig.BypassGroup)
+    repeat task.wait() until getgenv().BypassGroup or (StratXLibrary.UtilitiesConfig and StratXLibrary.UtilitiesConfig.BypassGroup)
 end
 
 --loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/AutoStratModded/main/ConvertFunc.lua", true))()
@@ -34,11 +38,6 @@ function ParametersPatch(name,...)
     end
     return Patcher[name](...)
 end
-
-if not (StratXLibrary and StratXLibrary.Executed) then
-    repeat task.wait() until StratXLibrary and StratXLibrary.Executed
-end
-local UI = StratXLibrary.UI
 
 function CheckTroop(towerequip)
     if not (type(towerequip) == "table" and type(TroopsOwned) == "table") then
