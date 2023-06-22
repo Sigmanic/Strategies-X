@@ -182,7 +182,7 @@ function SaveUtilitiesConfig()
         BypassGroup = UtilitiesTab.flags.BypassGroup,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
-            Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
+            Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
             HideUser = WebSetting.flags.HideUser or false,
             PlayerInfo = WebSetting.flags.PlayerInfo or true,
             GameInfo = WebSetting.flags.GameInfo or true,
@@ -464,6 +464,8 @@ if CheckPlace() then
         UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
         local WebSetting = UI.WebSetting
         WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+        WebSetting:Section("Webhook Link:                             ")
+        WebSetting:TypeBox("Webhook Link",{default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
         if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
             WebSetting:Toggle("Disable SL's Custom Log",{default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
         end
@@ -656,6 +658,8 @@ if not CheckPlace() then
     UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
     local WebSetting = UI.WebSetting
     WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+    WebSetting:Section("Webhook Link:                             ")
+    WebSetting:TypeBox("Webhook Link",{default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
     if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
         WebSetting:Toggle("Disable SL's Custom Log",{default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
     end
