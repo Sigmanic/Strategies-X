@@ -33,7 +33,7 @@ if not StratXLibrary.UtilitiesConfig then
     }
 end
 
-local Version = "Version: 0.2.4 [Alpha]"
+local Version = "Version: 0.2.5 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -711,6 +711,7 @@ function StratXLibrary:Map(...)
     local Map = tableinfo["Map"]
     local Solo = tableinfo["Solo"]
     local Mode = tableinfo["Mode"]
+    local EquipTroops = tableinfo["EquipTroops"]
     repeat task.wait() until LocalPlayer:FindFirstChild("Level")
     if Mode == "Hardcore" and LocalPlayer.Level.Value < 50 then
         LocalPlayer:Kick("This User Doesn't Have Require Level > 50")
@@ -722,9 +723,6 @@ function StratXLibrary:Map(...)
                 return
             end
             ConsoleInfo("Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
-            return
-        end
-        if getgenv().IsMultiStrat then
             return
         end
         MapProps.Count = MapProps.Count + 1
@@ -783,6 +781,9 @@ function StratXLibrary:Map(...)
                     end
                     if TempCount ~= MapProps.Count then
                         return
+                    end
+                    if EquipTroops and getgenv().Maps[v["MapName"].Value] then
+                        StratXLibrary:Loadout(unpack(getgenv().Maps[v["MapName"].Value]))
                     end
                     MapProps.JoiningCheck = true
                     UI.JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
@@ -1245,6 +1246,59 @@ function StratXLibrary:SellAllFarms(...)
         SetActionInfo("SellAllFarms")
     end)
 end
+local function CheckTroop(TowerTable)
+    local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    if not (type(TowerTable) == "table" and type(TroopsOwned) == "table") then
+        return ConsoleWarn("Cant Find Any Information About Towers To Equip Or Towers Owned")
+    end
+    local Text = ""
+    for i,v in next, TowerTable do
+        if v ~= "nil" and not TroopsOwned[v] then
+            Text = Text..v..", "
+        end
+    end
+    if #Text ~= 0 then
+        UI.EquipStatus:SetText("Troops Loadout: Missing")
+        repeat
+            local BoughtCheck = true
+            TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+            for i,v in next, string.split(Text,", ") do
+                if #v > 0 and v ~= "nil" and not TroopsOwned[v] then
+                    BoughtCheck = false
+                    UI.TowersStatus[i].Text = v..": Missing"
+                end
+            end
+            task.wait(5)
+        until BoughtCheck
+    end
+end
+local function GetMapList(Table)
+    local MapList = {}
+    for i,v in next, Table do
+        table.insert(MapList,i)
+    end
+    return MapList
+end
+
+function StratXLibrary:LoadMultiStrat()
+    for i,v in next, getgenv().Maps do
+        if type(v) == "table" then
+            CheckTroop(v)
+        else
+            prints(i,"Doesn't Contained Any Information About Towers")
+            ConsoleError(i.."Doesn't Contained Any Information About Towers")
+        end
+    end
+    local MapList = maplist or GetMapList(getgenv().Maps)
+    getgenv().Maps["Mode"] = getgenv().MultiStratType or "Survival"
+    StratXLibrary:Map({
+        ["Map"] = MapList,
+        ["Solo"] = true,
+        ["Mode"] = getgenv().Maps["Mode"],
+        ["EquipTroops"] = true,
+    })
+end
+
 local GetConnects = getconnections or get_signal_cons
 if GetConnects then
     for i,v in next, GetConnects(LocalPlayer.Idled) do

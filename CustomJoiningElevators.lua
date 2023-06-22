@@ -2,7 +2,14 @@ if game.PlaceId ~= 3260590327 then return end
 if not game:IsLoaded() then
     game['Loaded']:Wait()
 end
-function prints(...)
+if not (StratXLibrary and StratXLibrary.Executed) then
+    repeat task.wait() until StratXLibrary and StratXLibrary.Executed
+end
+if not getgenv().IsPlayerInGroup then
+    repeat task.wait() until getgenv().BypassGroup or (StratXLibrary.UtilitiesConfig and StratXLibrary.UtilitiesConfig.BypassGroup)
+end
+StratXLibrary:LoadMultiStrat()
+--[[function prints(...)
     local TableText = {...}
     for i,v in next, TableText do
         if type(v) ~= "string" then
@@ -200,23 +207,15 @@ function Map(tableinfo)
                 end
                 task.wait(.2)
             end
-                --[[elseif v["MapName"].Value ~= name and v["Playing"].Value == 0 and not JoiningCheck then
-                    prints("Changing Elavator",i)
-                    RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
-                    task.wait(.9)
-                    RemoteFunction:InvokeServer("Elevators", "Leave")
-                end
-            end
-            task.wait(WaitTime)]]
         end
     end)
-end
+end]]
 
 --[[for i, v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
     table.insert(TroopsOwned, i)
 end]]
 
-for i,v in next, getgenv().Maps do
+--[[for i,v in next, getgenv().Maps do
     if type(v) == "table" then
         CheckTroop(v)
     else
@@ -225,4 +224,4 @@ for i,v in next, getgenv().Maps do
     end
 end
 getgenv().Maps["Mode"] = getgenv().MultiStratType or "Survival"
-Map(getgenv().Maps)
+Map(getgenv().Maps)]]
