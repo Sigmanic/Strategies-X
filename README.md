@@ -50,6 +50,7 @@ Executors Supported:
 * ~~Script-Ware W~~
 * Script-Ware M/ IOS **(Not Tested)**
 * Fluxus UWP
+* Electron / Valyse (Same API)
 * ~~Krnl~~
 
 Or any executors that supported the following librarys:
