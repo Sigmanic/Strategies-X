@@ -77,7 +77,7 @@ function prints(...)
     end
     local Text = table.concat(TableText, " ")
     appendfile("StratLoader/UserLogs/PrintLog.txt", Text.."\n")
-    print(Text)
+    --print(Text)
     ConsoleInfo(Text)
 end
 getgenv().output = function(Text,Color)
@@ -243,8 +243,6 @@ function TowersCheckHandler(...)
             if SkipTowerCheck then
                 ConsoleWarn("Can't Find Tower Index: "..Id..". Maybe Its Arguments Have Been Wrong?")
             end
-        --[[else
-            ConsoleInfo("Tower Index: "..Id.." Existed")]]
         end
     end
 end
@@ -702,6 +700,12 @@ if not CheckPlace() then
     end)
 end
 
+StratXLibrary.MapFunc = {
+    Count = 0,
+    JoiningCheck = false,
+    ChangeCheck = false,
+}
+local MapProps = StratXLibrary.MapFunc
 function StratXLibrary:Map(...)
     local tableinfo = ParametersPatch("Map",...)
     local Map = tableinfo["Map"]
@@ -723,6 +727,8 @@ function StratXLibrary:Map(...)
         if getgenv().IsMultiStrat then
             return
         end
+        MapProps.Count = MapProps.Count + 1
+        local TempCount = MapProps.Count
         local Elevators = {}
         for i,v in next,Workspace.Elevators:GetChildren() do
             if require(v.Settings).Type == Mode then
@@ -735,30 +741,35 @@ function StratXLibrary:Map(...)
             end
         end
         prints("Found",#Elevators,"Elevators")
-        local JoiningCheck, ChangeCheck = false, false
         local ConnectionEvent
         local WaitTime = (#Elevators > 6 and 1) or 5.5
         task.spawn(function()
-            while true do
+            while TempCount == MapProps.Count do
                 for i,v in next, Elevators do
                     task.wait()
-                    if JoiningCheck then
-                        repeat task.wait() until JoiningCheck == false
+                    if MapProps.JoiningCheck then
+                        repeat task.wait() until MapProps.JoiningCheck == false
                     end
-                    if not table.find(Map,v["MapName"].Value) and v["Playing"].Value == 0 and not JoiningCheck then
-                        ChangeCheck = true
+                    if TempCount ~= MapProps.Count then
+                        return
+                    end
+                    if not table.find(Map,v["MapName"].Value) and v["Playing"].Value == 0 and not MapProps.JoiningCheck then
+                        MapProps.ChangeCheck = true
                         prints("Changing Elevator",i)
                         RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                         task.wait(.9)
                         RemoteFunction:InvokeServer("Elevators", "Leave")
-                        ChangeCheck = false
+                        MapProps.ChangeCheck = false
                     end
                 end
                 task.wait(WaitTime)
             end
         end)
-        while true do
+        while TempCount == MapProps.Count do
             for i,v in next, Elevators do
+                if TempCount ~= MapProps.Count then
+                    return
+                end
                 UI.JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
                 UI.MapFind.Text = "Map: "..v["MapName"].Value
                 UI.CurrentPlayer.Text = "Player Joined: "..v["Playing"].Value
@@ -767,10 +778,13 @@ function StratXLibrary:Map(...)
                     if Solo and v["Playing"].Value ~= 0 then
                         continue
                     end
-                    if JoiningCheck or ChangeCheck then
-                        repeat task.wait() until JoiningCheck == false and ChangeCheck == false
+                    if MapProps.JoiningCheck or MapProps.ChangeCheck then
+                        repeat task.wait() until MapProps.JoiningCheck == false and MapProps.ChangeCheck == false
                     end
-                    JoiningCheck = true
+                    if TempCount ~= MapProps.Count then
+                        return
+                    end
+                    MapProps.JoiningCheck = true
                     UI.JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
                     prints("Joined Elevator",i)
                     RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
@@ -787,18 +801,18 @@ function StratXLibrary:Map(...)
                             RemoteFunction:InvokeServer("Elevators", "Leave")
                             UI.TimerLeft.Text = "Time Left: 20"
                             repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-                            JoiningCheck = false
+                            MapProps.JoiningCheck = false
                         end
-                        if numbertime > 0 and (not table.find(Map,v["MapName"].Value) or (Solo and v["Playing"].Value > 1)) then
+                        if (numbertime > 0 and (not table.find(Map,v["MapName"].Value) or (Solo and v["Playing"].Value > 1))) or TempCount ~= MapProps.Count then
                             print("Event Disconnected 1")
                             ConnectionEvent:Disconnect()
-                            local Text = (not table.find(Map,v["MapName"].Value) and "Map Has Been Changed") or ((Solo and v["Playing"].Value > 1) and "Someone Has Joined") or "Error"
+                            local Text = (not table.find(Map,v["MapName"].Value) and "Map Has Been Changed") or ((Solo and v["Playing"].Value > 1) and "Someone Has Joined") or (TempCount ~= MapProps.Count and "Cancel Joining Progress") or "Error"
                             RemoteFunction:InvokeServer("Elevators", "Leave")
                             
                             UI.JoiningStatus.Text = Text..", Leaving Elevator "..tostring(i)
                             prints(Text..", Leaving Elevator",i,"Map:","\""..v["MapName"].Value.."\"",", Player Joined:",v["Playing"].Value)
                             UI.TimerLeft.Text = "Time Left: 20"
-                            JoiningCheck = false
+                            MapProps.JoiningCheck = false
                             return
                         end
                         if numbertime == 0 then
@@ -810,23 +824,14 @@ function StratXLibrary:Map(...)
                             prints("Rejoining Elevator")
                             RemoteFunction:InvokeServer("Elevators", "Leave")
                             UI.TimerLeft.Text = "Time Left: 20"
-                            JoiningCheck = false
+                            MapProps.JoiningCheck = false
                             return
                         end
                     end)
-                    repeat task.wait() until JoiningCheck == false
+                    repeat task.wait() until MapProps.JoiningCheck == false
                 end
                 task.wait(.2)
             end
-            --[[for i,v in next, Elevators do
-                if v["MapName"].Value ~= name and v["Playing"].Value == 0 and not JoiningCheck then
-                    prints("Changing Elavator",i)
-                    RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
-                    task.wait(.9)
-                    RemoteFunction:InvokeServer("Elevators", "Leave")
-                end
-            end
-            task.wait(WaitTime)]]
         end
     end)
 end
