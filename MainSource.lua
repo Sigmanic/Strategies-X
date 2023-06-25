@@ -228,8 +228,7 @@ function TowersCheckHandler(...)
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
-            task.spawn(function()
-                task.wait(15)
+            task.delay(15,function()
                 SkipTowerCheck = true
             end)
             if not TowersContained[Id] then
@@ -336,6 +335,11 @@ if CheckPlace() then
             end)
         end
     end)]]
+    local AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal.Settings.window.scrollingFrame.Unknown["Auto Skip"].button.toggle.content.textLabel.Text == "Enabled")
+    if AutoSkipCheck then
+        RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
+    end
+
     TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
         if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
             TimerCheck = true
@@ -585,6 +589,9 @@ if CheckPlace() then
         local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
         MatchGui:GetPropertyChangedSignal("Visible"):Connect(function()
             prints("Match Ended")
+            if AutoSkipCheck then
+                RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
+            end
             task.wait(1)
             if UtilitiesConfig.Webhook.Enabled then
                 task.wait(1.3)
