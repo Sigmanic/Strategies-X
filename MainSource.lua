@@ -2,12 +2,12 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then return getg
 getgenv().IsPlayerInGroup = getgenv().IsPlayerInGroup
 local Success
 task.spawn(function()
-    if IsPlayerInGroup then
+    if getgenv().IsPlayerInGroup then
         return
     end
     repeat task.wait() until game:GetService("Players").LocalPlayer
     local Success = pcall(function()
-        IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+        getgenv().IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
     end)
 end)
 if not game:IsLoaded() then
@@ -17,7 +17,7 @@ writefile("StratLoader/UserLogs/PrintLog.txt", "")
 getgenv().StratXLibrary = {}
 
 if not StratXLibrary.UtilitiesConfig then
-    StratXLibrary.UtilitiesConfig = {
+    StratXLibrary.UtilitiesConfig = {  
         Camera = tonumber(getgenv().DefaultCam) or 2,
         LowGraphics = getgenv().PotatoPC or false,
         BypassGroup = false,
@@ -975,6 +975,8 @@ function StratXLibrary:Place(...)
             ["TowerName"] = Tower,
             ["Placed"] = false,
             ["TypeIndex"] = "Nil",
+            ["Position"] = Position,
+            ["Rotation"] = Rotation
         }
         local CheckPlaced
         task.delay(15, function()
@@ -1129,6 +1131,12 @@ function StratXLibrary:Ability(...)
     task.spawn(function()
         TimeWaveWait(Wave, Min, Sec, InWave)
         TowersCheckHandler(Tower)
+        if Ability == "Call Of Arms" and TowersContained[Tower].AutoChain then
+            local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
+            SetActionInfo("Ability")
+            ConsoleInfo("Skipped Ability (AutoChain Enabled) On Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+            return
+        end
         RemoteFunction:InvokeServer("Troops","Abilities","Activate",{
             ["Troop"] = TowersContained[Tower].Instance, 
             ["Name"] = Ability
@@ -1203,6 +1211,9 @@ function StratXLibrary:AutoChain(...)
     task.spawn(function()
         TimeWaveWait(Wave, Min, Sec, InWave)
         TowersCheckHandler(Tower1,Tower2,Tower3)
+        TowersContained[Tower1].AutoChain = true
+        TowersContained[Tower2].AutoChain = true
+        TowersContained[Tower3].AutoChain = true
         local TowerType = {
             [Tower1] = TowersContained[Tower1].TypeIndex,
             [Tower2] = TowersContained[Tower2].TypeIndex,
@@ -1219,16 +1230,19 @@ function StratXLibrary:AutoChain(...)
         "\" (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
         while true do
             if not TowersContained[Tower1].Instance then
+                TowersContained[Tower1].AutoChain = false
                 ConsoleInfo("Disbaled AutoChain For Towers Index: "..Tower1..", "..Tower2..", "..Tower3)
                 break
             end
             Chain(Tower1)
             if not TowersContained[Tower2].Instance then
+                TowersContained[Tower2].AutoChain = false
                 ConsoleInfo("Disbaled AutoChain For Towers Index: "..Tower1..", "..Tower2..", "..Tower3)
                 break
             end
             Chain(Tower2)
             if not TowersContained[Tower3].Instance then
+                TowersContained[Tower3].AutoChain = false
                 ConsoleInfo("Disbaled AutoChain For Towers Index: "..Tower1..", "..Tower2..", "..Tower3)
                 break
             end
