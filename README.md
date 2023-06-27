@@ -28,7 +28,7 @@
 
 I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. But the ugly section color of Wally UI V2 makes the main ui look very bad for me. In the first attempt, I use some trick to make the ui source link change into my own ui. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. And due to some annoying bugs in that time, I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs and make it more stable.
 
-Although I considered it as a hobby project, I spent a lot of time making this project works. Also, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university.
+Although I considered it as a hobby project, I spent a lot of time making this project works. Also, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university. With a lot of things have been changed compared to the original one, I decided to rename this project to "Strategies X".
 
 ## Goals
 * Support all current strats (even premium strats).
@@ -62,7 +62,7 @@ Or any executors that supported the following librarys:
 ## Features (WIP)
 
 ## Contributors
-* **Gurt**, for testing, reporting bugs and giving solutions.
+* **Gurt**, for testing, reporting bugs and giving me some solutions.
 * **ThanH**, for testing script.
 
 ## FAQ
@@ -76,4 +76,4 @@ Can I use this with premium strat?
 * Maybe.
 
 Can you make the premium strat be free or cracked?
-* No, and never. Even though this script is open-sourced, that's not the goal of this script. ~~Also, the premium strat is the hard work of very talented people, who spend lots of time making it, should be paid for their work.~~
+* No, and never. This script is OPEN-SOURCED means any cracking stuffs do not allowed in here.
