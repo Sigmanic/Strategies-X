@@ -39,7 +39,7 @@ Although I considered it as a hobby project, I spent a lot of time making this p
 ## How To Use It?
 There are two ways to use Strategies X:
 1. Enable Strategies X through StratLoader DevTest Version.
-2. Create a file in your exploit's autoexec and paste this code below in that file:
+2. Create a file in your executor's autoexec and paste this code below in that file:
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Loader.lua", true))()
 ```
@@ -53,7 +53,7 @@ Executors Supported:
 * Electron / Valyse (Same API)
 * ~~Krnl~~
 
-Or any executors that supported the following librarys:
+Or any executors that supported the following libraries:
 * Filesystem Functions
 * Request Function
 * ~~Websocket Library~~
