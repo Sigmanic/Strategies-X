@@ -21,6 +21,7 @@ if not StratXLibrary.UtilitiesConfig then
         Camera = tonumber(getgenv().DefaultCam) or 2,
         LowGraphics = getgenv().PotatoPC or false,
         BypassGroup = false,
+        AutoBuyMissing = false,
         Webhook = {
             Enabled = false,
             Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -33,7 +34,7 @@ if not StratXLibrary.UtilitiesConfig then
     }
 end
 
-local Version = "Version: 0.2.5 [Alpha]"
+local Version = "Version: 0.2.6 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -41,6 +42,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
 local RemoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
 local Lighting = game:GetService("Lighting")
+local TeleportService = game:GetService("TeleportService")
 local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 StratXLibrary["TowersContained"] = {}
 getgenv().TowersContained = StratXLibrary["TowersContained"]
@@ -180,6 +182,7 @@ function SaveUtilitiesConfig()
         Camera = tonumber(getgenv().DefaultCam) or 2,
         LowGraphics = UtilitiesTab.flags.LowGraphics,
         BypassGroup = UtilitiesTab.flags.BypassGroup,
+        AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
             Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -191,7 +194,7 @@ function SaveUtilitiesConfig()
         },
     }
     UtilitiesConfig = StratXLibrary.UtilitiesConfig
-    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(StratXLibrary.UtilitiesConfig))
+    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(UtilitiesConfig))
 end
 
 local GameInfo
@@ -307,10 +310,13 @@ end
 maintab:Section(Version)
 maintab:Section("Current Place: "..(CheckPlace() and "Ingame" or "Lobby"))
 
+UI.UtilitiesTab = UILibrary:CreateWindow("Utilities")
+local UtilitiesTab = UI.UtilitiesTab
+
 local CountNum = 0
 if CheckPlace() then
     if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
-        game:GetService("TeleportService"):Teleport(3260590327, LocalPlayer)
+        TeleportService:Teleport(3260590327, LocalPlayer)
     end
     --[[Workspace.Towers.ChildAdded:Connect(function(Tower)
         if not Tower:FindFirstChild("Replicator") then
@@ -348,8 +354,6 @@ if CheckPlace() then
         end
     end)
 
-    UI.UtilitiesTab = UILibrary:CreateWindow("Utilities")
-    local UtilitiesTab = UI.UtilitiesTab
     UtilitiesTab:Toggle("Rejoin Lobby After Match",{default = true, location = StratXLibrary, flag = "RejoinLobby"})
 
     task.spawn(function()
@@ -538,9 +542,10 @@ if CheckPlace() then
         end)
 
         UtilitiesTab:Toggle("Bypass Group Checking",{default = UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
+        UtilitiesTab:Toggle("Auto Buy Missing Tower",{default = UtilitiesConfig.AutoBuyMissing or false, flag = "AutoBuyMissing"})
         UtilitiesTab:Button("Teleport Back To Lobby",function()
             task.wait(.5)
-            game:GetService("TeleportService"):Teleport(3260590327)
+            TeleportService:Teleport(3260590327)
         end)
         task.spawn(function()
             while true do
@@ -606,7 +611,7 @@ if CheckPlace() then
                 return
             end
             prints("Rejoining To Lobby")
-            game:GetService("TeleportService"):Teleport(3260590327)
+            TeleportService:Teleport(3260590327)
         end)
     end)
     function DebugTower(Object)
@@ -680,6 +685,7 @@ if not CheckPlace() then
     end)
 
     UtilitiesTab:Toggle("Bypass Group Checking",{default = UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
+    UtilitiesTab:Toggle("Auto Buy Missing Tower",{default = UtilitiesConfig.AutoBuyMissing or false, flag = "AutoBuyMissing"})
 
     task.spawn(function()
         while true do
@@ -730,7 +736,7 @@ function StratXLibrary:Map(...)
     task.spawn(function()
         if CheckPlace() then
             if not table.find(Map, ReplicatedStorage.State.Map.Value) then
-                game:GetService("TeleportService"):Teleport(3260590327, LocalPlayer)
+                TeleportService:Teleport(3260590327, LocalPlayer)
                 return
             end
             ConsoleInfo("Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
@@ -849,18 +855,23 @@ function StratXLibrary:Map(...)
 end
 
 function StratXLibrary:Loadout(...)
-    if getgenv().IsMultiStrat then 
-        return 
-    end
     local tableinfo = ParametersPatch("Loadout",...)
     local TotalTowers = tableinfo["TotalTowers"]
     local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
     if CheckPlace() then
+        local TowerEquiped = {}
         for i,v in next, TroopsOwned do
-            if v.Equipped and not table.find(TotalTowers, i) then
-                game:GetService("TeleportService"):Teleport(3260590327, LocalPlayer)
-                return
+            if v.Equipped then
+                table.insert(TowerEquiped, i)
+                if not table.find(TotalTowers, i) then
+                    TeleportService:Teleport(3260590327, LocalPlayer)
+                    return
+                end
             end
+        end
+        if #TowerEquiped ~= #TotalTowers then
+            TeleportService:Teleport(3260590327, LocalPlayer)
+            return
         end
         ConsoleInfo("Loadout Selected: \""..table.concat(TotalTowers, "\", \"").."\"")
         return
@@ -881,7 +892,19 @@ function StratXLibrary:Loadout(...)
             for i,v in next, string.split(Text,", ") do
                 if #v > 0 and v ~= "nil" and not TroopsOwned[v] then
                     BoughtCheck = false
-                    UI.TowersStatus[i].Text = v..": Missing"
+                    if UtilitiesConfig.AutoBuyMissing then
+                        local BoughtCheck, BoughtMsg = RemoteFunction:InvokeServer("Shop", "Purchase", "tower",v)
+                        if BoughtCheck or (type(BoughtMsg) == "string" and string.find(BoughtMsg,"Player already has tower")) then
+                            UI.TowersStatus[i].Text = v..": Bought"
+                        else
+                            local TowerPriceStat = require(game:GetService("ReplicatedStorage").Content.Tower[v].Stats).Properties.Price
+                            local Price = tostring(TowerPriceStat.Value)
+                            local TypePrice = if tonumber(TowerPriceStat.Type) < 3 then "Coins" else "Gems"
+                            UI.TowersStatus[i].Text = v..": Need "..Price.." "..TypePrice
+                        end
+                    else
+                        UI.TowersStatus[i].Text = v..": Missing"
+                    end
                 end
             end
             task.wait(5)
@@ -957,6 +980,19 @@ function SetActionInfo(String,Type)
     end)
 end
 
+function StackPosition(Position)
+    local Position = if typeof(Position) == "Vector3" then Position else Vector3.new(0,0,0)
+    local PositionY = Position.Y
+    for i,v in next, TowersContained do
+        --if v.Position and v.Placed and (math.floor(v.Position.X) == math.floor(Position.X) and math.floor(v.Position.Z) == math.floor(Position.Z)) and (v.Position - Position).magnitude < 5 then (math.abs(v.Position.X - Position.X) < 1 and math.abs(v.Position.Z - Position.Z) < 1)
+        if v.Position and v.Placed and ((v.Position * Vector3.new(1,0,1) - Position * Vector3.new(1,0,1)).magnitude < 1) and (v.Position - Position).magnitude < 5 then
+            Position = Vector3.new(Position.X,v.Position.Y + 5, Position.Z)
+        end
+    end
+    return Vector3.new(0,Position.Y - PositionY,0)
+end
+
+
 function StratXLibrary:Place(...)
     local tableinfo = ParametersPatch("Place",...)
     local Tower = tableinfo["Type"]
@@ -975,8 +1011,9 @@ function StratXLibrary:Place(...)
             ["TowerName"] = Tower,
             ["Placed"] = false,
             ["TypeIndex"] = "Nil",
-            ["Position"] = Position,
-            ["Rotation"] = Rotation
+            ["Position"] = Position + StackPosition(Position),
+            ["Rotation"] = Rotation,
+            ["OldPosition"] = Position
         }
         local CheckPlaced
         task.delay(15, function()
@@ -986,8 +1023,8 @@ function StratXLibrary:Place(...)
         end)
         repeat
             CheckPlaced = RemoteFunction:InvokeServer("Troops","Place",Tower,{
-                ["Position"] = Position,
-                ["Rotation"] = Rotation
+                ["Position"] = TowersContained[TempNum].Position,
+                ["Rotation"] = TowersContained[TempNum].Rotation
             })
             wait()
         until typeof(CheckPlaced) == "Instance" --return instance
@@ -1008,7 +1045,9 @@ function StratXLibrary:Place(...)
         end
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],TempNum)
         SetActionInfo("Place")
-        ConsoleInfo("Placed "..Tower.." Index: "..CheckPlaced.Name..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+        local StackingCheck = (TowersContained[TempNum].Position - TowersContained[TempNum].OldPosition).magnitude > 1
+        ConsoleInfo("Placed "..Tower.." Index: "..CheckPlaced.Name..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")"..
+        if StackingCheck then ", Stacked Position" else "Original Position")
     end)
 end
 --[[{
@@ -1339,7 +1378,7 @@ LocalPlayer.Idled:Connect(function()
 end)
 game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(object)
     if object.Name == "ErrorPrompt" and object:FindFirstChild("MessageArea") and object.MessageArea:FindFirstChild("ErrorFrame") then
-        game:GetService("TeleportService"):Teleport(3260590327, LocalPlayer)
+        TeleportService:Teleport(3260590327, LocalPlayer)
     end
 end)
 prints("Loaded Library")
