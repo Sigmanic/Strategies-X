@@ -665,8 +665,6 @@ if not CheckPlace() then
     UI.MapFind = maintab:Section("Map: ")
     UI.CurrentPlayer = maintab:Section("Player Joined: 0")
 
-    UI.UtilitiesTab = UILibrary:CreateWindow("Utilities")
-    local UtilitiesTab = UI.UtilitiesTab
     UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
     local WebSetting = UI.WebSetting
     WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
@@ -854,10 +852,15 @@ function StratXLibrary:Map(...)
     end)
 end
 
+StratXLibrary.LoadoutFunc = {
+    Count = 0,
+}
 function StratXLibrary:Loadout(...)
     local tableinfo = ParametersPatch("Loadout",...)
     local TotalTowers = tableinfo["TotalTowers"]
     local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    StratXLibrary.LoadoutFunc.Count += 1
+    local TempCount = StratXLibrary.LoadoutFunc.Count
     if CheckPlace() then
         local TowerEquiped = {}
         for i,v in next, TroopsOwned do
@@ -889,6 +892,9 @@ function StratXLibrary:Loadout(...)
         repeat
             local BoughtCheck = true
             TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+            if TempCount ~= StratXLibrary.LoadoutFunc.Count then
+                return
+            end
             for i,v in next, string.split(Text,", ") do
                 if #v > 0 and v ~= "nil" and not TroopsOwned[v] then
                     BoughtCheck = false
@@ -907,7 +913,7 @@ function StratXLibrary:Loadout(...)
                     end
                 end
             end
-            task.wait(5)
+            task.wait(2)
         until BoughtCheck
     end
 
