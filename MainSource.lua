@@ -26,6 +26,7 @@ if not StratXLibrary.UtilitiesConfig then
             Enabled = false,
             Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
             HideUser = false,
+            UseNewFormat = false,
             PlayerInfo = true,
             GameInfo = true,
             TroopsInfo = true,
@@ -34,7 +35,7 @@ if not StratXLibrary.UtilitiesConfig then
     }
 end
 
-local Version = "Version: 0.2.6 [Alpha]"
+local Version = "Version: 0.2.7 [Alpha]"
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -185,6 +186,7 @@ function SaveUtilitiesConfig()
         AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
+            UseNewFormat = WebSetting.flags.UseNewFormat or false,
             Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
             HideUser = WebSetting.flags.HideUser or false,
             PlayerInfo = WebSetting.flags.PlayerInfo or true,
@@ -472,6 +474,7 @@ if CheckPlace() then
         UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
         local WebSetting = UI.WebSetting
         WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+        WebSetting:Toggle("Use New Format",{default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
         WebSetting:Section("Webhook Link:                             ")
         WebSetting:TypeBox("Webhook Link",{default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
         if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
@@ -668,6 +671,7 @@ if not CheckPlace() then
     UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
     local WebSetting = UI.WebSetting
     WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+    WebSetting:Toggle("Use New Format",{default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
     WebSetting:Section("Webhook Link:                             ")
     WebSetting:TypeBox("Webhook Link",{default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
     if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
