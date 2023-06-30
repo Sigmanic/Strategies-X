@@ -6,7 +6,7 @@ if not (StratXLibrary and StratXLibrary.Executed) then
     repeat task.wait() until StratXLibrary and StratXLibrary.Executed
 end
 if not getgenv().IsPlayerInGroup then
-    repeat task.wait() until getgenv().BypassGroup or (StratXLibrary.UtilitiesConfig and StratXLibrary.UtilitiesConfig.BypassGroup)
+    repeat task.wait() until getgenv().IsPlayerInGroup or getgenv().BypassGroup or (StratXLibrary.UtilitiesConfig and StratXLibrary.UtilitiesConfig.BypassGroup)
 end
 StratXLibrary:LoadMultiStrat()
 --[[function prints(...)
