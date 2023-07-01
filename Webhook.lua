@@ -193,7 +193,7 @@ else
   "\n**Coins : **" ..LocalPlayer.Coins.Value.." :coin:** | Gems : **" ..LocalPlayer.Gems.Value.." :gem:"..
    "\n**Level : **" ..LocalPlayer.Level.Value.." :chart_with_upwards_trend: ** | Exp : **" ..LocalPlayer.Experience.Value.." :star:"..
    "\n**Triumphs : **" ..LocalPlayer.Triumphs.Value.." :trophy: ** | Loses : **" ..LocalPlayer.Loses.Value.." :skull:"..
-    "\n **Executor Used : **"..Executor.."\n"
+   "\n**Executor Used : **"..Executor.."\n"
    else ""
    local GameInfo = if UtilitiesConfig.Webhook.GameInfo then
       "**------------------ GAME INFO ----------------**"..
