@@ -3,9 +3,6 @@ if getgenv().StrategiesXLoader then
     return
 end
 getgenv().ExecDis = true
-if not game:GetService("Players").LocalPlayer then
-    repeat task.wait() until game:GetService("Players").LocalPlayer
-end
 if getgenv().Config then
     return
 end
@@ -65,6 +62,9 @@ end
 local writelog = function(...)
     local TableText = {...}
     task.spawn(function()
+        if not game:GetService("Players").LocalPlayer then
+            repeat task.wait() until game:GetService("Players").LocalPlayer
+        end
         for i,v in next, TableText do
             if type(v) ~= "string" then
                 TableText[i] = tostring(v)
@@ -78,6 +78,9 @@ end
 local appendlog = function(...)
     local TableText = {...}
     task.spawn(function()
+        if not game:GetService("Players").LocalPlayer then
+            repeat task.wait() until game:GetService("Players").LocalPlayer
+        end
         for i,v in next, TableText do
             if type(v) ~= "string" then
                 TableText[i] = tostring(v)
@@ -88,7 +91,6 @@ local appendlog = function(...)
         return AppendFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
     end)
 end
-writelog("")
 
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
