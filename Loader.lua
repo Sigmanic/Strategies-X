@@ -97,11 +97,11 @@ OldNamecall = hookmetamethod(game, '__namecall', function(...)
     local Self, Args = (...), ({select(2, ...)})
     if getnamecallmethod() == 'HttpGet' then
         if Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
-            appendlog("Hooked AutoStrat Main Library Using hookmetamethod")
             Args[1] = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua"
+            appendlog("Hooked AutoStrat Main Library Using hookmetamethod")
         elseif Args[1] == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
-            appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
             Args[1] = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/CustomJoiningElevators.lua"
+            appendlog("Hooked AutoStrat Joining Library Using hookmetamethod")
         end
     elseif getnamecallmethod() == 'Kick' then
         wait(math.huge)
@@ -111,11 +111,11 @@ end)
 local OldHook
 OldHook = hookfunction(game.HttpGet, function(Self, Url, ...)
     if Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/ckmhjvskfkmsStratFun2" then
-        appendlog("Hooked AutoStrat Main Library Using hookfunction")
         Url = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua"
+        appendlog("Hooked AutoStrat Main Library Using hookfunction")
     elseif Url == "https://raw.githubusercontent.com/banbuskox/dfhtyxvzexrxgfdzgzfdvfdz/main/asjhxnjfdStratFunJoin" then
-        appendlog("Hooked AutoStrat Joining Library Using hookfunction")
         Url = "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/CustomJoiningElevators.lua"
+        appendlog("Hooked AutoStrat Joining Library Using hookfunction")
     end
     return OldHook(Self, Url, ...)
 end)
