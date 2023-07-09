@@ -1,4 +1,7 @@
 local Patcher = {
+    ["Mode"] = function(name)
+        return {["Name"] = name}
+    end,
     ["Map"] = function(name, solo, mode)
         return {
             ["Map"] = type(name) == table and name or {name},
