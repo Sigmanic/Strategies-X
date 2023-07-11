@@ -801,10 +801,11 @@ function StratXLibrary:Map(...)
                     if TempCount ~= MapProps.Count then
                         return
                     end
+                    MapProps.JoiningCheck = true
                     if EquipTroops and getgenv().Maps[v["MapName"].Value] then
                         StratXLibrary:Loadout(unpack(getgenv().Maps[v["MapName"].Value]))
                     end
-                    MapProps.JoiningCheck = true
+                    
                     UI.JoiningStatus.Text = "Joined Elevator: " ..tostring(i)
                     prints("Joined Elevator",i)
                     RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
@@ -847,6 +848,7 @@ function StratXLibrary:Map(...)
                             MapProps.JoiningCheck = false
                             return
                         end
+                        RemoteFunction:InvokeServer("Elevators", "Enter", v["Object"])
                     end)
                     repeat task.wait() until MapProps.JoiningCheck == false
                 end
