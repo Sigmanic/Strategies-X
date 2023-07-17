@@ -1395,4 +1395,5 @@ game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(func
 end)
 prints("Loaded Library")
 getgenv().StratXLibrary.Executed = true
+
 return StratXLibrary
