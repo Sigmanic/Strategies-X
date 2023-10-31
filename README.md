@@ -39,21 +39,20 @@ Although I considered as a hobby project, I spent a lot of time making this proj
 ## How To Use It?
 There are two ways to use Strategies X:
 1. Enable Strategies X through StratLoader DevTest Version.
-2. Create a file in your executor's autoexec and paste this code below in that file:
+2. Create a file in your executor's autoexec and paste this code below into that file:
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Loader.lua", true))()
 ```
 
 ## Requirements
 Executors Supported:
-* ~~Synapse X V2~~
-* ~~Script-Ware W~~
-* Script-Ware M/ IOS **(Not Tested)**
-* Fluxus UWP
+* Fluxus UWP/Android
 * Electron / Valyse (Same API)
-* ~~Krnl~~
+* Krnl UWP (Patched)
+* ~~Synapse X V2~~
+* ~~Script-Ware Windows/Mac/IOS~~
 
-Or any executors that supported the following libraries:
+Or any executors that supported the following libraries/functions:
 * Filesystem Functions
 * Request Function
 * ~~Websocket Library~~
@@ -76,4 +75,4 @@ Can I use this with premium strat?
 * Maybe.
 
 Can you make the premium strat be free or cracked?
-* No, and never. This script is OPEN-SOURCED meaning any cracking stuff do not allow in here.
+* No, and never. This script is **OPEN-SOURCED** meaning any cracking stuff **DO NOT ALLOWED** in here.
