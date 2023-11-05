@@ -158,7 +158,7 @@ StratXLibrary.LowGraphics = function(bool)
                 end
             end
         else
-            for i,v in next, Workspace.Lobby:GetChildren() do
+            for i,v in next, Workspace.Environment:GetChildren() do
                 v.Parent = Folder
             end
         end
@@ -169,7 +169,7 @@ StratXLibrary.LowGraphics = function(bool)
             LocalPlayer.Character.HumanoidRootPart.Anchored = false
         end
         for i,v in next, Folder:GetChildren() do
-            v.Parent = Workspace[CheckPlace() and "Map" or "Lobby"]
+            v.Parent = Workspace[CheckPlace() and "Map" or "Environment"]
         end
     end
     MinimizeClient(bool)
@@ -1025,8 +1025,11 @@ function StratXLibrary:Place(...)
             ["TypeIndex"] = "Nil",
             ["Position"] = Position + StackPosition(Position),
             ["Rotation"] = Rotation,
-            ["OldPosition"] = Position
+            ["OldPosition"] = Position,
+            ["PassedTimer"] = false,
         }
+        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
+        TowersContained[TempNum].PassedTimer = true
         local CheckPlaced
         task.delay(15, function()
             if typeof(CheckPlaced) ~= "Instance" then
@@ -1038,20 +1041,18 @@ function StratXLibrary:Place(...)
                 ["Position"] = TowersContained[TempNum].Position,
                 ["Rotation"] = TowersContained[TempNum].Rotation
             })
-            wait()
+            task.wait()
         until typeof(CheckPlaced) == "Instance" --return instance
         CheckPlaced.Name = TempNum
         local TowerTable = StratXLibrary.TowerInfo[Tower]
         TowerTable[2] += 1
         CheckPlaced:SetAttribute("TypeIndex", Tower.." "..tostring(TowerTable[2]))
         TowerTable[1].Text = Tower.." : "..tostring(TowerTable[2])
-        TowersContained[TempNum] = {
-            ["Instance"] = CheckPlaced,
-            ["TypeIndex"] = CheckPlaced:GetAttribute("TypeIndex"),
-            ["Target"] = "First",
-            ["Upgrade"] = 0,
-            ["Placed"] = true,
-        }
+        TowersContained[TempNum].Instance = CheckPlaced
+        TowersContained[TempNum].TypeIndex = CheckPlaced:GetAttribute("TypeIndex")
+        TowersContained[TempNum].Placed = true
+        TowersContained[TempNum].Target = "First"
+        TowersContained[TempNum].Upgrade = 0
         if getgenv().Debug then
             task.spawn(DebugTower,TowersContained[TempNum].Instance)
         end
@@ -1059,7 +1060,7 @@ function StratXLibrary:Place(...)
         SetActionInfo("Place")
         local StackingCheck = (TowersContained[TempNum].Position - TowersContained[TempNum].OldPosition).magnitude > 1
         ConsoleInfo("Placed "..Tower.." Index: "..CheckPlaced.Name..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")"..
-        if StackingCheck then ", Stacked Position" else "Original Position")
+        if StackingCheck then ", Stacked Position" else ", Original Position")
     end)
 end
 --[[{
