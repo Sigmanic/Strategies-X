@@ -1,73 +1,50 @@
-local SpecialFunction = function(v)
-    local metatable = (getrawmetatable or getmetatable)(v)
-    if not metatable then
-        return tostring(v)
-    end
-    local old_func = rawget(metatable, '__tostring')
-    rawset(metatable, '__tostring', nil)
-    local name = tostring(v)
-    rawset(metatable, '__tostring', old_func)
-    return name
-end
-local DataFuncs = {
-    ["number"] = function(v)
-        return tostring(v)
-    end,
-    ["boolean"] = function(v)
-        return tostring(v)
-    end,
-    ["string"] = function(v)
-        return "\""..v.."\""
-    end,
-    ["Instance"] = function(v)
-        return v:GetFullName()
-    end,
-    ["table"] = SpecialFunction,
-    ["function"] = SpecialFunction,
-      
-}
-local SpecialData = function(v,TypeName)
-    return TypeName..".new("..tostring(v)..")"
-end
-local GetIndexs = function(data)
-    local indexs = 0
-    for i,v in next, data do
-        indexs += 1
-    end
-    return indexs
-end
-
-local function BeautyTable(data,tab)
-    local str = ""
-    local CurrentIndex = 1
-    local tab = tab or 1
-    local indexs = GetIndexs(data)
-    if indexs == 0 and typeof(data) == "table" then
-        return "{}"
-    end
-    local function format_value(v,is_table)
-        return is_table and BeautyTable(v,tab+1) or (DataFuncs[typeof(v)] or SpecialData)(v,typeof(v))
-    end
-
-    for i,v in next, data do
-        str = str.."\n"..string.rep("    ",tab).."["..DataFuncs[typeof(i)](i).."] = "..format_value(v,type(v) == "table")..(CurrentIndex < indexs and "," or "")
-        CurrentIndex += 1
-    end
-    return "{"..str.."\n"..string.rep("    ",tab-1).."}"
-end
-
+local BeautyTable = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/TableBeauty/master/repr.lua"))() --Supports More Features Made By: Ozzypig
 local ConsoleUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/RBX-ImGui/main/RBXImGuiSource.lua"))()
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
---[[if not rconsoleclear then
-    getgenv().rconsoleclear = function() end
-    getgenv().rconsolename = function() end
-    getgenv().rconsoleprint = function() end
-end]]
---[[rconsoleclear()
-rconsolename("\""..LocalPlayer.Name.."\" Co biet ong Liem khong?")]]
 
-getgenv().AppendFile = getgenv().AppendFile or function() end
+getgenv().WriteFile = WriteFile or function(check,name,location,str)
+    if not check then
+        return
+    end
+    if type(name) == "string" then
+        if not type(location) == "string" then
+            location = ""
+        end
+        if not isfolder(location) then
+            makefolder(location)
+        end
+        if type(str) ~= "string" then
+            error("Argument 4 must be a string got " .. tostring(number))
+        end
+        writefile(location.."/"..name..".txt",str)
+    else
+        error("Argument 2 must be a string got " .. tostring(number))
+    end
+end
+getgenv().AppendFile = AppendFile or function(check,name,location,str)
+    if not check then
+        return
+    end
+    if type(name) == "string" then
+        if not type(location) == "string" then
+            location = ""
+        end
+        if not isfolder(location) then
+            WriteFile(check,name,location,str)
+        end
+        if type(str) ~= "string" then
+            error("Argument 4 must be a string got " .. tostring(number))
+        end
+        if isfile(location.."/"..name..".txt") then
+            appendfile(location.."/"..name..".txt",str)
+        else
+            WriteFile(check,name,location,str)
+        end
+    else
+        error("Argument 2 must be a string got " .. tostring(number))
+    end
+end
 
 local Window = ConsoleUI.new({
     text = "Strategies X",
