@@ -53,7 +53,7 @@ local Window = ConsoleUI.new({
     rounding = 1,
     transparency = 0.2,
     font = Enum.Font.SourceSansBold,
-    position = UDim2.new(0,650,0,230)
+    position = UDim2.new(0,900,0,70)
 })
 Window.open()
 
