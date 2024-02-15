@@ -47,10 +47,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X
 ## Requirements
 Executors Supported:
 * Fluxus Android
-* Valyse
-* ~~Krnl~~
-* ~~Synapse X V2~~
-* ~~Script-Ware Windows/Mac/IOS~~
+* Valyse Android
+* Delta
+* Hydrogen
 
 Or any executors that supported the following libraries/functions:
 * Filesystem Functions
