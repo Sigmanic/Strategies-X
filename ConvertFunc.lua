@@ -4,13 +4,13 @@ local Patcher = {
     end,
     ["Map"] = function(name, solo, mode)
         return {
-            ["Map"] = type(name) == table and name or {name},
+            ["Map"] = name or "", -- Change to string
             ["Solo"] = solo or true,
             ["Mode"] = mode or "Survival",
         }
     end,
     ["Loadout"] = function(...)
-        local OldList = {...}
+        --[[local OldList = {...}
         for i,v in next, OldList do
             if v:lower() == "nil" then
                 OldList[i] = nil
@@ -21,10 +21,21 @@ local Patcher = {
         if type(getgenv().GoldenPerks) ~= "table" then
             getgenv().GoldenPerks = {}
         end
+        local TowerList = {}
         for i,v in next, OldList do
             if type(v) == "string" then
                 TowerList[v] = {table.find(getgenv().GoldenPerks,v) and true or false}
             end
+        end]]
+        local TowerList = {...}
+        for i = #TowerList, 1, -1 do
+            if TowerList[i]:lower() == "nil" then
+                table.remove(TowerList,i)
+            end
+        end
+        local GoldenPerks = getgenv().GoldenPerks or {}
+        if #GoldenPerks > 0 then
+            TowerList["Golden"] = GoldenPerks
         end
         return TowerList
     end,
