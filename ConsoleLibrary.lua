@@ -91,8 +91,6 @@ getgenv().ConsolePrint = function(Color,Type,...)
         end
         String = table.concat({...}, ", ")
     end
-    --rconsoleprint("@@"..Color.."@@")
-    --rconsoleprint("["..os.date("%X").."]["..Type.."] "..String.."\n")
     for i,v in next, string.split(String, "\n") do
 	    ConsoleTab.new("label", {
 	        text = (i == 1 and "["..os.date("%X").."]["..Type.."] " or "")..v,
