@@ -1,0 +1,9 @@
+{
+    "robloxLsp.diagnostics.globals": [
+        "getgenv",
+        "StratXLibrary",
+        "writefile",
+        "isfile",
+        "readfile"
+    ]
+}
