@@ -442,7 +442,7 @@ if CheckPlace() then
                 repeat task.wait() until type(GetGameInfo():GetAttribute("Won")) == "boolean"
                 task.wait(1.3)
             end
-            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == "false" then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
             prints("Match Lose And Restart")
                 ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
                 StratXLibrary["TowersContained"] = {}
