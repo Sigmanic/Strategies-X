@@ -87,6 +87,7 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
+UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
@@ -413,7 +414,7 @@ if CheckPlace() then
                         repeat wait() until UtilitiesConfig.Camera == 2
                     end
                     if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("HumanoidRootPart").CFrame.Y > -5 then
-                        if not v.RootPointer.Value.Parent then  --Clean model that's not long used by game
+                        if not v.RootPointer.Value.Parent then  --Clean model that's no longer used by game
                             v:Destroy()
                             continue
                         end
@@ -439,10 +440,10 @@ if CheckPlace() then
             end
             if not type(GetGameInfo():GetAttribute("Won")) == "boolean" then
                 repeat task.wait() until type(GetGameInfo():GetAttribute("Won")) == "boolean"
+                task.wait(1.3)
             end
-            if UtilitiesConfig.RestartMatch and not GetGameInfo():GetAttribute("Won") then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == "false" then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
             prints("Match Lose And Restart")
-                task.wait(.5)
                 ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
                 StratXLibrary["TowersContained"] = {}
                 StratXLibrary["ActionInfo"] = {
