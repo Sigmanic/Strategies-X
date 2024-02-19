@@ -40,18 +40,18 @@ return function(self, p1)
         return
     end
     SetActionInfo("Place","Total")
+    local TempNum = #TowersContained + 1
+    TowersContained[TempNum] = {
+        ["TowerName"] = Tower,
+        ["Placed"] = false,
+        ["TypeIndex"] = "Nil",
+        ["Position"] = Position + StackPosition(Position),
+        ["Rotation"] = Rotation,
+        ["OldPosition"] = Position,
+        ["PassedTimer"] = false,
+    }
+    local TowerTable = TowersContained[TempNum]
     task.spawn(function()
-        local TempNum = #TowersContained + 1
-        TowersContained[TempNum] = {
-            ["TowerName"] = Tower,
-            ["Placed"] = false,
-            ["TypeIndex"] = "Nil",
-            ["Position"] = Position + StackPosition(Position),
-            ["Rotation"] = Rotation,
-            ["OldPosition"] = Position,
-            ["PassedTimer"] = false,
-        }
-        local TowerTable = TowersContained[TempNum]
 
         TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
         TowerTable.PassedTimer = true
