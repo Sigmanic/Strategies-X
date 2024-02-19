@@ -31,10 +31,10 @@ I started to use AutoStrat after it got released in 2022. It provides an automat
 Although I considered as a hobby project, I spent a lot of time making this project works. Also, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university. With lots **(IF NOT ALL)** things that have been changed, added, or remade compared to the original one, I decided to rename this project to **"Strategies X"**.
 
 ## Goals
-* Support all current strats (even premium strats).
-* Support Multiplayers.
-* Have better tools for strat maker.
-* Faster and more stable.
+:white_check_mark: Supported all current strats (even premium strats).  
+:hammer_and_wrench: Support Multiplayers.  
+:hammer_and_wrench: Have better tools for strat maker.  
+:hammer_and_wrench: Faster and more stable.  
 
 ## How To Use It?
 There are two ways to use Strategies X:

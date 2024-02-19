@@ -56,9 +56,9 @@ return function(self, p1)
         TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
         TowerTable.PassedTimer = true
         local CheckPlaced
-        task.delay(15, function()
+        task.delay(25, function()
             if typeof(CheckPlaced) ~= "Instance" then
-                ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 15 Seconds. Check Again Its Arguments Or Order.")
+                ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 25 Seconds. Check Again Its Arguments Or Order.")
             end
         end)
         repeat

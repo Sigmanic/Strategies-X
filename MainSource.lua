@@ -1,12 +1,18 @@
-if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then return Strat.new() end
-getgenv().IsPlayerInGroup = getgenv().IsPlayerInGroup
+if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
+    if StratXLibrary.Strat[#StratXLibrary.Strat].Active then
+        return Strat.new()
+    else
+        return StratXLibrary.Strat[#StratXLibrary.Strat]
+    end
+end
+getgenv().IsPlayerInGroup = IsPlayerInGroup --From StratLoader
 local Success
 task.spawn(function()
-    if getgenv().IsPlayerInGroup then
+    if IsPlayerInGroup then
         return
     end
     repeat task.wait() until game:GetService("Players").LocalPlayer
-    local Success = pcall(function()
+    Success = pcall(function()
         getgenv().IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
     end)
 end)
@@ -69,7 +75,7 @@ if GameSpoof then
         print("FireServer",...)
     end
 end
-local Version = "Version: 0.3 [Alpha]"
+local Version = "Version: 0.3.1 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -294,8 +300,16 @@ end
 local maintab = UILibrary:CreateWindow("Strategies X")
 prints("Checking Group")
 getgenv().BypassGroup = false
-if not ((IsPlayerInGroup and CheckPlace()) or UtilitiesConfig.BypassGroup) then
-    if IsPlayerInGroup == nil then
+if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
+    repeat task.wait() until Success ~= nil
+    if not Success then
+        maintab:Section("Checking Group Failed")
+        prints("Checking Group Failed")
+        maintab:Button("I Already Joined It", function()
+            getgenv().BypassGroup = true
+        end)
+    end
+    --[[if IsPlayerInGroup == nil then
         task.spawn(function()
             repeat task.wait() until Success ~= nil
             if not Success then
@@ -306,22 +320,33 @@ if not ((IsPlayerInGroup and CheckPlace()) or UtilitiesConfig.BypassGroup) then
                 end)
             end
         end)
-        repeat task.wait() until IsPlayerInGroup ~= nil or getgenv().BypassGroup or UtilitiesConfig.BypassGroup
-        if getgenv().BypassGroup or UtilitiesConfig.BypassGroup then
-            return
-        end
-    end
+    end]]
     if not IsPlayerInGroup then
-        maintab:Section("You Need To Join")
-        maintab:Section("Paradoxum Games Group")
-        local JoinButton = maintab:DropSection("Join The Group")
-        JoinButton:Button("Copy Link Group", function()
-            setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
+        if CheckPlace() then
+            maintab:Section("WARN Extra Money Not Actived")
+            maintab:Section("Strat May Broken Due To This")
+        else
+            maintab:Section("You Need To Join")
+            maintab:Section("Paradoxum Games Group")
+            local JoinButton = maintab:DropSection("Join The Group")
+            JoinButton:Button("Copy Link Group", function()
+                setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
+            end)
+            JoinButton:Button("Yes, I Just Joined It", function()
+                getgenv().BypassGroup = true
+            end)
+        end
+        task.spawn(function()
+            repeat
+                task.wait()
+                Success = pcall(function()
+                    IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
+                end)
+            until IsPlayerInGroup ~= nil or getgenv().BypassGroup or UtilitiesConfig.BypassGroup
         end)
-        JoinButton:Button("Yes, I Just Joined It", function()
-            getgenv().BypassGroup = true
-        end)
-        repeat task.wait() until getgenv().BypassGroup or UtilitiesConfig.BypassGroup
+        repeat 
+            task.wait()
+        until IsPlayerInGroup ~= nil or getgenv().BypassGroup or UtilitiesConfig.BypassGroup
     end
 end
 if UtilitiesConfig.BypassGroup then
@@ -494,7 +519,7 @@ if CheckPlace() then
             --StratXLibrary.RestartCount += 1
         end)
     end)
-    function DebugTower(Object) --Rework in 0.3.1
+    function DebugTower(Object) --Rework in Future
         repeat task.wait() until tonumber(Object.Name)
         local GuiInstance = Instance.new("BillboardGui")
         GuiInstance.Parent = Object:WaitForChild("HumanoidRootPart")
@@ -700,7 +725,6 @@ Functions.MatchMaking = function()
     task.wait(6)
     ConsoleInfo(`Map Selected: {ReplicatedStorage.State.Map.Value}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
     StratXLibrary.Strat.ChosenID = Index
-    return
 end
 
 local GetConnects = getconnections or get_signal_cons
@@ -750,6 +774,7 @@ function Strat.new()
             __call = function(self,...) --self is Functions, ...[1] is parent of self
                 local tableinfo = (select(1,...) == t) and (select(2,...) == StratXLibrary and {select(3,...)} or {select(2,...)}) or {...}
                 table.insert(t[Funcname].Lists, ParametersPatch(Funcname,unpack(tableinfo)))
+                t.Active = true
                 --print(t[Funcname].Lists,#t[Funcname].Lists)
             end
         })
