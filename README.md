@@ -12,7 +12,7 @@
   </p>
 </p>
 
-![Contributors](https://img.shields.io/github/contributors/Sigmanic/Strategies-X?color=dark-green) ![Forks](https://img.shields.io/github/forks/Sigmanic/Strategies-X?style=social) ![Stargazers](https://img.shields.io/github/stars/Sigmanic/Strategies-X?style=social) ![Issues](https://img.shields.io/github/issues/Sigmanic/Strategies-X) 
+![Contributors](https://img.shields.io/github/contributors/Sigmanic/Strategies-X?color=dark-green) ![Forks](https://img.shields.io/github/forks/Sigmanic/Strategies-X?style=social) ![Stargazers](https://img.shields.io/github/stars/Sigmanic/Strategies-X?style=social) ![Issues](https://img.shields.io/github/issues/Sigmanic/Strategies-X) [![](https://dcbadge.vercel.app/api/server/RWGUGV3YTj?style=flat)](https://discord.gg/RWGUGV3YTj)
 
 ## Highlight
 
@@ -64,6 +64,8 @@ Or any executors that supported the following libraries/functions:
 * **ThanH**, for testing script.
 
 ## FAQ
+Where's Discord server link?  
+[![](https://dcbadge.vercel.app/api/server/RWGUGV3YTj)](https://discord.gg/RWGUGV3YTj)  
 I got a bug, where do I report it?
 * You can report it in [Issues](https://github.com/Sigmanic/Strategies-X/issues).
 
@@ -74,4 +76,4 @@ Can I use this with premium strat?
 * Maybe.
 
 Can you make the premium strat be free or cracked?
-* No, and never. This script is **OPEN-SOURCED** meaning any cracking stuff **DO NOT ALLOWED** in here.
+* No. This script is **OPEN-SOURCED** under [MIT LICENSE](https://github.com/Sigmanic/Strategies-X/blob/main/LICENSE.md) meaning any cracking stuff **DO NOT ALLOWED** here.
