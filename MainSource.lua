@@ -18,6 +18,12 @@ task.spawn(function()
 end)
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
+local Version = "Version: 0.3.2 [Alpha]"
+local Items = {
+    Enabled = false,
+    Name = "Cookie"
+}
+
 local LoadLocal = false
 local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
 
@@ -34,7 +40,8 @@ StratXLibrary["ActionInfo"] = {
     ["Ability"] = {0,0},
     ["Target"] = {0,0},
     ["AutoChain"] = {0,0},
-    ["SellAllFarms"] = {0,0}, 
+    ["SellAllFarms"] = {0,0},
+    ["Option"] = {0,0},
 }
 StratXLibrary.UI = {}
 --StratXLibrary.MultiStratEnabled = getgenv().IsMultiStrat or false
@@ -75,11 +82,7 @@ if GameSpoof then
         print("FireServer",...)
     end
 end
-local Version = "Version: 0.3.1 [Alpha]"
-local Items = {
-    Enabled = false,
-    Name = "Cookie"
-}
+
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -143,7 +146,7 @@ end
 ConsolePrint("WHITE","Table",UtilitiesConfig)
 
 function SaveUtilitiesConfig()
-    local UtilitiesTab = UI.UtilitiesTab
+    UtilitiesTab = UI.UtilitiesTab
     local WebSetting = UI.WebSetting
     StratXLibrary.UtilitiesConfig = {
         Camera = tonumber(getgenv().DefaultCam) or 2,
@@ -358,7 +361,7 @@ maintab:Section(Version)
 maintab:Section(`Current Place: {CheckPlace() and "Ingame" or "Lobby"}`)
 
 UI.UtilitiesTab = UILibrary:CreateWindow("Utilities")
-local UtilitiesTab = UI.UtilitiesTab
+UtilitiesTab = UI.UtilitiesTab
 
 --InGame Core
 if CheckPlace() then
@@ -366,7 +369,7 @@ if CheckPlace() then
         TeleportService:Teleport(3260590327, LocalPlayer)
     end
     --Disable Auto Skip Feature
-    local AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal.Settings.window.scrollingFrame.Unknown["Auto Skip"].button.toggle.content.textLabel.Text == "Enabled")
+    local AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal.Settings.window.scrollingFrame.Unknown["Auto Skip"].button.toggle[1][2].Text == "Enabled")
     if AutoSkipCheck then
         RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
     end
@@ -479,7 +482,8 @@ if CheckPlace() then
                     ["Ability"] = {0,0},
                     ["Target"] = {0,0},
                     ["AutoChain"] = {0,0},
-                    ["SellAllFarms"] = {0,0}, 
+                    ["SellAllFarms"] = {0,0},
+                    ["Option"] = {0,0}, 
                 }
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
@@ -558,7 +562,7 @@ if not CheckPlace() then
     RemoteFunction:InvokeServer("Login", "Claim")
     RemoteFunction:InvokeServer("Session", "Search", "Login")
 
-    UI.EquipStatus = maintab:DropSection("Troops Loadout: Broken")
+    UI.EquipStatus = maintab:DropSection("Troops Loadout Status")
     UI.TowersStatus = {
         [1] = UI.EquipStatus:Section("Empty"),
         [2] = UI.EquipStatus:Section("Empty"),
@@ -707,6 +711,7 @@ Functions.Ability = loadstring(game:HttpGet(MainLink.."TDS/Functions/Ability.lua
 Functions.Target = loadstring(game:HttpGet(MainLink.."TDS/Functions/Target.lua", true))()
 Functions.AutoChain = loadstring(game:HttpGet(MainLink.."TDS/Functions/AutoChain.lua", true))()
 Functions.SellAllFarms = loadstring(game:HttpGet(MainLink.."TDS/Functions/SellAllFarms.lua", true))()
+Functions.Option = loadstring(game:HttpGet(MainLink.."TDS/Functions/Option.lua", true))()
 
 Functions.MatchMaking = function()
     local MapProps,Index

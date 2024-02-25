@@ -107,6 +107,18 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
+    ["Option"] = function(troop, wave, name, value, min, sec, inbetween)
+        return {
+            ["TowerIndex"] = troop,
+            ["TypeIndex"] = "",
+            ["Name"] = name,
+            ["Value"] = value,
+            ["Wave"] = wave,
+            ["Minute"] = min,
+            ["Second"] = sec,
+            ["InBetween"] = inbetween or false,
+        }
+    end,
     --[[[""] = function()
         return
     end,]]

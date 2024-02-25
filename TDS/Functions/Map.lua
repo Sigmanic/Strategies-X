@@ -152,7 +152,7 @@ return function(self, p1)
                             if numbertime == 0 then
                                 print("Event Disconnected 2")
                                 MapGlobal.ConnectionEvent:Disconnect()
-                                UI.JoiningStatus.Text = "Teleporting To A Match"
+                                UI.JoiningStatus.Text = "Teleporting To Match"
                                 task.wait(60)
                                 UI.JoiningStatus.Text = "Rejoining Elevator"
                                 prints("Rejoining Elevator")
