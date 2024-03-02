@@ -18,7 +18,7 @@ task.spawn(function()
 end)
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
-local Version = "Version: 0.3.2 [Alpha]"
+local Version = "Version: 0.3.3 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -379,6 +379,14 @@ if CheckPlace() then
             TimerCheck = true
         elseif object:GetAttribute("Duration") and object:GetAttribute("Duration") > 5 then
             TimerCheck = false
+        end
+    end)
+    if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
+        RemoteFunction:InvokeServer("Voting", "Skip")
+    end
+    StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
+        if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
+            RemoteFunction:InvokeServer("Voting", "Skip")
         end
     end)
     
@@ -853,13 +861,6 @@ task.spawn(function()
                 task.wait()
             end
         end)
-    end
-    while true do
-        task.wait()
-        if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
-            RemoteFunction:InvokeServer("Voting", "Skip")
-            break
-        end
     end
 end)
 prints("Loaded Library")

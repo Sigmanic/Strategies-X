@@ -33,12 +33,15 @@ return function(self, p1)
     MapGlobal.ChangeCheck = false
     task.spawn(function()
         if CheckPlace() then
-            if not MapGlobal[ReplicatedStorage.State.Map.Value..":Survival"] then
-                print(MapGlobal[ReplicatedStorage.State.Map.Value..":Survival"],ReplicatedStorage.State.Map.Value)
+            if not MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")] then
+                print(MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")],GetGameInfo():GetAttribute("GameMode"))
                 for i,v in next, MapGlobal do
                     print(i,v)
                 end
-                TeleportService:Teleport(3260590327, LocalPlayer)
+                ConsoleError("Wrong Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..GetGameInfo():GetAttribute("GameMode"))
+                task.wait(3)
+                TeleportHandler(3260590327,2,7)
+                --TeleportService:Teleport(3260590327, LocalPlayer)
                 return
             end
             ConsoleInfo("Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
