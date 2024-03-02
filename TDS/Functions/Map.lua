@@ -6,13 +6,19 @@ local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("Rem
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 local TeleportService = game:GetService("TeleportService")
 
+local SpecialGameMode = {
+    ["Pizza Party"] = "halloween",
+    ["Badlands II"] = "badlands",
+    ["Polluted Wastelands II"] = "polluted", 
+}
+
 return function(self, p1)
     local tableinfo = p1
     local MapName = tableinfo["Map"]
     local Solo = tableinfo["Solo"]
     local Mode = tableinfo["Mode"]
     --local MapProps = self.Map
-    local MapGlobal = StratXLibrary.Global.Map
+    local MapGlobal = StratXLibrary.Global.Map --Not use self.Map since this function acts like global so if using self in each strat, it will duplicate the value and conflicts
     tableinfo.Index = self.Index
     local NameTable = MapName..":"..Mode
     MapGlobal[NameTable] = tableinfo
@@ -35,9 +41,6 @@ return function(self, p1)
         if CheckPlace() then
             if not MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")] then
                 print(MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")],GetGameInfo():GetAttribute("GameMode"))
-                for i,v in next, MapGlobal do
-                    print(i,v)
-                end
                 ConsoleError("Wrong Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..GetGameInfo():GetAttribute("GameMode"))
                 task.wait(3)
                 TeleportHandler(3260590327,2,7)
@@ -51,12 +54,25 @@ return function(self, p1)
         for i,v in next,Workspace.Elevators:GetChildren() do
             if v.State.Difficulty.Value == "Private Server" or Matchmaking then
                 UI.JoiningStatus.Text = "Teleporting To Matchmaking"
-                prints("Teleporting To Matchmaking")
+                if SpecialGameMode[MapName] then
+                    local Strat = StratXLibrary.Strat[self.Index]
+                    if Strat.Loadout and not Strat.Loadout.AllowTeleport then
+                        prints("Waiting Loadout Allowed")
+                        repeat task.wait() until Strat.Loadout.AllowTeleport
+                    end
+                    local LoadoutInfo = Strat.Loadout.Lists[#Strat.Loadout.Lists]
+                    LoadoutInfo.AllowEquip = true
+                    LoadoutInfo.SkipCheck = true
+                    print("Loadout Selecting")
+                    Functions.Loadout(Strat,LoadoutInfo)
+                    task.wait(3)
+                end
                 RemoteFunction:InvokeServer("Multiplayer","single_create")       
                 RemoteFunction:InvokeServer("Multiplayer","single_start",{
                     ["count"] = 1,
-                    ["mode"] = "survival"
+                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else "survival"
                 })
+                prints(if SpecialGameMode[MapName] then `Using Matchking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
                 return
             end
             table.insert(Elevators,{
@@ -104,7 +120,7 @@ return function(self, p1)
                         end
                         local MapIndex = MapTable.Index
                         if StratXLibrary.Strat[MapIndex].Loadout and not StratXLibrary.Strat[MapIndex].Loadout.AllowTeleport then
-                            print("Wait Loadout Allowed")
+                            prints("Waiting Loadout Allowed")
                             repeat task.wait() until StratXLibrary.Strat[MapIndex].Loadout.AllowTeleport
                         end
                         if MapGlobal.JoiningCheck or MapGlobal.ChangeCheck then -- or not self.Loadout.AllowTeleport then

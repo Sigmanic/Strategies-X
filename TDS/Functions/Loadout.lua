@@ -33,8 +33,11 @@ return function(self, p1)
     if CheckPlace() then
         for i,v in ipairs(TotalTowers) do
             if not (TroopsOwned[v] and TroopsOwned[v].Equipped) then
-                print("Loadout",v,TroopsOwned[v] and TroopsOwned[v].Equippe)
-                TeleportService:Teleport(3260590327, LocalPlayer)
+                prints("Loadout",v,TroopsOwned[v] and TroopsOwned[v].Equipped)
+                ConsoleInfo(`Tower "{v}" Didn't Equipped. Rejoining To Lobby`)
+                task.wait(1)
+                --TeleportHandler(3260590327,2,7)
+                TeleportService:Teleport(3260590327, LocalPlayer) --Do instant teleport maybe avoid detect place wrong tower
                 return
             end
         end
@@ -102,7 +105,7 @@ return function(self, p1)
                 end
             end
             --UI.EquipStatus:SetText("Troops Loadout: Equipped")
-            print("Loadout Selected: \""..table.concat(TotalTowers, "\", \"").."\"")
+            ConsoleInfo("Loadout Selected: \""..table.concat(TotalTowers, "\", \"").."\"")
         end
     end)
 end

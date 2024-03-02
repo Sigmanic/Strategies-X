@@ -18,7 +18,7 @@ task.spawn(function()
 end)
 writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
-local Version = "Version: 0.3.3 [Alpha]"
+local Version = "Version: 0.3.4 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -723,6 +723,14 @@ Functions.Option = loadstring(game:HttpGet(MainLink.."TDS/Functions/Option.lua",
 
 Functions.MatchMaking = function()
     local MapProps,Index
+    local SpecialMap = {
+        "Pizza Party",
+        "Badlands II",
+        "Polluted Wastelands II", 
+    }
+    if table.find(SpecialMap,ReplicatedStorage.State.Map.Value) then
+        return
+    end
     repeat
         task.wait()
         for i,v in ipairs(StratXLibrary.Strat) do
