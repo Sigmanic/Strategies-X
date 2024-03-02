@@ -48,6 +48,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X
 Executors Supported:
 * Fluxus Android
 * Valyse Android
+* Codex
 * Delta
 * Hydrogen
 
@@ -60,6 +61,7 @@ Or any executors that supported the following libraries/functions:
 ## Features (WIP)
 
 ## Contributors
+* **[wxzex](https://github.com/wxzex)**, for giving ideas, MatchMaking codes solutions.
 * **Gurt**, for testing, reporting bugs, and giving me some solutions.
 * **ThanH**, for testing script.
 
