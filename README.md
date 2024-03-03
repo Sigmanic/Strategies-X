@@ -3,12 +3,12 @@
   <h3 align="center">Strategies X [Alpha]</h3>
 
   <p align="center">
-    A Version Inspired By MoneyMaker's AutoStrat, Aims To Be Fully Open-Sourced And More Customization.
+    A version inspired By MoneyMaker's AutoStrat, that aims to be fully open-sourced and more customizeable.
     <br/>
     <br/>
-    <a href="https://github.com/Sigmanic/Strategies-X/issues">Report Bug</a>
+    <a href="https://github.com/Sigmanic/Strategies-X/issues">Report a Bug</a>
     |
-    <a href="https://github.com/Sigmanic/Strategies-X/issues">Request Feature</a>
+    <a href="https://github.com/Sigmanic/Strategies-X/issues">Request a Feature</a>
   </p>
 </p>
 
@@ -26,14 +26,14 @@
 
 ## Why did you make Strategies X?
 
-I started to use AutoStrat after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. But the ugly section color of Wally UI V2 makes the main ui look very bad to me. In the first attempt, I use some tricks to make the ui source link change into my own UI. And it was success, at least I think so. I recognized it didn't work in obfuscated strat. And due to some annoying bugs in that time, I decide to make my own version based on its source in September 2022. I also added many features, fixed bugs, and make it more stable.
+I started to use AutoStrat, after it got released in 2022. It provides an automatic process so the user won't have to touch the keyboard and mouse. But, the ugly section color of Wally UI V2 makes the main ui look very bad to me. In the first attempt, I use some tricks to make the ui source link change into my own UI. And it was successful, at least I think so. I realized it doesn't work in obfuscated strat. And due to some annoying bugs in that time, I decided to make my own version based on its source in September 2022. I also added many features, fixed bugs, and made it more stable.
 
-Although I considered as a hobby project, I spent a lot of time making this project works. Also, It took me more than 6 months to release this project due to the loss of motivation or studying to prepare for university. With lots **(IF NOT ALL)** things that have been changed, added, or remade compared to the original one, I decided to rename this project to **"Strategies X"**.
+Although I considered this as a hobby project, I spent a lot of time making this project work. Also, it took me more than 6 months to release this project due to the loss of motivation and studying to prepare for university. With lots **(IF NOT ALL)** things that have been changed, added, or remade compared to the original one, I decided to rename this project to **"Strategies X"**.
 
 ## Goals
-:white_check_mark: Supported all current strats (even premium strats).  
-:hammer_and_wrench: Support Multiplayers.  
-:hammer_and_wrench: Have better tools for strat maker.  
+:white_check_mark:  Support all current strats (even premium strats).  
+:hammer_and_wrench: Support Multiplayer.  
+:hammer_and_wrench: Have better tools for strat makers.  
 :hammer_and_wrench: Faster and more stable.  
 
 ## How To Use It?
@@ -52,7 +52,7 @@ Executors Supported:
 * Delta
 * Hydrogen
 
-Or any executors that supported the following libraries/functions:
+Or any executors that support the following libraries/functions:
 * Filesystem Functions
 * Request Function
 * ~~Websocket Library~~
@@ -66,16 +66,16 @@ Or any executors that supported the following libraries/functions:
 * **ThanH**, for testing script.
 
 ## FAQ
-Where's Discord server link?  
+Where's the Discord server link?  
 [![](https://dcbadge.vercel.app/api/server/RWGUGV3YTj)](https://discord.gg/RWGUGV3YTj)  
-I got a bug, where do I report it?
+I found a bug, where do I report it?
 * You can report it in [Issues](https://github.com/Sigmanic/Strategies-X/issues).
 
-Can I get banned when using this script?
+Can I get banned by using this script?
 * I will make sure that the detection will be low as possible, so you won't get banned.
 
 Can I use this with premium strat?
 * Maybe.
 
 Can you make the premium strat be free or cracked?
-* No. This script is **OPEN-SOURCED** under [MIT LICENSE](https://github.com/Sigmanic/Strategies-X/blob/main/LICENSE.md) meaning any cracking stuff **DO NOT ALLOWED** here.
+* No. This script is **OPEN-SOURCED** under [MIT LICENSE](https://github.com/Sigmanic/Strategies-X/blob/main/LICENSE.md) meaning any cracking stuff is **NOT ALLOWED** here.
