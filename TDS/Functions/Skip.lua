@@ -15,8 +15,12 @@ return function(self, p1)
     SetActionInfo("Skip","Total")
     task.spawn(function()
         TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        RemoteFunction:InvokeServer("Voting", "Skip")
+        local SkipCheck
+        repeat
+            SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
+            task.wait()
+        until SkipCheck
         SetActionInfo("Skip")
-        ConsoleInfo("Skipped Wave "..Wave.." (Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+        ConsoleInfo(`Skipped Wave {Wave} (Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)
 end

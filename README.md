@@ -3,7 +3,7 @@
   <h3 align="center">Strategies X [Alpha]</h3>
 
   <p align="center">
-    A version inspired By MoneyMaker's AutoStrat, that aims to be fully open-sourced and more customizeable.
+    A version inspired By MoneyMaker's AutoStrat, that aims to be fully open-sourced and more customizable.
     <br/>
     <br/>
     <a href="https://github.com/Sigmanic/Strategies-X/issues">Report a Bug</a>
