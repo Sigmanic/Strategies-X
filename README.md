@@ -38,7 +38,7 @@ Although I considered this as a hobby project, I spent a lot of time making this
 
 ## How To Use It?
 There are two ways to use Strategies X:
-1. Enable Strategies X through StratLoader DevTest Version.
+1. ~~Enable Strategies X through StratLoader DevTest Version.~~
 2. Create a file in your executor's autoexec and paste this code below into that file:
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Loader.lua", true))()
