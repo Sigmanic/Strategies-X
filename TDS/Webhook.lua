@@ -6,9 +6,8 @@ local Info = MatchGui.content.info
 local Stats = Info.stats
 local Rewards = Info.rewards
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Executor = identifyexecutor() or "Not Identify"
+local Executor = identifyexecutor and identifyexecutor() or "Not Identify"
 local UtilitiesConfig = StratXLibrary.UtilitiesConfig
-
 
 local CommaText = function(string)
    local String = tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
@@ -35,9 +34,9 @@ local GetGameInfo = getgenv().GetGameInfo or function()
    until GameInfo
 end
 
-local function CheckStatus()
+--[[local function CheckStatus()
    return MatchGui.banner.textLabel.Text
-end
+end]]
 local function CheckReward()
    local RewardType
    repeat task.wait() until Rewards[1] and Rewards[2]
@@ -53,7 +52,7 @@ local function CheckTower()
    local str = ""
    local TowerInfo = StratXLibrary.TowerInfo or {}
    for i,v in next, TowerInfo do
-      str = str.."\n"..v[3].." : "..tostring(v[2])
+      str = `{str}\n{v[3]}: {v[2]}`
    end
    return str
 end
@@ -61,6 +60,8 @@ end
 local CheckColor = {
    ["TRIUMPH!"] = tonumber(65280),
    ["YOU LOST"] = tonumber(16711680),
+   [true] = tonumber(65280),
+   [false] = tonumber(16711680),
 }
 
 local GetReward = CheckReward()
@@ -69,14 +70,15 @@ local Data = {
    ["content"] = "", --Msg
    ["embeds"] = {
       {
-         ["title"] = "**Strategies X Logger ("..os.date("%X").." "..os.date("%x")..")**",
-         ["color"] = CheckColor[CheckStatus()], --decimal
+         ["title"] = `**Strategies X Logger ({os.date("%X")} {os.date("%x")})**`,
+         ["color"] = CheckColor[GetGameInfo():GetAttribute("Won")], --decimal
       }
    }
 }
+local WebhookData = {}
 if UtilitiesConfig.Webhook.UseNewFormat then
    Data.embeds[1].fields = {}
-   local PlayerInfo = if UtilitiesConfig.Webhook.PlayerInfo then 
+   WebhookData.PlayerInfo = if UtilitiesConfig.Webhook.PlayerInfo then 
       {
          {
             ["name"] = "----------------- PLAYER INFO ---------------",
@@ -129,7 +131,7 @@ if UtilitiesConfig.Webhook.UseNewFormat then
          },
       }
       else {}
-   local GameInfo = if UtilitiesConfig.Webhook.GameInfo then
+   WebhookData.GameInfo = if UtilitiesConfig.Webhook.GameInfo then
       {
          {
             ["name"] = "------------------ GAME INFO ----------------",
@@ -167,7 +169,7 @@ if UtilitiesConfig.Webhook.UseNewFormat then
          }, 
       }
       else {}
-   local TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then
+   WebhookData.TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then
       {
          {
             ["name"] = "----------------- TROOPS INFO ---------------",
@@ -176,14 +178,10 @@ if UtilitiesConfig.Webhook.UseNewFormat then
          },
       }
    else {}
-   for i,v in next, PlayerInfo do
-      table.insert(Data.embeds[1].fields,v)
-   end
-   for i,v in next, GameInfo do
-      table.insert(Data.embeds[1].fields,v)
-   end
-   for i,v in next, TroopsInfo do
-      table.insert(Data.embeds[1].fields,v)
+   for i,v in next, WebhookData do
+      for i2,v2 in next, v do
+         table.insert(Data.embeds[1].fields,v2)
+      end
    end
 else
    Data.embeds.description = ""

@@ -65,14 +65,14 @@ return function(self, p1)
                     LoadoutInfo.SkipCheck = true
                     print("Loadout Selecting")
                     Functions.Loadout(Strat,LoadoutInfo)
-                    task.wait(3)
+                    task.wait(2)
                 end
                 RemoteFunction:InvokeServer("Multiplayer","single_create")       
                 RemoteFunction:InvokeServer("Multiplayer","single_start",{
                     ["count"] = 1,
                     ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else "survival"
                 })
-                prints(if SpecialGameMode[MapName] then `Using Matchking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
+                prints(if SpecialGameMode[MapName] then `Using MatchMaking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
                 return
             end
             table.insert(Elevators,{

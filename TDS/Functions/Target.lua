@@ -19,8 +19,12 @@ return function(self, p1)
     end
     SetActionInfo("Target","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        TowersCheckHandler(Tower)
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
+        if not TowersCheckHandler(Tower) then
+            return
+        end
         RemoteFunction:InvokeServer("Troops","Target","Set",{
             ["Troop"] = TowersContained[Tower].Instance,
             ["Target"] = Target,

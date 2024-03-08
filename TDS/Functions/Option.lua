@@ -21,8 +21,9 @@ return function(self, p1)
     end
     SetActionInfo("Option","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        TowersCheckHandler(Tower)
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
         local RemoteCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         task.spawn(function()
@@ -33,6 +34,9 @@ return function(self, p1)
             end
         end)
         repeat
+            if not TowersCheckHandler(Tower) then
+                return
+            end
             RemoteCheck = RemoteFunction:InvokeServer("Troops","Option","Set",{
                 ["Troop"] = TowersContained[Tower].Instance, 
                 ["Name"] = OptName,

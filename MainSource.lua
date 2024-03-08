@@ -16,9 +16,9 @@ task.spawn(function()
         getgenv().IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
     end)
 end)
-writefile("StratLoader/UserLogs/PrintLog.txt", "")
+--writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
-local Version = "Version: 0.3.4 [Alpha]"
+local Version = "Version: 0.3.5 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -26,6 +26,18 @@ local Items = {
 
 local LoadLocal = false
 local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+
+local OldTime = os.clock()
+
+if not isfolder("StrategiesX") then
+    makefolder("StrategiesX")
+    makefolder("StrategiesX/UserLogs")
+    makefolder("StrategiesX/UserConfig")
+elseif not isfolder("StrategiesX/UserLogs") then
+    makefolder("StrategiesX/UserLogs")
+elseif not isfolder("StrategiesX/UserConfig") then
+    makefolder("StrategiesX/UserConfig")
+end
 
 getgenv().StratXLibrary = {Functions = {}}
 getgenv().StratXLibrary.ExecutedCount = 0
@@ -44,31 +56,11 @@ StratXLibrary["ActionInfo"] = {
     ["Option"] = {0,0},
 }
 StratXLibrary.UI = {}
+StratXLibrary.RestartCount = 0
+StratXLibrary.CurrentCount = StratXLibrary.RestartCount
 --StratXLibrary.MultiStratEnabled = getgenv().IsMultiStrat or false
 --[[StratXLibrary.MultiStratEnabled = true
-getgenv().GameSpoof = "Lobby"
-StratXLibrary.Strat = {}]]
-
-if not StratXLibrary.UtilitiesConfig then
-    StratXLibrary.UtilitiesConfig = {  
-        Camera = tonumber(getgenv().DefaultCam) or 2,
-        LowGraphics = getgenv().PotatoPC or false,
-        BypassGroup = false,
-        AutoBuyMissing = false,
-        AutoPickups = false,
-        RestartMatch = true,
-        Webhook = {
-            Enabled = false,
-            Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
-            HideUser = false,
-            UseNewFormat = false,
-            PlayerInfo = true,
-            GameInfo = true,
-            TroopsInfo = true,
-            DisableCustomLog = true,
-        },
-    }
-end
+getgenv().GameSpoof = "Lobby"]]
 
 if not game:IsLoaded() then
     game["Loaded"]:Wait()
@@ -132,8 +124,8 @@ getgenv().output = function(Text,Color)
     ConsolePrint(Color,"Info",Text)
 end
 
-if isfile("StratLoader/UserConfig/UtilitiesConfig.txt") then
-    UtilitiesConfig = cloneref(game:GetService("HttpService")):JSONDecode(readfile("StratLoader/UserConfig/UtilitiesConfig.txt"))
+if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
+    UtilitiesConfig = game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
     if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
@@ -141,8 +133,32 @@ if isfile("StratLoader/UserConfig/UtilitiesConfig.txt") then
         UtilitiesConfig.LowGraphics = true
     end
 else
-    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(UtilitiesConfig))
+    writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
+
+if not (type(UtilitiesConfig) == "table" and UtilitiesConfig.Camera) then
+    StratXLibrary.UtilitiesConfig = {  
+        Camera = tonumber(getgenv().DefaultCam) or 2,
+        LowGraphics = getgenv().PotatoPC or false,
+        BypassGroup = false,
+        AutoBuyMissing = false,
+        AutoPickups = false,
+        RestartMatch = true,
+        TowersPreview = false,
+        Webhook = {
+            Enabled = false,
+            Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
+            HideUser = false,
+            UseNewFormat = false,
+            PlayerInfo = true,
+            GameInfo = true,
+            TroopsInfo = true,
+            DisableCustomLog = true,
+        },
+    }
+    UtilitiesConfig = StratXLibrary.UtilitiesConfig
+end
+
 ConsolePrint("WHITE","Table",UtilitiesConfig)
 
 function SaveUtilitiesConfig()
@@ -155,19 +171,20 @@ function SaveUtilitiesConfig()
         AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
         AutoPickups = UtilitiesConfig.AutoPickups or UtilitiesTab.flags.AutoPickups,
         RestartMatch = UtilitiesTab.flags.RestartMatch,
+        TowersPreview = UtilitiesTab.flags.TowersPreview,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
             UseNewFormat = WebSetting.flags.UseNewFormat or false,
             Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
             HideUser = WebSetting.flags.HideUser or false,
-            PlayerInfo = WebSetting.flags.PlayerInfo or true,
-            GameInfo = WebSetting.flags.GameInfo or true,
-            TroopsInfo = WebSetting.flags.TroopsInfo or true,
-            DisableCustomLog = WebSetting.flags.DisableCustomLog or true,
+            PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
+            GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
+            TroopsInfo = if type(WebSetting.flags.TroopsInfo) == "boolean" then WebSetting.flags.TroopsInfo else true,
+            DisableCustomLog = if type(WebSetting.flags.DisableCustomLog) == "boolean" then WebSetting.flags.DisableCustomLog else true,
         },
     }
     UtilitiesConfig = StratXLibrary.UtilitiesConfig
-    writefile("StratLoader/UserConfig/UtilitiesConfig.txt",cloneref(game:GetService("HttpService")):JSONEncode(UtilitiesConfig))
+    writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
 
 function CheckPlace()
@@ -218,58 +235,73 @@ function CheckTimer(bool)
 end
 function TimePrecise(Number)
     --return math.round((math.ceil(Number) - Number)*1000)/1000 --more the decimal, long wait
-    return Number - math.floor(Number) - 0.13 --more the decimal, less wait, wtf is this mathematic
+    return (Number - math.floor(Number) - 0.13) + 0.7 --more the decimal, less wait, wtf is this mathematic, 0.7 is random error of Timer <= 1
 end
 function TotalSec(Minute,Second)
     return (Minute*60) + math.ceil(Second)
 end
 function TowersCheckHandler(...)
+    local CurrentCount = StratXLibrary.CurrentCount
     for i,v in next, {...} do
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
-            task.delay(25,function() --game has wave 0 now so increase it to make it works
+            task.delay(35,function() --game has wave 0 now so increase it to make it works
                 SkipTowerCheck = true
             end)
             if not TowersContained[Id] then
                 ConsoleWarn(`Tower Index: {Id} Hasn't Created Yet`)
-                repeat task.wait() until TowersContained[Id] or SkipTowerCheck
+                repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id]) or SkipTowerCheck
             end
-            if TowersContained[Id].Placed == false and not SkipTowerCheck then
+            if (CurrentCount == StratXLibrary.RestartCount) and TowersContained[Id].Placed == false and not SkipTowerCheck then
                 ConsoleWarn(`Tower Index: {Id}, Type: \"{TowersContained[Id].TowerName}\" Hasn't Been Placed Yet. Waiting It To Be Placed`)
-                repeat task.wait() until (TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
+                repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
+            end
+            if not (CurrentCount == StratXLibrary.RestartCount) then
+                return false
             end
             if SkipTowerCheck then
-                ConsoleWarn(`Can't Find Tower Index: {Id}. Maybe Its Arguments Have Been Wrong?`)
+                ConsoleError(`Can't Find Tower Index "{Id}" Instance`)
+                ConsoleWarn(`Tower Index: {Id}, Table {TowersContained[Id]}, Instance: {TowersContained[Id] and TowersContained[Id].Instance or "Nil"}`)
+                return false
             end
         end
     end
+    return true
 end
 
 function GetTypeIndex(string,Id)
-    if (type(string) ~= "string" or (type(string) == "string" and #string == 0)) then
-        return TowersContained[Id].TypeIndex
+    if type(string) == "string" and #string > 0 then
+        return string
     end
-    return string
+    return TowersContained[Id].TypeIndex
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
     if Debug or GetGameInfo():GetAttribute("Wave") > Wave then
-        return
+        return true
     end
+    local CurrentCount = StratXLibrary.CurrentCount
     repeat 
-        task.wait() 
-    until tonumber(GetGameInfo():GetAttribute("Wave")) == Wave and CheckTimer(InWave)
+        task.wait()
+        if CurrentCount ~= StratXLibrary.RestartCount then
+            return false
+        end
+    until tonumber(GetGameInfo():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
     if ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) < -1 then
-        return
+        return true
     end
     local Timer = 0
     repeat 
         task.wait()
+        if CurrentCount ~= StratXLibrary.RestartCount then
+            return false
+        end
         Timer = math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
     until Timer <= 1
-    --until (ReplicatedStorage.State.Timer.Time.Value + 1 == TotalSec(Min,Sec) or ReplicatedStorage.State.Timer.Time.Value == TotalSec(Min,Sec)) --CheckTimer will return true when in wave and false when not in wave
+    --until (ReplicatedStorage.State.Timer.Time.Value + 1 == TotalSec(Min,Sec) or ReplicatedStorage.State.Timer.Time.Value == TotalSec(Min,Sec))
     task.wait(TimePrecise(Sec))
+    return true
 end
 
 function SetActionInfo(String,Type)
@@ -312,18 +344,6 @@ if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
             getgenv().BypassGroup = true
         end)
     end
-    --[[if IsPlayerInGroup == nil then
-        task.spawn(function()
-            repeat task.wait() until Success ~= nil
-            if not Success then
-                maintab:Section("Checking Group Failed")
-                prints("Checking Group Failed")
-                maintab:Button("I Already Joined It", function()
-                    getgenv().BypassGroup = true
-                end)
-            end
-        end)
-    end]]
     if not IsPlayerInGroup then
         if CheckPlace() then
             maintab:Section("WARN Extra Money Not Actived")
@@ -369,10 +389,25 @@ if CheckPlace() then
         TeleportService:Teleport(3260590327, LocalPlayer)
     end
     --Disable Auto Skip Feature
-    local AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal.Settings.window.scrollingFrame.Unknown["Auto Skip"].button.toggle[1][2].Text == "Enabled")
-    if AutoSkipCheck then
-        RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
-    end
+    local AutoSkipCheck
+    task.spawn(function()
+        local Success, Skip
+        task.delay(10,function()
+            if not Success then
+                ConsoleError(`Auto Skip [VIP] Check Errored`)
+                Skip = true
+            end
+        end)
+        repeat 
+            task.wait(1)
+            Success = pcall(function()
+                AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal:WaitForChild("Settings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown")["Auto Skip"].button.toggle[1][2].Text == "Enabled")
+            end)
+        until Success or Skip
+        if AutoSkipCheck then
+            RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
+        end
+    end)
     --Check if InWave or not
     StratXLibrary.TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
         if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
@@ -385,7 +420,7 @@ if CheckPlace() then
         RemoteFunction:InvokeServer("Voting", "Skip")
     end
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
-        if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
+        if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
             RemoteFunction:InvokeServer("Voting", "Skip")
         end
     end)
@@ -444,44 +479,72 @@ if CheckPlace() then
 
         repeat task.wait() until Workspace:FindFirstChild("NPCs")
         task.spawn(function()
+            local ViewCeck
             while true do
                 for i,v in next, Workspace.NPCs:GetChildren() do
-                    if UtilitiesConfig.Camera ~= 2 then
-                        repeat wait() until UtilitiesConfig.Camera == 2
-                    end
                     if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("HumanoidRootPart").CFrame.Y > -5 then
                         if not v.RootPointer.Value.Parent then  --Clean model that's no longer used by game
                             v:Destroy()
                             continue
                         end
-                        repeat
-                            if UtilitiesConfig.Camera == 2 then
-                                CurrentCamera.CameraSubject = v:FindFirstChild("HumanoidRootPart")
-                            end
-                            task.wait() 
-                        until not (v:FindFirstChild("HumanoidRootPart") and v.RootPointer.Value.Parent)
+                        if UtilitiesConfig.Camera == 2 and not ViewCeck then
+                            ViewCeck = true
+                            task.spawn(function()
+                                repeat
+                                    CurrentCamera.CameraSubject = v:FindFirstChild("HumanoidRootPart")
+                                    task.wait() 
+                                until UtilitiesConfig.Camera ~= 2 or not (v:FindFirstChild("HumanoidRootPart") and v.RootPointer.Value.Parent)
+                                ViewCeck = false
+                            end)
+                        end
                     end
                     --CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
                 end
-                task.wait(.5)
+                task.wait(.8)
             end
         end) 
         --End Of Match
-        --StratXLibrary.RestartCount = 1
         StratXLibrary.SignalEndMatch = GetGameInfo():GetAttributeChangedSignal("GameOver"):Connect(function()
-            prints("Match Ended")
+            prints("GameOver Changed")
             task.wait(.5)
             if not GetGameInfo():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
                 return
             end
+            StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
+            task.wait(1)
             if not type(GetGameInfo():GetAttribute("Won")) == "boolean" then
                 repeat task.wait() until type(GetGameInfo():GetAttribute("Won")) == "boolean"
                 task.wait(1.3)
             end
+            if UtilitiesConfig.Webhook.Enabled then
+                task.spawn(function()
+                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+                    prints("Sent Webhook Log")
+                end)
+            end
+            if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
+                repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
+            end
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
-            prints("Match Lose And Restart")
-                ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-                StratXLibrary["TowersContained"] = {}
+                prints("Match Lose. Strat Will Restart Shortly")
+                task.wait(2.5)
+                local VoteCheck
+                repeat
+                    VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+                    task.wait()
+                until VoteCheck
+                for i,v in next, TowersContained do
+                    if v.TowerModel then
+                        v.TowerModel:Destroy()
+                    end
+                    if v.ErrorModel then
+                        v.ErrorModel:Destroy()
+                    end
+                end
+                --[[StratXLibrary["TowersContained"] = {}
+                getgenv().TowersContained = StratXLibrary["TowersContained"]]
+                table.clear(TowersContained)
+                prints("TowersContained",#TowersContained)
                 StratXLibrary["ActionInfo"] = {
                     ["Place"] = {0,0},
                     ["Upgrade"] = {0,0},
@@ -496,6 +559,7 @@ if CheckPlace() then
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
                 end
+                StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
                     if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
                         task.delay(3, function()
@@ -503,21 +567,12 @@ if CheckPlace() then
                         end)
                     end
                 end
+
                 --prints("RestartCount",StratXLibrary.RestartCount)
             else
-                --prints("Stopped Restart Match After",StratXLibrary.RestartCount)
-                prints("Match Won")
+                prints(`Match {if GetGameInfo():GetAttribute("Won") then "Won" else "Lose"}`)
                 if AutoSkipCheck then
                     RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
-                end
-                task.wait(1)
-                if UtilitiesConfig.Webhook.Enabled then
-                    task.wait(1.3)
-                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
-                    prints("Sent Webhook Log")
-                end
-                if not StratXLibrary.RejoinLobby then
-                    repeat task.wait() until StratXLibrary.RejoinLobby
                 end
                 task.wait(.5)
                 if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
@@ -528,42 +583,10 @@ if CheckPlace() then
                 --TeleportService:Teleport(3260590327)
                 --StratXLibrary.SignalEndMatch:Disconnect()
             end
-            --StratXLibrary.RestartCount += 1
         end)
     end)
-    function DebugTower(Object) --Rework in Future
-        repeat task.wait() until tonumber(Object.Name)
-        local GuiInstance = Instance.new("BillboardGui")
-        GuiInstance.Parent = Object:WaitForChild("HumanoidRootPart")
-        GuiInstance.Adornee = Object:WaitForChild("HumanoidRootPart")
-        GuiInstance.StudsOffsetWorldSpace = Vector3.new(0, 2, 0)
-        GuiInstance.Size = UDim2.new(0, 250, 0, 50)
-        GuiInstance.AlwaysOnTop = true
-        local Text1 = Instance.new("TextLabel")
-        Text1.Parent = GuiInstance
-        Text1.BackgroundTransparency = 1
-        Text1.Text = Object.Name
-        Text1.Font = "Legacy"
-        Text1.Size = UDim2.new(1, 0, 0, 70)
-        Text1.TextSize = 32
-        Text1.TextScaled = false
-        Text1.TextColor3 = Color3.new(0, 0, 0)
-        Text1.TextStrokeColor3 = Color3.new(0, 0, 0)
-        Text1.TextStrokeTransparency = 0.5
-        local Text2 = Instance.new("TextLabel")
-        Text2.Parent = GuiInstance
-        Text2.BackgroundTransparency = 1
-        Text2.Text = Object.Name
-        Text2.Font = "Legacy"
-        Text2.Size = UDim2.new(1, 0, 0, 70)
-        Text2.TextSize = 30
-        Text2.TextScaled = false
-        Text2.TextColor3 = Color3.new(1, 0, 0)
-        Text2.TextStrokeColor3 = Color3.new(0, 0, 0)
-        Text2.TextStrokeTransparency = 0.5
-    end
+    prints("Loaded InGame Core")
 end
-
 --UI Setup
 --getgenv().PlayersSection = {}
 if not CheckPlace() then
@@ -601,6 +624,20 @@ end
 if CheckPlace() then
     UtilitiesTab:Section("Game Settings")
     UtilitiesTab:Toggle("Rejoin Lobby After Match",{default = true, location = StratXLibrary, flag = "RejoinLobby"})
+    UtilitiesTab:Toggle("Show Towers Preview", {flag = "TowersPreview", default = UtilitiesConfig.TowersPreview}, function(bool)
+        local TowersFolder = if bool then Workspace.PreviewFolder else ReplicatedStorage.PreviewHolder
+        local ErrorsFolder = if bool then Workspace.PrewviewErrorFolder else ReplicatedStorage.PreviewHolder
+        for i,v in next, TowersContained do
+            if v.Placed then
+                continue
+            end
+            if v.ErrorModel then
+                v.ErrorModel.Parent = ErrorsFolder
+            elseif v.TowerModel then
+                v.TowerModel.Parent = TowersFolder
+            end
+        end
+    end)
     UtilitiesTab:Button("Teleport Back To Platform",function()
         LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
     end)
@@ -661,7 +698,7 @@ end
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
 WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
-WebSetting:Toggle("Use New Format",{default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
+WebSetting:Toggle("Apply New Format",{default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
 WebSetting:Section("Webhook Link:                             ")
 WebSetting:TypeBox("Webhook Link",{default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
 if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
@@ -707,6 +744,7 @@ task.spawn(function()
     end
 end)
 
+prints("Loaded GUI")
 
 Functions.Map = loadstring(game:HttpGet(MainLink.."TDS/Functions/Map.lua", true))()
 Functions.Loadout = loadstring(game:HttpGet(MainLink.."TDS/Functions/Loadout.lua", true))()
@@ -748,6 +786,8 @@ Functions.MatchMaking = function()
     StratXLibrary.Strat.ChosenID = Index
 end
 
+prints("Loaded Functions")
+
 local GetConnects = getconnections or get_signal_cons
 if GetConnects then
     for i,v in next, GetConnects(LocalPlayer.Idled) do
@@ -773,6 +813,7 @@ task.spawn(function()
         task.wait(1)
     end
 end)
+
 
 StratXLibrary.Strat = {}
 StratXLibrary.Executed = true
@@ -804,8 +845,11 @@ function Strat.new()
     t.Index = #StratXLibrary.Strat
     return t
 end
+prints("Loaded Proxy Strat")
+
 task.spawn(function()
     local StratsListNum = 1
+    prints("Loading Strat Data")
     while not CheckPlace() do
         task.wait()
         if not StratXLibrary.Strat[StratsListNum] then
@@ -834,11 +878,14 @@ task.spawn(function()
         end
         StratsListNum += 1
     end
+
     if Matchmaking then
+        prints("MatchMaking Enabled")
         Functions.MatchMaking()
     end
     --print("ID1",StratXLibrary.Strat.ChosenID)
     if not StratXLibrary.Strat.ChosenID then
+        prints("Strat ID Not Set. Now Checking")
         repeat
             task.wait()
             for i,v in ipairs(StratXLibrary.Strat) do
@@ -848,7 +895,7 @@ task.spawn(function()
             end
         until StratXLibrary.Strat.ChosenID
     end
-    prints("Strat ID",StratXLibrary.Strat.ChosenID)
+    prints("Selected Strat ID",StratXLibrary.Strat.ChosenID)
     local Strat = StratXLibrary.Strat[StratXLibrary.Strat.ChosenID]
     for i,v in next, Functions do
         task.spawn(function()
@@ -871,5 +918,5 @@ task.spawn(function()
         end)
     end
 end)
-prints("Loaded Library")
+prints(`Loaded Library. Took: {math.floor((os.clock() - OldTime)*1000)/1000}s`)
 return Strat.new()

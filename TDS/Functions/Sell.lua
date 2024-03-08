@@ -19,12 +19,16 @@ return function(self, p1)
         SetActionInfo("Sell","Total")
     end
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        TowersCheckHandler(unpack(Tower))
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
         for i,v in next, Tower do
             task.spawn(function()
                 local CheckSold
                 repeat
+                    if not TowersCheckHandler(v) then
+                        return
+                    end
                     CheckSold = RemoteFunction:InvokeServer("Troops","Sell",{
                         ["Troop"] = TowersContained[v].Instance
                     })

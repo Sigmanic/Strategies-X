@@ -32,8 +32,12 @@ return function(self, p1)
     end
     SetActionInfo("AutoChain","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        TowersCheckHandler(Tower1,Tower2,Tower3)
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
+        if not TowersCheckHandler(Tower1,Tower2,Tower3) then
+            return
+        end
         TowersContained[Tower1].AutoChain = true
         TowersContained[Tower2].AutoChain = true
         TowersContained[Tower3].AutoChain = true

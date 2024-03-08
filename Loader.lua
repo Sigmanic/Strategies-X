@@ -7,14 +7,14 @@ if getgenv().Config then
     return
 end
 local OldTime = os.clock()
-if not isfolder("StratLoader") then
-    makefolder("StratLoader")
-    makefolder("StratLoader/UserLogs")
-    makefolder("StratLoader/UserConfig")
-elseif not isfolder("StratLoader/UserLogs") then
-    makefolder("StratLoader/UserLogs")
-elseif not isfolder("StratLoader/UserConfig") then
-    makefolder("StratLoader/UserConfig")
+if not isfolder("StrategiesX") then
+    makefolder("StrategiesX")
+    makefolder("StrategiesX/UserLogs")
+    makefolder("StrategiesX/UserConfig")
+elseif not isfolder("StrategiesX/UserLogs") then
+    makefolder("StrategiesX/UserLogs")
+elseif not isfolder("StrategiesX/UserConfig") then
+    makefolder("StrategiesX/UserConfig")
 end
 
 getgenv().WriteFile = function(check,name,location,str)
@@ -72,7 +72,7 @@ local writelog = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return WriteFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text))
+        return WriteFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StrategiesX/UserLogs",tostring(Text))
     end)
 end
 local appendlog = function(...)
@@ -88,7 +88,7 @@ local appendlog = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return AppendFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StratLoader/UserLogs",tostring(Text).."\n")
+        return AppendFile(true,game:GetService("Players").LocalPlayer.Name.."'s log","StrategiesX/UserLogs",tostring(Text).."\n")
     end)
 end
 local LinkTable = {

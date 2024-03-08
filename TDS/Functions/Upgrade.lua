@@ -18,21 +18,21 @@ return function(self, p1)
     end
     SetActionInfo("Upgrade","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        local SkipCheck = false
-        task.spawn(function()
-            task.wait(15)
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
+        local CheckUpgraded, SkipCheck
+        task.delay(30, function()
             SkipCheck = true
         end)
-        local CheckUpgraded
-        TowersCheckHandler(Tower)
         repeat
-            --pcall(function()
+            if not TowersCheckHandler(Tower) then
+                return
+            end
             CheckUpgraded = RemoteFunction:InvokeServer("Troops","Upgrade","Set",{
                 ["Troop"] = TowersContained[Tower].Instance
             })
             task.wait()
-            --end)
         until CheckUpgraded or SkipCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         if SkipCheck and not CheckUpgraded then

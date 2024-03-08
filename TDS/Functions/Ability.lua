@@ -19,8 +19,12 @@ return function(self, p1)
     end
     SetActionInfo("Ability","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        TowersCheckHandler(Tower)
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
+        if not TowersCheckHandler(Tower) then
+            return
+        end
         if Ability == "Call Of Arms" and TowersContained[Tower].AutoChain then
             local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
             SetActionInfo("Ability")

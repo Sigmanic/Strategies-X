@@ -13,14 +13,23 @@ return function(self, p1)
     end
     SetActionInfo("SellAllFarms","Total")
     task.spawn(function()
-        TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
-        for i,v in next, Workspace.Towers:GetChildren() do
+        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+            return
+        end
+        for i,v in next, TowersContained do
+            if v.TowerName == "Farm" and v.Instance then
+                RemoteFunction:InvokeServer("Troops","Sell",{
+                    ["Troop"] = v.Instance
+                })
+            end
+        end
+        --[[for i,v in next, Workspace.Towers:GetChildren() do
             if v:FindFirstChild("Owner").Value == LocalPlayer.UserId and v.Replicator:GetAttribute("Type") == "Farm" then 
                 RemoteFunction:InvokeServer("Troops","Sell",{
                     ["Troop"] = v
                 })
             end
-        end
+        end]]
         SetActionInfo("SellAllFarms")
     end)
 end
