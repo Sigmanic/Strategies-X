@@ -81,7 +81,7 @@ end)
 UserInputService.InputBegan:connect(Input)
 UserInputService.InputEnded:connect(Input)
 game:GetService("RunService").RenderStepped:Connect(function()
-    if  StratXLibrary.UtilitiesConfig.Camera == 3 then
+    if StratXLibrary.UtilitiesConfig and StratXLibrary.UtilitiesConfig.Camera == 3 then
         targetMovePosition = movePosition
         CurrentCamera.CoordinateFrame = CFrame.new(CurrentCamera.CoordinateFrame.p) * CFrame.fromEulerAnglesYXZ(-targetMovePosition.Y / 300,-targetMovePosition.X / 300,0) * CFrame.new(CalculateMovement() * (({[true] = 3})[sprinting] or .5))
         Tween(FOV,.1)
