@@ -62,6 +62,26 @@ StratXLibrary.CurrentCount = StratXLibrary.RestartCount
 --[[StratXLibrary.MultiStratEnabled = true
 getgenv().GameSpoof = "Lobby"]]
 
+StratXLibrary.UtilitiesConfig = {  
+    Camera = tonumber(getgenv().DefaultCam) or 2,
+    LowGraphics = getgenv().PotatoPC or false,
+    BypassGroup = false,
+    AutoBuyMissing = false,
+    AutoPickups = false,
+    RestartMatch = true,
+    TowersPreview = false,
+    Webhook = {
+        Enabled = false,
+        Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
+        HideUser = false,
+        UseNewFormat = false,
+        PlayerInfo = true,
+        GameInfo = true,
+        TroopsInfo = true,
+        DisableCustomLog = true,
+    },
+}
+
 if not game:IsLoaded() then
     game["Loaded"]:Wait()
 end
@@ -134,29 +154,6 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
-end
-
-if not (type(UtilitiesConfig) == "table" and UtilitiesConfig.Camera) then
-    StratXLibrary.UtilitiesConfig = {  
-        Camera = tonumber(getgenv().DefaultCam) or 2,
-        LowGraphics = getgenv().PotatoPC or false,
-        BypassGroup = false,
-        AutoBuyMissing = false,
-        AutoPickups = false,
-        RestartMatch = true,
-        TowersPreview = false,
-        Webhook = {
-            Enabled = false,
-            Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
-            HideUser = false,
-            UseNewFormat = false,
-            PlayerInfo = true,
-            GameInfo = true,
-            TroopsInfo = true,
-            DisableCustomLog = true,
-        },
-    }
-    UtilitiesConfig = StratXLibrary.UtilitiesConfig
 end
 
 ConsolePrint("WHITE","Table",UtilitiesConfig)
