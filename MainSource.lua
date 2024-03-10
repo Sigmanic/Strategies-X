@@ -807,7 +807,7 @@ end)
 task.spawn(function()
     while true do
         SaveUtilitiesConfig()
-        task.wait(1)
+        task.wait(.7)
     end
 end)
 
