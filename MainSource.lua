@@ -325,7 +325,7 @@ if not UtilitiesConfig.BypassGroup then
     prints("Checking Player Is In Paradoxum Group")
     local Success
     repeat 
-        pcall(function()
+        Success = pcall(function()
             IsPlayerInGroup = LocalPlayer:IsInGroup(4914494)
         end)
         task.wait()
