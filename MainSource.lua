@@ -231,7 +231,7 @@ function TowersCheckHandler(...)
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
-            task.delay(35,function() --game has wave 0 now so increase it to make it works
+            task.delay(50,function() --game has wave 0 now so increase it to make it works
                 SkipTowerCheck = true
             end)
             if not TowersContained[Id] then
@@ -418,7 +418,7 @@ if CheckPlace() then
         OutlineBox.Adornee = Part
         OutlineBox.LineThickness = 0.05
 
-        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+        repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
         LocalPlayer.Character.Humanoid.PlatformStand = true
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
         LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 3.5, 0)

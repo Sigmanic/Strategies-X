@@ -180,9 +180,9 @@ return function(self, p1)
         end
         TowerTable.PassedTimer = true
         local CheckPlaced, ErrorModel
-        task.delay(25, function()
+        task.delay(45, function()
             if typeof(CheckPlaced) ~= "Instance" then
-                ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 25 Seconds. Check Again Its Arguments Or Order.")
+                ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 45 Seconds. Check Again Its Arguments Or Order.")
                 ConsoleError(`Returned CheckPlaced Value: {CheckPlaced}`)
             end
         end)

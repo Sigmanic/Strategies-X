@@ -22,7 +22,7 @@ return function(self, p1)
             return
         end
         local CheckUpgraded, SkipCheck
-        task.delay(30, function()
+        task.delay(50, function()
             SkipCheck = true
         end)
         repeat
