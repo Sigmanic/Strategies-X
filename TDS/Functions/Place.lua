@@ -151,7 +151,8 @@ return function(self, p1)
         return
     end
     SetActionInfo("Place","Total")
-    local TempNum = #TowersContained + 1
+    TowersContained.Index += 1
+    local TempNum = TowersContained.Index
     TowersContained[TempNum] = {
         ["TowerName"] = Tower,
         ["Placed"] = false,

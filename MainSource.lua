@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.5 [Alpha]"
+local Version = "Version: 0.3.6 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -31,6 +31,7 @@ getgenv().StratXLibrary = {Functions = {}}
 getgenv().StratXLibrary.ExecutedCount = 0
 getgenv().Functions = StratXLibrary.Functions
 StratXLibrary["TowersContained"] = {}
+StratXLibrary["TowersContained"].Index = 0
 getgenv().TowersContained = StratXLibrary["TowersContained"]
 StratXLibrary["ActionInfo"] = {
     ["Place"] = {0,0},
@@ -509,7 +510,7 @@ if CheckPlace() then
                     VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
                     task.wait()
                 until VoteCheck
-                for i,v in next, TowersContained do
+                for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
                         v.TowerModel:Destroy()
                     end
@@ -520,6 +521,7 @@ if CheckPlace() then
                 --[[StratXLibrary["TowersContained"] = {}
                 getgenv().TowersContained = StratXLibrary["TowersContained"]]
                 table.clear(TowersContained)
+                TowersContained.Index = 0
                 prints("TowersContained",#TowersContained)
                 StratXLibrary["ActionInfo"] = {
                     ["Place"] = {0,0},
@@ -603,7 +605,7 @@ if CheckPlace() then
     UtilitiesTab:Toggle("Show Towers Preview", {flag = "TowersPreview", default = UtilitiesConfig.TowersPreview}, function(bool)
         local TowersFolder = if bool then Workspace.PreviewFolder else ReplicatedStorage.PreviewHolder
         local ErrorsFolder = if bool then Workspace.PrewviewErrorFolder else ReplicatedStorage.PreviewHolder
-        for i,v in next, TowersContained do
+        for i,v in ipairs(TowersContained) do
             if v.Placed then
                 continue
             end
