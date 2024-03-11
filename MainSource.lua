@@ -5,18 +5,6 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
         return StratXLibrary.Strat[#StratXLibrary.Strat]
     end
 end
-getgenv().IsPlayerInGroup = IsPlayerInGroup --From StratLoader
-local Success
-task.spawn(function()
-    if IsPlayerInGroup then
-        return
-    end
-    repeat task.wait() until game:GetService("Players").LocalPlayer
-    Success = pcall(function()
-        getgenv().IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
-    end)
-end)
---writefile("StratLoader/UserLogs/PrintLog.txt", "")
 
 local Version = "Version: 0.3.5 [Alpha]"
 local Items = {
@@ -111,8 +99,8 @@ local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.gi
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
     if type(...) == "table" and #{...} == 1 then --select("#",...)
         return ...
@@ -330,20 +318,21 @@ end
 
 --Main Ui Setup
 local maintab = UILibrary:CreateWindow("Strategies X")
-prints("Checking Group")
-getgenv().BypassGroup = false
-if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
-    repeat task.wait() until Success ~= nil
-    if not Success then
-        maintab:Section("Checking Group Failed")
-        prints("Checking Group Failed")
-        maintab:Button("I Already Joined It", function()
-            getgenv().BypassGroup = true
+local BypassGroup
+local IsPlayerInGroup
+
+if not UtilitiesConfig.BypassGroup then
+    prints("Checking Player Is In Paradoxum Group")
+    local Success
+    repeat 
+        pcall(function()
+            IsPlayerInGroup = LocalPlayer:IsInGroup(4914494)
         end)
-    end
-    if not IsPlayerInGroup then
+        task.wait()
+    until Success ~= nil or UtilitiesConfig.BypassGroup
+    if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
         if CheckPlace() then
-            maintab:Section("WARN Extra Money Not Actived")
+            maintab:Section("[WARN] Extra Money Not Actived")
             maintab:Section("Strat May Broken Due To This")
         else
             maintab:Section("You Need To Join")
@@ -352,28 +341,18 @@ if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
             JoinButton:Button("Copy Link Group", function()
                 setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
             end)
-            JoinButton:Button("Yes, I Just Joined It", function()
-                getgenv().BypassGroup = true
+            JoinButton:Button("Continue To Use Script", function()
+                BypassGroup = true
             end)
-        end
-        task.spawn(function()
-            repeat
+            repeat 
                 task.wait()
-                Success = pcall(function()
-                    IsPlayerInGroup = game:GetService("Players").LocalPlayer:IsInGroup(4914494)
-                end)
-            until IsPlayerInGroup ~= nil or getgenv().BypassGroup or UtilitiesConfig.BypassGroup
-        end)
-        repeat 
-            task.wait()
-        until IsPlayerInGroup ~= nil or getgenv().BypassGroup or UtilitiesConfig.BypassGroup
+            until BypassGroup or UtilitiesConfig.BypassGroup
+        end
     end
-end
-if UtilitiesConfig.BypassGroup then
-    prints("Bypassed Group Checking")
 else
-    prints("Checking Group Completed")
+    prints("Bypassed Group Checking")
 end
+prints("Group Checking Completed")
 maintab:Section(Version)
 maintab:Section(`Current Place: {CheckPlace() and "Ingame" or "Lobby"}`)
 
