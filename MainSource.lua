@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.6 [Alpha]"
+local Version = "Version: 0.3.7 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -232,14 +232,14 @@ function TowersCheckHandler(...)
         local Id = tonumber(v) or 0
         local SkipTowerCheck
         if not (TowersContained[Id] and typeof(TowersContained[Id].Instance) == "Instance") then
-            task.delay(50,function() --game has wave 0 now so increase it to make it works
+            task.delay(45,function() --game has wave 0 now so increase it to make it works
                 SkipTowerCheck = true
             end)
-            if not TowersContained[Id] then
+            if CurrentCount == StratXLibrary.RestartCount and not TowersContained[Id] then
                 ConsoleWarn(`Tower Index: {Id} Hasn't Created Yet`)
                 repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id]) or SkipTowerCheck
             end
-            if (CurrentCount == StratXLibrary.RestartCount) and TowersContained[Id].Placed == false and not SkipTowerCheck then
+            if (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Placed == false) and not SkipTowerCheck then
                 ConsoleWarn(`Tower Index: {Id}, Type: \"{TowersContained[Id].TowerName}\" Hasn't Been Placed Yet. Waiting It To Be Placed`)
                 repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
             end
@@ -396,9 +396,13 @@ if CheckPlace() then
     if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
         RemoteFunction:InvokeServer("Voting", "Skip")
     end
+    StratXLibrary.ReadyState = false
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
         if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
+            task.wait(.1)
             RemoteFunction:InvokeServer("Voting", "Skip")
+            StratXLibrary.ReadyState = true
+            prints("Ready Signal Fired")
         end
     end)
     
@@ -504,12 +508,7 @@ if CheckPlace() then
             end
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints("Match Lose. Strat Will Restart Shortly")
-                task.wait(2.5)
-                local VoteCheck
-                repeat
-                    VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-                    task.wait()
-                until VoteCheck
+                task.wait()
                 for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
                         v.TowerModel:Destroy()
@@ -518,8 +517,6 @@ if CheckPlace() then
                         v.ErrorModel:Destroy()
                     end
                 end
-                --[[StratXLibrary["TowersContained"] = {}
-                getgenv().TowersContained = StratXLibrary["TowersContained"]]
                 table.clear(TowersContained)
                 TowersContained.Index = 0
                 prints("TowersContained",#TowersContained)
@@ -537,14 +534,32 @@ if CheckPlace() then
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
                 end
+                task.wait(2)
+                prints("VoteCheck")
+                local VoteCheck
+                repeat
+                    VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+                    task.wait()
+                until VoteCheck 
+                repeat task.wait() until StratXLibrary.ReadyState
+                --prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
+                for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
+                    if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
+                        v.ListNum = 1 
+                    end
+                end
+                prints("Set All ListNum To 1")
+                task.wait(5)
+                StratXLibrary.ReadyState = false
+                --[[StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
                     if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
                         task.delay(3, function()
                             v.ListNum = 1 
                         end)
                     end
-                end
+                end]]
 
                 --prints("RestartCount",StratXLibrary.RestartCount)
             else
@@ -743,6 +758,7 @@ Functions.MatchMaking = function()
         "Pizza Party",
         "Badlands II",
         "Polluted Wastelands II", 
+        "Huevous Hunt",
     }
     if table.find(SpecialMap,ReplicatedStorage.State.Map.Value) then
         return
@@ -805,7 +821,7 @@ function Strat.new()
     local t = setmetatable({}, Strat)
     for Funcname, Functable in next, StratXLibrary.Functions do
         t[Funcname] = {
-            name = Funcname,
+            Name = Funcname,
             --InQueue = {},
             --Loaded = {},
             Lists = {}

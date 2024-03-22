@@ -10,6 +10,7 @@ local SpecialGameMode = {
     ["Pizza Party"] = "halloween",
     ["Badlands II"] = "badlands",
     ["Polluted Wastelands II"] = "polluted", 
+    ["Huevous Hunt"] = {"egg_hunt"},
 }
 
 return function(self, p1)
@@ -17,6 +18,7 @@ return function(self, p1)
     local MapName = tableinfo["Map"]
     local Solo = tableinfo["Solo"]
     local Mode = tableinfo["Mode"]
+    local Difficulty = tableinfo["Difficulty"]
     --local MapProps = self.Map
     local MapGlobal = StratXLibrary.Global.Map --Not use self.Map since this function acts like global so if using self in each strat, it will duplicate the value and conflicts
     tableinfo.Index = self.Index
@@ -52,7 +54,7 @@ return function(self, p1)
         end
         local Elevators = {}
         for i,v in next,Workspace.Elevators:GetChildren() do
-            if v.State.Difficulty.Value == "Private Server" or Matchmaking then
+            if (Mode == "Survival" and v.State.Difficulty.Value == "Private Server") or Matchmaking then
                 UI.JoiningStatus.Text = "Teleporting To Matchmaking"
                 if SpecialGameMode[MapName] then
                     local Strat = StratXLibrary.Strat[self.Index]
@@ -70,7 +72,8 @@ return function(self, p1)
                 RemoteFunction:InvokeServer("Multiplayer","single_create")       
                 RemoteFunction:InvokeServer("Multiplayer","single_start",{
                     ["count"] = 1,
-                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else "survival"
+                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else "survival",
+                    ["difficulty"] = Difficulty,
                 })
                 prints(if SpecialGameMode[MapName] then `Using MatchMaking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
                 return
