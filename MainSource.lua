@@ -28,7 +28,7 @@ elseif not isfolder("StrategiesX/UserConfig") then
 end
 
 getgenv().StratXLibrary = {Functions = {}}
-getgenv().StratXLibrary.ExecutedCount = 0
+--getgenv().StratXLibrary.ExecutedCount = 0
 getgenv().Functions = StratXLibrary.Functions
 StratXLibrary["TowersContained"] = {}
 StratXLibrary["TowersContained"].Index = 0
@@ -394,7 +394,10 @@ if CheckPlace() then
         end
     end)
     if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
-        RemoteFunction:InvokeServer("Voting", "Skip")
+        task.spawn(function()
+            repeat task.wait() until StratXLibrary.Executed
+            RemoteFunction:InvokeServer("Voting", "Skip")
+        end)
     end
     StratXLibrary.ReadyState = false
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
@@ -508,6 +511,7 @@ if CheckPlace() then
             end
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints("Match Lose. Strat Will Restart Shortly")
+                StratXLibrary.ReadyState = false
                 task.wait()
                 for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
@@ -810,7 +814,6 @@ end)
 
 
 StratXLibrary.Strat = {}
-StratXLibrary.Executed = true
 StratXLibrary.Global = {Map = {}}
 StratXLibrary.__index = StratXLibrary
 
@@ -890,6 +893,7 @@ task.spawn(function()
         until StratXLibrary.Strat.ChosenID
     end
     prints("Selected Strat ID",StratXLibrary.Strat.ChosenID)
+    StratXLibrary.Executed = true
     local Strat = StratXLibrary.Strat[StratXLibrary.Strat.ChosenID]
     for i,v in next, Functions do
         task.spawn(function()
