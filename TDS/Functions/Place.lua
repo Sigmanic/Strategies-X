@@ -132,21 +132,20 @@ if CheckPlace() then
 end
 
 --[[{
-    ["Type"] = "",
+    ["TowerName"] = "",
     ["TypeIndex"] = ""
     ["Position"] = Vector3.new(),
     ["Rotation"] = CFrame.new(),
-    ["Wave"] = number,
-    ["Minute"] = number,
-    ["Second"] = number,
-    ["InBetween"] = boolean,
+    Timer = {Wave,Min,Sec,InWave},
+
 }]]
+
 return function(self, p1)
     local tableinfo = p1--ParametersPatch("Place",...)
-    local Tower = tableinfo["Type"]
+    local Tower = tableinfo["TowerName"]
     local Position = tableinfo["Position"] or Vector3.new(0,0,0)
     local Rotation = tableinfo["Rotation"] or CFrame.new(0,0,0)
-    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false 
+    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false
     if not CheckPlace() then
         return
     end
@@ -183,6 +182,9 @@ return function(self, p1)
         local CheckPlaced, ErrorModel
         task.delay(45, function()
             if typeof(CheckPlaced) ~= "Instance" then
+                if (type(CheckPlaced) == "string" and CheckPlaced == "Game is over!") or CurrentCount ~= StratXLibrary.RestartCount then
+                    return
+                end
                 ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 45 Seconds. Check Again Its Arguments Or Order.")
                 ConsoleError(`Returned CheckPlaced Value: {CheckPlaced}`)
             end

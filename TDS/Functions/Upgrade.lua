@@ -16,6 +16,7 @@ return function(self, p1)
     if not CheckPlace() then
         return
     end
+    local CurrentCount = StratXLibrary.CurrentCount
     SetActionInfo("Upgrade","Total")
     task.spawn(function()
         if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
@@ -35,6 +36,9 @@ return function(self, p1)
             task.wait()
         until CheckUpgraded or SkipCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
+        if CurrentCount ~= StratXLibrary.RestartCount then
+            return
+        end
         if SkipCheck and not CheckUpgraded then
             ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", SkipCheck: "..tostring(SkipCheck))
             return
