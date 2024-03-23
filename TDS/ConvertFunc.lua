@@ -24,7 +24,7 @@ local Patcher = {
     end,
     ["Place"] = function(troop, x, y, z, wave, min, sec,rotate, rotatex, rotatey, rotatez, inbetween)
         return {
-            ["Type"] = troop,
+            ["TowerName"] = troop,
             ["TypeIndex"] = "",
             ["Position"] = Vector3.new(x,y,z),
             ["Rotation"] = CFrame.new(rotatex or 0, rotatey or 0, rotatez or 0),
