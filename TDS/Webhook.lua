@@ -70,8 +70,11 @@ local Data = {
    ["content"] = "", --Msg
    ["embeds"] = {
       {
-         ["title"] = `**Strategies X Logger ({os.date("%X")} {os.date("%x")})**`,
+         ["title"] = `**Strategies X Webhook**`,
          ["color"] = CheckColor[GetGameInfo():GetAttribute("Won")], --decimal
+         ["footer"] = {
+            ["text"] = `{os.date("%X")} {os.date("%x")}`,
+         },
       }
    }
 }
