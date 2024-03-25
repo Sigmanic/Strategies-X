@@ -127,9 +127,9 @@ function AddFakeTower(Name,Type)
     end
 end
 
-if CheckPlace() then
+--[[if CheckPlace() then
     PreviewInitial()
-end
+end]]
 
 --[[{
     ["TowerName"] = "",
