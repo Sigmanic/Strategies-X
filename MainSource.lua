@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.7 [Alpha]"
+local Version = "Version: 0.3.8 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -221,7 +221,7 @@ function CheckTimer(bool)
 end
 function TimePrecise(Number)
     --return math.round((math.ceil(Number) - Number)*1000)/1000 --more the decimal, long wait
-    return (Number - math.floor(Number) - 0.13) + 0.7 --more the decimal, less wait, wtf is this mathematic, 0.7 is random error of Timer <= 1
+    return (Number - math.floor(Number) - 0.13) + 0.5 --more the decimal, less wait, wtf is this mathematic, 0.7 is random error of Timer <= 1
 end
 function TotalSec(Minute,Second)
     return (Minute*60) + math.ceil(Second)
@@ -263,6 +263,10 @@ function GetTypeIndex(string,Id)
     return TowersContained[Id].TypeIndex
 end
 
+function ConvertTimer(number : number)
+    return math.floor(number/60), number % 60
+end
+
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
     if Debug or GetGameInfo():GetAttribute("Wave") > Wave then
         return true
@@ -283,10 +287,12 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
         if CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
-        Timer = math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
+        Timer = ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) --math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
     until Timer <= 1
     --until (ReplicatedStorage.State.Timer.Time.Value + 1 == TotalSec(Min,Sec) or ReplicatedStorage.State.Timer.Time.Value == TotalSec(Min,Sec))
     task.wait(TimePrecise(Sec))
+    --local ConvertMin, ConvertSec = ConvertTimer(ReplicatedStorage.State.Timer.Time.Value)
+    --prints(Wave,Min,Sec,InWave, ConvertMin, ConvertSec,Timer)
     return true
 end
 
@@ -402,7 +408,10 @@ if CheckPlace() then
     StratXLibrary.ReadyState = false
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
         if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-            task.wait(.1)
+            task.wait(1.5)
+            if not UtilitiesConfig.RestartMatch then
+                repeat task.wait() until UtilitiesConfig.RestartMatch
+            end
             RemoteFunction:InvokeServer("Voting", "Skip")
             StratXLibrary.ReadyState = true
             prints("Ready Signal Fired")
@@ -509,8 +518,13 @@ if CheckPlace() then
             if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
+            local PlayerInfo = UI.PlayerInfo
+            for i,v in next, PlayerInfo.Property do
+                PlayerInfo[i].Text = `{i}: {v.Value}`
+            end
+            prints("GameOver Changed1")
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
-                prints("Match Lose. Strat Will Restart Shortly")
+                prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
                 task.wait()
                 for i,v in ipairs(TowersContained) do
@@ -524,29 +538,25 @@ if CheckPlace() then
                 table.clear(TowersContained)
                 TowersContained.Index = 0
                 prints("TowersContained",#TowersContained)
-                StratXLibrary["ActionInfo"] = {
-                    ["Place"] = {0,0},
-                    ["Upgrade"] = {0,0},
-                    ["Sell"] = {0,0},
-                    ["Skip"] = {0,0},
-                    ["Ability"] = {0,0},
-                    ["Target"] = {0,0},
-                    ["AutoChain"] = {0,0},
-                    ["SellAllFarms"] = {0,0},
-                    ["Option"] = {0,0}, 
-                }
+                for i,v in next, StratXLibrary["ActionInfo"] do
+                    StratXLibrary["ActionInfo"][i][1] = 0
+                    StratXLibrary["ActionInfo"][i][2] = 0
+                end
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
                 end
-                task.wait(2)
+                task.wait(4.5)
                 prints("VoteCheck")
-                local VoteCheck
-                repeat
-                    VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-                    task.wait()
-                until VoteCheck 
+                task.spawn(function()
+                    local VoteCheck
+                    repeat
+                        VoteCheck = ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+                        task.wait()
+                    until VoteCheck
+                    prints("VoteCheck Passed")
+                end)
                 repeat task.wait() until StratXLibrary.ReadyState
-                --prints("Prepare Set All ListNum To 1")
+                prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
                     if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
@@ -625,6 +635,9 @@ if CheckPlace() then
         local TowersFolder = if bool then Workspace.PreviewFolder else ReplicatedStorage.PreviewHolder
         local ErrorsFolder = if bool then Workspace.PrewviewErrorFolder else ReplicatedStorage.PreviewHolder
         for i,v in ipairs(TowersContained) do
+            if v.DebugTag then
+                v.DebugTag.Enabled = bool
+            end
             if v.Placed then
                 continue
             end
@@ -718,6 +731,26 @@ UtilitiesTab:Button("Rejoin To Lobby",function()
     TeleportHandler(3260590327,2,7)
     --TeleportService:Teleport(3260590327)
 end)
+
+UI.PlayerInfo = {}
+UI.PlayerInfo.UI = maintab:DropSection("Player Info")
+local PlayerInfoUI = UI.PlayerInfo.UI
+UI.PlayerInfo.Level = PlayerInfoUI:Section(`Level: {LocalPlayer.Level.Value}`)
+UI.PlayerInfo.Coins = PlayerInfoUI:Section(`Coins: {LocalPlayer.Coins.Value}`)
+UI.PlayerInfo.Gems = PlayerInfoUI:Section(`Gems: {LocalPlayer.Gems.Value}`)
+UI.PlayerInfo.Triumphs = PlayerInfoUI:Section(`Wins: {LocalPlayer.Triumphs.Value}`)
+UI.PlayerInfo.Loses = PlayerInfoUI:Section(`Loses: {LocalPlayer.Loses.Value}`)
+UI.PlayerInfo.Property = {
+    ["Level"] = LocalPlayer.Level,
+    ["Coins"] = LocalPlayer.Coins,
+    ["Gems"] = LocalPlayer.Gems,
+    ["Triumphs"] = LocalPlayer.Triumphs,
+    ["Loses"] = LocalPlayer.Loses,
+}
+--[[for i,v in next, UI.PlayerInfo.Property do
+    UI.PlayerInfo[i] =  PlayerInfoUI:Section(`{i}: {v.Value}`)
+end]]
+
 task.spawn(function()
     repeat task.wait(.3)
     until getgenv().StratCreditsAuthor ~= nil

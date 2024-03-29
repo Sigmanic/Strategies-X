@@ -70,6 +70,7 @@ function DebugTower(Object, Color) --Rework in Future
     Text.TextColor3 = Color
     Text.TextStrokeColor3 = Color3.new(0, 0, 0)
     Text.TextStrokeTransparency = 0.5
+    return GuiInstance
 end
 
 function PreviewInitial()
@@ -168,7 +169,7 @@ return function(self, p1)
     --TowerModel.PrimaryPart.CFrame = CFrame.new(TowerTable.Position) + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)
     TowerModel:PivotTo(CFrame.new(TowerTable.Position + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)) * TowerTable.Rotation)
     TowerModel.Name = TempNum
-    DebugTower(TowerModel,Color3.new(0.35, 0.7, 0.3))
+    DebugTower(TowerModel,Color3.fromRGB(255, 130, 0))
     TowerTable.TowerModel = TowerModel
     if UtilitiesTab.flags.TowersPreview then
         TowerModel.Parent = PreviewFolder
@@ -223,6 +224,10 @@ return function(self, p1)
         TowerTable.Target = "First"
         TowerTable.Upgrade = 0
         TowerModel.Parent = PreviewHolder
+        TowerTable.DebugTag = DebugTower(TowerTable.Instance,Color3.new(0.35, 0.7, 0.3))
+        if not UtilitiesTab.flags.TowersPreview then
+            TowerTable.DebugTag.Enabled = false 
+        end
         if ErrorModel then
             ErrorModel.Parent = PreviewHolder
         end
@@ -232,7 +237,6 @@ return function(self, p1)
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],TempNum)
         SetActionInfo("Place")
         local StackingCheck = (TowerTable.Position - TowerTable.OldPosition).magnitude > 1
-        ConsoleInfo("Placed "..Tower.." Index: "..CheckPlaced.Name..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")"..
-        if StackingCheck then ", Stacked Position" else ", Original Position")
+        ConsoleInfo(`Placed {Tower} Index: {CheckPlaced.Name}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave}, Time Error: {ReplicatedStorage.State.Timer.Time.Value - Min*60+Sec}) {if StackingCheck then ", Stacked Position" else ", Original Position"}`)
     end)
 end

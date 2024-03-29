@@ -18,10 +18,15 @@ return function(self, p1)
             return
         end
         local SkipCheck
+        if not GetVoteState():GetAttribute("Enabled") then
+            repeat 
+                task.wait()
+            until GetVoteState():GetAttribute("Enabled")
+        end
         repeat
             SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
             task.wait()
-        until SkipCheck
+        until SkipCheck or not GetVoteState():GetAttribute("Enabled")
         SetActionInfo("Skip")
         ConsoleInfo(`Skipped Wave {Wave} (Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)
