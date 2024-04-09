@@ -135,6 +135,27 @@ end
 
 if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     UtilitiesConfig = game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
+    if not type(UtilitiesConfig) == "table" then
+        UtilitiesConfig = {  
+            Camera = tonumber(getgenv().DefaultCam) or 2,
+            LowGraphics = getgenv().PotatoPC or false,
+            BypassGroup = false,
+            AutoBuyMissing = false,
+            AutoPickups = false,
+            RestartMatch = true,
+            TowersPreview = false,
+            Webhook = {
+                Enabled = false,
+                Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
+                HideUser = false,
+                UseNewFormat = false,
+                PlayerInfo = true,
+                GameInfo = true,
+                TroopsInfo = true,
+                DisableCustomLog = true,
+            },
+        }
+    end
     if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
