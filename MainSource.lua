@@ -134,8 +134,10 @@ getgenv().output = function(Text,Color)
 end
 
 if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
-    UtilitiesConfig = game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
-    if not type(UtilitiesConfig) == "table" then
+    local Check = pcall(function()
+        UtilitiesConfig = game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
+    end)
+    if not (Check and type(UtilitiesConfig) == "table") then
         UtilitiesConfig = {  
             Camera = tonumber(getgenv().DefaultCam) or 2,
             LowGraphics = getgenv().PotatoPC or false,
