@@ -541,10 +541,10 @@ if CheckPlace() then
             if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
-            local PlayerInfo = StratXLibrary.UI.PlayerInfo
+            --[[local PlayerInfo = StratXLibrary.UI.PlayerInfo
             for i,v in next, PlayerInfo.Property do
                 PlayerInfo[i].Text = `{i}: {v.Value}`
-            end
+            ]]
             prints("GameOver Changed1")
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
@@ -756,7 +756,7 @@ UtilitiesTab:Button("Rejoin To Lobby",function()
 end)
 
 UI.PlayerInfo = {}
-UI.PlayerInfo.UI = maintab:DropSection("Player Info")
+--[[UI.PlayerInfo.UI = maintab:DropSection("Player Info")
 local PlayerInfoUI = UI.PlayerInfo.UI
 UI.PlayerInfo.Level = PlayerInfoUI:Section(`Level: {LocalPlayer.Level.Value}`)
 UI.PlayerInfo.Coins = PlayerInfoUI:Section(`Coins: {LocalPlayer.Coins.Value}`)
@@ -769,7 +769,7 @@ UI.PlayerInfo.Property = {
     ["Gems"] = LocalPlayer.Gems,
     ["Triumphs"] = LocalPlayer.Triumphs,
     ["Loses"] = LocalPlayer.Loses,
-}
+}]]
 --[[for i,v in next, UI.PlayerInfo.Property do
     UI.PlayerInfo[i] =  PlayerInfoUI:Section(`{i}: {v.Value}`)
 end]]
