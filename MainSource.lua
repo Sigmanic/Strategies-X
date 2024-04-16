@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.8 [Alpha]"
+local Version = "Version: 0.3.9 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -432,9 +432,9 @@ if CheckPlace() then
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
         if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
             task.wait(1.5)
-            if not UtilitiesConfig.RestartMatch then
+            --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
-            end
+            end]]
             RemoteFunction:InvokeServer("Voting", "Skip")
             StratXLibrary.ReadyState = true
             prints("Ready Signal Fired")
