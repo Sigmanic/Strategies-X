@@ -541,7 +541,7 @@ if CheckPlace() then
             if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
-            local PlayerInfo = UI.PlayerInfo
+            local PlayerInfo = StratXLibrary.UI.PlayerInfo
             for i,v in next, PlayerInfo.Property do
                 PlayerInfo[i].Text = `{i}: {v.Value}`
             end
