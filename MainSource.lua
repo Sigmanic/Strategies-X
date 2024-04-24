@@ -757,7 +757,7 @@ end)
 
 UI.PlayerInfo = {}
 UI.PlayerInfo.UI = maintab:DropSection("Player Info")
-local PlayerInfoUI = UI.PlayerInfo.
+local PlayerInfoUI = UI.PlayerInfo.UI
 task.spawn(function()
     UI.PlayerInfo.Level = PlayerInfoUI:Section(`Level: {LocalPlayer:WaitForChild("Level").Value}`)
     UI.PlayerInfo.Coins = PlayerInfoUI:Section(`Coins: {LocalPlayer:WaitForChild("Coins").Value}`)
