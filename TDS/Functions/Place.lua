@@ -73,7 +73,12 @@ function DebugTower(Object, Color) --Rework in Future
     return GuiInstance
 end
 
---[[function PreviewInitial()
+function PreviewInitial()
+    if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
+        repeat
+            task.wait()
+        until ReplicatedStorage.Assets:FindFirstChild("Troops")
+    end
     for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
         if v.Equipped then
             TowerProps[i] = v.Skin
@@ -121,7 +126,7 @@ function AddFakeTower(Name,Type)
         end
         return Tower
     end
-end]]
+end
 
 --[[if CheckPlace() then
     PreviewInitial()
@@ -160,7 +165,7 @@ return function(self, p1)
 
     local CurrentCount = StratXLibrary.CurrentCount
     local TowerTable = TowersContained[TempNum]
-    --[[local TowerModel = AddFakeTower(TowerTable.TowerName)
+    local TowerModel = AddFakeTower(TowerTable.TowerName)
     --TowerModel.PrimaryPart.CFrame = CFrame.new(TowerTable.Position) + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)
     TowerModel:PivotTo(CFrame.new(TowerTable.Position + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)) * TowerTable.Rotation)
     TowerModel.Name = TempNum
@@ -168,7 +173,7 @@ return function(self, p1)
     TowerTable.TowerModel = TowerModel
     if UtilitiesTab.flags.TowersPreview then
         TowerModel.Parent = PreviewFolder
-    end]]
+    end
 
     task.spawn(function()
         if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
@@ -186,17 +191,17 @@ return function(self, p1)
             end
         end)
         repeat
-            --[[if type(CheckPlaced) == "string" and CheckPlaced == "You cannot place here!" and not ErrorModel then
+            if type(CheckPlaced) == "string" and CheckPlaced == "You cannot place here!" and not ErrorModel then
                 ErrorModel = AddFakeTower(TowerTable.TowerName,"Error")
                 ErrorModel:PivotTo(CFrame.new(TowerTable.Position + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)) * TowerTable.Rotation)
                 ErrorModel.Name = TempNum
                 DebugTower(ErrorModel,Color3.new(1, 0, 0))
                 TowerTable.ErrorModel = ErrorModel 
-                --TowerModel.Parent = PreviewHolder
+                TowerModel.Parent = PreviewHolder
                 if UtilitiesTab.flags.TowersPreview then
                     ErrorModel.Parent = PrewviewErrorFolder
                 end
-            end]]
+            end
             if CurrentCount ~= StratXLibrary.RestartCount then
                 return
             end
@@ -216,7 +221,7 @@ return function(self, p1)
         TowerTable.Placed = true
         TowerTable.Target = "First"
         TowerTable.Upgrade = 0
-        --TowerModel.Parent = PreviewHolder
+        TowerModel.Parent = PreviewHolder
         TowerTable.DebugTag = DebugTower(TowerTable.Instance,Color3.new(0.35, 0.7, 0.3))
         if not UtilitiesTab.flags.TowersPreview then
             TowerTable.DebugTag.Enabled = false 
