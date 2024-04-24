@@ -756,20 +756,22 @@ UtilitiesTab:Button("Rejoin To Lobby",function()
 end)
 
 UI.PlayerInfo = {}
---[[UI.PlayerInfo.UI = maintab:DropSection("Player Info")
-local PlayerInfoUI = UI.PlayerInfo.UI
-UI.PlayerInfo.Level = PlayerInfoUI:Section(`Level: {LocalPlayer.Level.Value}`)
-UI.PlayerInfo.Coins = PlayerInfoUI:Section(`Coins: {LocalPlayer.Coins.Value}`)
-UI.PlayerInfo.Gems = PlayerInfoUI:Section(`Gems: {LocalPlayer.Gems.Value}`)
-UI.PlayerInfo.Triumphs = PlayerInfoUI:Section(`Wins: {LocalPlayer.Triumphs.Value}`)
-UI.PlayerInfo.Loses = PlayerInfoUI:Section(`Loses: {LocalPlayer.Loses.Value}`)
-UI.PlayerInfo.Property = {
-    ["Level"] = LocalPlayer.Level,
-    ["Coins"] = LocalPlayer.Coins,
-    ["Gems"] = LocalPlayer.Gems,
-    ["Triumphs"] = LocalPlayer.Triumphs,
-    ["Loses"] = LocalPlayer.Loses,
-}]]
+UI.PlayerInfo.UI = maintab:DropSection("Player Info")
+local PlayerInfoUI = UI.PlayerInfo.
+task.spawn(function()
+    UI.PlayerInfo.Level = PlayerInfoUI:Section(`Level: {LocalPlayer:WaitForChild("Level").Value}`)
+    UI.PlayerInfo.Coins = PlayerInfoUI:Section(`Coins: {LocalPlayer:WaitForChild("Coins").Value}`)
+    UI.PlayerInfo.Gems = PlayerInfoUI:Section(`Gems: {LocalPlayer:WaitForChild("Gems").Value}`)
+    UI.PlayerInfo.Triumphs = PlayerInfoUI:Section(`Wins: {LocalPlayer:WaitForChild("Triumphs").Value}`)
+    UI.PlayerInfo.Loses = PlayerInfoUI:Section(`Loses: {LocalPlayer:WaitForChild("Loses").Value}`)
+    UI.PlayerInfo.Property = {
+        ["Level"] = LocalPlayer.Level,
+        ["Coins"] = LocalPlayer.Coins,
+        ["Gems"] = LocalPlayer.Gems,
+        ["Triumphs"] = LocalPlayer.Triumphs,
+        ["Loses"] = LocalPlayer.Loses,
+    }
+end)
 --[[for i,v in next, UI.PlayerInfo.Property do
     UI.PlayerInfo[i] =  PlayerInfoUI:Section(`{i}: {v.Value}`)
 end]]
