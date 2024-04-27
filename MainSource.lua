@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.9 [Alpha]"
+local Version = "Version: 0.3.10 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -96,6 +96,7 @@ local UserInputService = game:GetService("UserInputService")
 local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
+local VirtualUser = game:GetService("VirtualUser")
 local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
@@ -844,7 +845,7 @@ end
 
 prints("Loaded Functions")
 
-local GetConnects = getconnections or get_signal_cons
+--[[local GetConnects = getconnections or get_signal_cons
 if GetConnects then
     for i,v in next, GetConnects(LocalPlayer.Idled) do
         if v["Disable"] then
@@ -853,9 +854,12 @@ if GetConnects then
             v["Disconnect"](v)
         end
     end
-end
+end]]
 LocalPlayer.Idled:Connect(function()
-    game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    VirtualUser:ClickButton2(Vector2.new())
+    VirtualUser:Button2Down(Vector2.new(0,0), CurrentCamera.CFrame)
+	task.wait(1)
+    VirtualUser:Button2Up(Vector2.new(0,0), CurrentCamera.CFrame)
 end)
 game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(object)
     if object.Name == "ErrorPrompt" and object:FindFirstChild("MessageArea") and object.MessageArea:FindFirstChild("ErrorFrame") then
