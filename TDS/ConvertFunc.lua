@@ -31,7 +31,7 @@ local Patcher = {
             ["Wave"] = wave,
             ["Minute"] = min,
             ["Second"] = sec,
-            ["InBetween"] = inbetween or false,
+            ["InBetween"] = type(inbetween) == "boolean" and inbetween or rotate or false,
         }
     end,
     ["Upgrade"] = function(troop, wave, min, sec, inbetween)
