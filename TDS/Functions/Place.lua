@@ -84,7 +84,7 @@ function PreviewInitial()
             --task.spawn(function()
                 --repeat task.wait() until ReplicatedStorage.Assets.Troops:FindFirstChild(i)
             TowerProps[i] = v.Skin
-            local Tower = ReplicatedStorage.Assets.Troops:WaitForChild(i,7).Skins[v.Skin]:Clone()
+            local Tower = ReplicatedStorage.Assets.Troops:WaitForChild(i,7).Skins:GetChildren()[1]:Clone() --[v.Skin]:Clone()
             Tower.Parent = AssetsHologram
             Tower.Name = i
             for i2,v2 in next, Tower:GetDescendants() do
