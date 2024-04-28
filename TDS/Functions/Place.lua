@@ -81,25 +81,28 @@ function PreviewInitial()
     end
     for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
         if v.Equipped then
-            TowerProps[i] = v.Skin
-            local Tower = ReplicatedStorage.Assets.Troops[i].Skins[v.Skin]:Clone()
-            Tower.Parent = AssetsHologram
-            Tower.Name = i
-            for i2,v2 in next, Tower:GetDescendants() do
-                if v2:IsA("BasePart") then
-                    v2.Material = Enum.Material.ForceField
-                    if v2.CanCollide then
-                        v2.CanCollide = false
+            task.spawn(function()
+                repeat task.wait() until ReplicatedStorage.Assets.Troops:FindFirstChild(i)
+                TowerProps[i] = v.Skin
+                local Tower = ReplicatedStorage.Assets.Troops[i].Skins[v.Skin]:Clone()
+                Tower.Parent = AssetsHologram
+                Tower.Name = i
+                for i2,v2 in next, Tower:GetDescendants() do
+                    if v2:IsA("BasePart") then
+                        v2.Material = Enum.Material.ForceField
+                        if v2.CanCollide then
+                            v2.CanCollide = false
+                        end
                     end
                 end
-            end
-            local Tower = Tower:Clone()
-            for i2,v2 in next, Tower:GetDescendants() do
-                if v2:IsA("BasePart") then
-                    v2.Color = Color3.new(1, 0, 0)
+                local Tower = Tower:Clone()
+                for i2,v2 in next, Tower:GetDescendants() do
+                    if v2:IsA("BasePart") then
+                        v2.Color = Color3.new(1, 0, 0)
+                    end
                 end
-            end
-            Tower.Parent = AssetsError
+                Tower.Parent = AssetsError
+            end)
         end
     end
 end
