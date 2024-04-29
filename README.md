@@ -46,8 +46,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X
 
 ## Requirements
 Executors Supported:
-* Fluxus Android
-* Valyse Android
 * Codex
 * Delta
 * Hydrogen
