@@ -77,12 +77,12 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
-    ["Target"] = function(troop, wave, target, min, sec, inbetween)
+    ["Target"] = function(troop, target_wave, wave_target, min, sec, inbetween)
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
-            ["Wave"] = wave,
-            ["Target"] = target,
+            ["Wave"] = type(target_wave) == "number" and target_wave or wave_target,
+            ["Target"] = type(wave_target) == "string" and wave_target or target_wave,
             ["Minute"] = min,
             ["Second"] = sec,
             ["InBetween"] = inbetween or false,
@@ -107,7 +107,7 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
-    ["Option"] = function(troop, wave, name, value, min, sec, inbetween)
+    ["Option"] = function(troop, name, value, wave, min, sec, inbetween)
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
