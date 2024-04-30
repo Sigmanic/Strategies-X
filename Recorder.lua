@@ -196,6 +196,7 @@ local GenerateFunction = {
         local TowerName = Args[3]
         local Position = Args[4].Position
         local Rotation = Args[4].Rotation
+        local RotateX,RotateY,RotateZ = Rotation:ToEulerAnglesYXZ()
         TowerCount += 1
         RemoteCheck.Name = TowerCount
         TowersList[TowerCount] = {
@@ -208,7 +209,7 @@ local GenerateFunction = {
         upgradeHandler:selectTroop(RemoteCheck)
         SetStatus(`Placed {TowerName}`)
         local TimerStr = table.concat(Timer, ", ")
-        appendstrat(`TDS:Place("{TowerName}", {Position.X}, {Position.Y}, {Position.Z}, {TimerStr}, {Rotation.X}, {Rotation.Y}, {Rotation.Z})`)
+        appendstrat(`TDS:Place("{TowerName}", {Position.X}, {Position.Y}, {Position.Z}, {TimerStr}, {RotateX}, {RotateY}, {RotateZ})`)
     end,
     Upgrade = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[4].Troop.Name;
@@ -276,12 +277,11 @@ local GenerateFunction = {
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
     local Self, Args = (...), ({select(2, ...)})
-    if getnamecallmethod() == "InvokeServer" and Self.name == "RemoteFunction" then --not table.find(args, "Rec") then
+    if getnamecallmethod() == "InvokeServer" and Self.name == "RemoteFunction" then
         local thread = coroutine.running()
         coroutine.wrap(function(Args)
             local Timer = GetTimer()
             local RemoteFired = Self.InvokeServer(Self, unpack(Args))
-            --passArgs(args, Msi, Wave, TM, TS, HalftTime, wasDid)
             print(table.concat(Timer, ", "))
             print(Args[2],RemoteFired)
             if GenerateFunction[Args[2]] then
