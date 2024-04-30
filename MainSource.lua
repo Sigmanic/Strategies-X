@@ -57,7 +57,7 @@ StratXLibrary.UtilitiesConfig = {
     BypassGroup = false,
     AutoBuyMissing = false,
     AutoPickups = false,
-    RestartMatch = true,
+    RestartMatch = false,
     TowersPreview = false,
     Webhook = {
         Enabled = false,
@@ -145,7 +145,7 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
             BypassGroup = false,
             AutoBuyMissing = false,
             AutoPickups = false,
-            RestartMatch = true,
+            RestartMatch = false,
             TowersPreview = false,
             Webhook = {
                 Enabled = false,
@@ -180,7 +180,7 @@ function SaveUtilitiesConfig()
         BypassGroup = UtilitiesTab.flags.BypassGroup,
         AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
         AutoPickups = UtilitiesConfig.AutoPickups or UtilitiesTab.flags.AutoPickups,
-        RestartMatch = UtilitiesTab.flags.RestartMatch,
+        --RestartMatch = UtilitiesTab.flags.RestartMatch,
         TowersPreview = UtilitiesTab.flags.TowersPreview,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
@@ -749,7 +749,7 @@ UtilitiesTab:Toggle("Low Graphics Mode",{default = UtilitiesConfig.LowGraphics o
 end)
 UtilitiesTab:Toggle("Bypass Group Checking",{default = UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
 UtilitiesTab:Toggle("Auto Buy Missing Tower",{default = UtilitiesConfig.AutoBuyMissing or false, flag = "AutoBuyMissing"})
-UtilitiesTab:Toggle("Auto Restart When Lose", {flag = "RestartMatch", default = UtilitiesConfig.RestartMatch})
+--UtilitiesTab:Toggle("Auto Restart When Lose", {flag = "RestartMatch", default = UtilitiesConfig.RestartMatch})
 UtilitiesTab:Button("Rejoin To Lobby",function()
     task.wait()
     TeleportHandler(3260590327,2,7)
