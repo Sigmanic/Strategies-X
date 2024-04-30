@@ -185,8 +185,8 @@ end
 --print(table.concat(Recorder.Troops, ", "))
 writestrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
 State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
-    table.concat(Recorder.Troops, `", "`).."\", [\"Golden\"] = {\""..
-    table.concat(Recorder.Troops.Golden, `", "`).."\"}})"
+    table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
+    table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
 )
 local GenerateFunction = {
     Place = function(Args, Timer, RemoteCheck)
