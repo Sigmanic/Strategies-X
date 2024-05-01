@@ -73,17 +73,18 @@ function DebugTower(Object, Color) --Rework in Future
     return GuiInstance
 end
 
-
-for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
-    if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
-        repeat
-            task.wait()
-        until ReplicatedStorage.Assets:FindFirstChild("Troops")
-    end
-    if v.Equipped and not (ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
-        repeat 
-            task.wait()
-        until ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
+if CheckPlace() then
+    for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
+        if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
+            repeat
+                task.wait()
+            until ReplicatedStorage.Assets:FindFirstChild("Troops")
+        end
+        if v.Equipped and not (ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
+            repeat 
+                task.wait()
+            until ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
+        end
     end
 end
         
