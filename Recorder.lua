@@ -265,7 +265,7 @@ local GenerateFunction = {
     Vote = function(Args, Timer, RemoteCheck)
         local Difficulty = Args[3]
         local DiffTable = {
-            ["Easy"] = "Normal",
+            ["Easy"] = "Easy",
             ["Normal"] = "Molten",
             ["Insane"] = "Fallen",
         }

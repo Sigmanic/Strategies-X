@@ -5,7 +5,7 @@ return function(self, p1)
         return
     end
     local DiffTable = {
-        ["Normal"] = "Easy",
+        ["Easy"] = "Easy",
         ["Molten"] = "Normal",
         ["Fallen"] = "Insane",
     }
