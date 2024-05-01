@@ -4,10 +4,16 @@ return function(self, p1)
     if not CheckPlace() then
         return
     end
+    local DiffTable = {
+        ["Normal"] = "Easy",
+        ["Molten"] = "Normal",
+        ["Fallen"] = "Insane",
+    }
+    local ModeName = DiffTable[p1.Name] or p1.Name
     task.spawn(function()
         local Mode
         repeat
-            Mode = RemoteFunction:InvokeServer("Difficulty", "Vote", p1.Name)
+            Mode = RemoteFunction:InvokeServer("Difficulty", "Vote", ModeName)
             task.wait() 
         until Mode
         ConsoleInfo("Mode Selected: "..p1.Name)
