@@ -73,6 +73,9 @@ StratXLibrary.UtilitiesConfig = {
 
 if not game:IsLoaded() then
     game["Loaded"]:Wait()
+    if identifyexecutor and identifyexecutor() == "Krampus" then
+        task.wait(3.5)
+    end
 end
 local SpoofEvent = {}
 if GameSpoof then
