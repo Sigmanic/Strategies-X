@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.10 [Alpha]"
+local Version = "Version: 0.3.11 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
