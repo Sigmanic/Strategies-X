@@ -73,19 +73,24 @@ function DebugTower(Object, Color) --Rework in Future
     return GuiInstance
 end
 
+StratXLibrary.AllowPlace = false
+
 if CheckPlace() then
-    for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
-        if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
-            repeat
-                task.wait()
-            until ReplicatedStorage.Assets:FindFirstChild("Troops")
+    task.spawn(function()
+        for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
+            if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
+                repeat
+                    task.wait()
+                until ReplicatedStorage.Assets:FindFirstChild("Troops")
+            end
+            if v.Equipped and not (ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
+                repeat 
+                    task.wait()
+                until ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
+            end
         end
-        if v.Equipped and not (ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
-            repeat 
-                task.wait()
-            until ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
-        end
-    end
+        StratXLibrary.AllowPlace = true
+    end)
 end
 
 function PreviewInitial()
@@ -180,6 +185,8 @@ return function(self, p1)
 
     local CurrentCount = StratXLibrary.CurrentCount
     local TowerTable = TowersContained[TempNum]
+    repeat task.wait() until StratXLibrary.AllowPlace
+
     local TowerModel = AddFakeTower(TowerTable.TowerName)
     --TowerModel.PrimaryPart.CFrame = CFrame.new(TowerTable.Position) + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)
     TowerModel:PivotTo(CFrame.new(TowerTable.Position + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)) * TowerTable.Rotation)
