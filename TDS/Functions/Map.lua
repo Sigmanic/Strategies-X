@@ -15,6 +15,7 @@ local SpecialGameMode = {
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
     ["Hardcore"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = 4.2, WaitTimeJoin = 1.7},
+    ["Tutorial"] = {Enabled = false,},
 }
 
 return function(self, p1)
