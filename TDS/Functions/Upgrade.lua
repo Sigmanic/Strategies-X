@@ -19,15 +19,19 @@ return function(self, p1)
     local CurrentCount = StratXLibrary.CurrentCount
     SetActionInfo("Upgrade","Total")
     task.spawn(function()
-        if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
+        local TimerCheck = TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"])
+        if not TimerCheck then
             return
         end
+        prints(TimerCheck)
+        prints("Upgrade",Wave, Min, Sec, InWave, StratXLibrary.CurrentCount, tableinfo["Debug"])
         local CheckUpgraded, SkipCheck
         task.delay(50, function()
             SkipCheck = true
         end)
         repeat
             if not TowersCheckHandler(Tower) then
+                prints("End Upgrade",Wave, Min, Sec, InWave)
                 return
             end
             CheckUpgraded = RemoteFunction:InvokeServer("Troops","Upgrade","Set",{
