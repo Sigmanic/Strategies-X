@@ -63,7 +63,9 @@ return function(self, p1)
             ["Hardcore"] = {},
         }
         if MapName == "Tutorial" then
+            prints("Teleporting To Tutorial Mode ")
             RemoteEvent:FireServer("Tutorial", "Start")
+            return
         end
         for i,v in next,Workspace.Elevators:GetChildren() do
             if (Mode == "Survival" and v.State.Difficulty.Value == "Private Server") or Matchmaking then
