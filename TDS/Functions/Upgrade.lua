@@ -23,8 +23,8 @@ return function(self, p1)
         if not TimerCheck then
             return
         end
-        prints(TimerCheck)
-        prints("Upgrade",Wave, Min, Sec, InWave, StratXLibrary.CurrentCount, tableinfo["Debug"])
+        --prints(TimerCheck)
+        --prints("Upgrade",Wave, Min, Sec, InWave, StratXLibrary.CurrentCount, tableinfo["Debug"])
         local CheckUpgraded, SkipCheck
         task.delay(50, function()
             SkipCheck = true
