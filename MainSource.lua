@@ -6,14 +6,14 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.11 [Alpha]"
+local Version = "Version: 0.3.12 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
 }
 
-local LoadLocal = true
-local MainLink = LoadLocal and "http://192.168.1.6:5500/" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local LoadLocal = false
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
 
 local OldTime = os.clock()
 
