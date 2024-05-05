@@ -12,8 +12,8 @@ local Items = {
     Name = "Cookie"
 }
 
-local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local LoadLocal = true
+local MainLink = LoadLocal and "http://192.168.1.6:5500/" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -27,7 +27,9 @@ elseif not isfolder("StrategiesX/UserConfig") then
     makefolder("StrategiesX/UserConfig")
 end
 
-getgenv().StratXLibrary = {Functions = {}}
+local StratXLibrary = {Functions = {}}
+getgenv().StratXLibrary = StratXLibrary
+
 --getgenv().StratXLibrary.ExecutedCount = 0
 getgenv().Functions = StratXLibrary.Functions
 StratXLibrary["TowersContained"] = {}
@@ -267,7 +269,11 @@ function TowersCheckHandler(...)
                 repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id]) or SkipTowerCheck
             end
             if (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Placed == false) and not SkipTowerCheck then
-                ConsoleWarn(`Tower Index: {Id}, Type: \"{TowersContained[Id].TowerName}\" Hasn't Been Placed Yet. Waiting It To Be Placed`)
+                task.delay(2, function()
+                    if not (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Instance and TowersContained[Id].Placed) then
+                        ConsoleWarn(`Tower Index: {Id}, Type: \"{TowersContained[Id].TowerName}\" Hasn't Been Placed Yet. Waiting It To Be Placed`)
+                    end
+                end)
                 repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Instance and TowersContained[Id].Placed) or SkipTowerCheck
             end
             if not (CurrentCount == StratXLibrary.RestartCount) then
@@ -351,7 +357,8 @@ function SetActionInfo(String,Type)
 end
 
 --Main Ui Setup
-local maintab = UILibrary:CreateWindow("Strategies X")
+StratXLibrary.UI.maintab = UILibrary:CreateWindow("Strategies X")
+maintab = StratXLibrary.UI.maintab
 local BypassGroup
 local IsPlayerInGroup
 
@@ -844,6 +851,10 @@ Functions.MatchMaking = function()
     task.wait(6)
     ConsoleInfo(`Map Selected: {ReplicatedStorage.State.Map.Value}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
     StratXLibrary.Strat.ChosenID = Index
+end
+
+function Tutorial()
+    loadstring(game:HttpGet(MainLink.."TDS/Tutorial.lua", true))()
 end
 
 prints("Loaded Functions")
