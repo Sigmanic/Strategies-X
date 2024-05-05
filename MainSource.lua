@@ -268,7 +268,7 @@ function TowersCheckHandler(...)
                 ConsoleWarn(`Tower Index: {Id} Hasn't Created Yet`)
                 repeat task.wait() until (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id]) or SkipTowerCheck
             end
-            if (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Placed == false) and not SkipTowerCheck then
+            if (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id] and TowersContained[Id].Placed == false) and not SkipTowerCheck then
                 task.delay(2, function()
                     if not (CurrentCount == StratXLibrary.RestartCount and TowersContained[Id].Instance and TowersContained[Id].Placed) then
                         ConsoleWarn(`Tower Index: {Id}, Type: \"{TowersContained[Id].TowerName}\" Hasn't Been Placed Yet. Waiting It To Be Placed`)
