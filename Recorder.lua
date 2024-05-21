@@ -247,7 +247,7 @@ local GenerateFunction = {
         local AbilityName = Args[4].Name
         SetStatus(`Used Ability On TowerIndex {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
-        appendstrat(`TDS:Abilities({TowerIndex}, "{AbilityName}", {TimerStr})`)
+        appendstrat(`TDS:Ability({TowerIndex}, "{AbilityName}", {TimerStr})`)
     end,
     Option = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[4].Troop.Name;
