@@ -169,6 +169,8 @@ GetStateReplica():GetAttributeChangedSignal("Enabled"):Connect(function()
         return
     end
     Skipped = true
+    local Timer = GetTimer()
+    task.spawn(GenerateFunction["Skip"], true, Timer)
     ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
     task.wait(2.5)
     Skipped = false
