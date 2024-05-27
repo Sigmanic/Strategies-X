@@ -22,7 +22,7 @@ getgenv().MinimizeClient = getgenv().MinimizeClient or function(boolean)
             GlobalShadow = Lighting.GlobalShadows,
             PhysicsThrottle = settings().Physics.PhysicsEnvironmentalThrottle,
             QualityLevel = settings():GetService("RenderSettings").QualityLevel,
-            Technology = if gethiddenproperty then gethiddenproperty(Lighting, "Technology") else Enum.Technology.ShadowMap,
+            Technology = Enum.Technology.ShadowMap, --if gethiddenproperty then gethiddenproperty(Lighting, "Technology") else Enum.Technology.ShadowMap,
             Set3dRenderingEnabled = true,
         }
     end
