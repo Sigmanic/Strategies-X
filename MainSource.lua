@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.12 [Alpha]"
+local Version = "Version: 0.3.13 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -61,6 +61,7 @@ StratXLibrary.UtilitiesConfig = {
     AutoPickups = false,
     RestartMatch = false,
     TowersPreview = false,
+    AutoSkip = false,
     Webhook = {
         Enabled = false,
         Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -102,7 +103,7 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
@@ -121,6 +122,20 @@ function ParametersPatch(FuncsName,...)
 end
 
 loadstring(game:HttpGet(MainLink.."ConsoleLibrary.lua", true))()
+--[[function ConsolePrint(...)
+    print("ConsolePrint",...)
+end
+
+function ConsoleInfo(...)
+    print("ConsoleInfo",...)
+end
+function ConsoleError(...)
+    print("ConsoleError",...)
+end
+
+function ConsoleWarn(...)
+    print("ConsoleWarn",...)
+end]]
 loadstring(game:HttpGet(MainLink.."TDS/JoinLessServer.lua", true))()
 
 function prints(...)
@@ -152,6 +167,7 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
             AutoPickups = false,
             RestartMatch = false,
             TowersPreview = false,
+            AutoSkip = false,
             Webhook = {
                 Enabled = false,
                 Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -187,6 +203,7 @@ function SaveUtilitiesConfig()
         AutoPickups = UtilitiesConfig.AutoPickups or UtilitiesTab.flags.AutoPickups,
         --RestartMatch = UtilitiesTab.flags.RestartMatch,
         TowersPreview = UtilitiesTab.flags.TowersPreview,
+        AutoSkip = UtilitiesTab.flags.AutoSkip,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
             UseNewFormat = WebSetting.flags.UseNewFormat or false,
@@ -449,7 +466,20 @@ if CheckPlace() then
             RemoteFunction:InvokeServer("Voting", "Skip")
             StratXLibrary.ReadyState = true
             prints("Ready Signal Fired")
+            return
         end
+
+        if not UtilitiesConfig.AutoSkip then
+            repeat
+                task.wait()
+                if not GetVoteState():GetAttribute("Enabled") then
+                    return
+                end
+            until UtilitiesConfig.AutoSkip
+        end
+        RemoteFunction:InvokeServer("Voting", "Skip")
+        SetActionInfo("Skip")
+        ConsoleInfo(`Skipped Wave {GetGameInfo():GetAttribute("Wave")}`)
     end)
     
     task.spawn(function()
@@ -754,6 +784,7 @@ WebSetting:Toggle("Game Info",{default = UtilitiesConfig.Webhook.GameInfo or fal
 WebSetting:Toggle("Troops Info",{default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
 UtilitiesTab:Section("Universal Settings")
+UtilitiesTab:Toggle("Auto Skip Wave", {flag = "AutoSkip", default = UtilitiesConfig.AutoSkip})
 UtilitiesTab:Toggle("Low Graphics Mode",{default = UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
     StratXLibrary.LowGraphics(bool)
 end)
@@ -969,7 +1000,6 @@ task.spawn(function()
         until StratXLibrary.Strat.ChosenID
     end
     prints("Selected Strat ID",StratXLibrary.Strat.ChosenID)
-    StratXLibrary.Executed = true
     local Strat = StratXLibrary.Strat[StratXLibrary.Strat.ChosenID]
     for i,v in next, Functions do
         task.spawn(function()
@@ -993,4 +1023,5 @@ task.spawn(function()
     end
 end)
 prints(`Loaded Library. Took: {math.floor((os.clock() - OldTime)*1000)/1000}s`)
+StratXLibrary.Executed = true
 return Strat.new()
