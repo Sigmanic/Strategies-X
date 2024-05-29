@@ -61,7 +61,7 @@ StratXLibrary.UtilitiesConfig = {
     AutoPickups = false,
     RestartMatch = false,
     TowersPreview = false,
-    AutoSkip = false,
+    AutoSkip = getgenv().AutoSkip or false,
     Webhook = {
         Enabled = false,
         Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -76,9 +76,9 @@ StratXLibrary.UtilitiesConfig = {
 
 if not game:IsLoaded() then
     game["Loaded"]:Wait()
-    if identifyexecutor and identifyexecutor() == "Krampus" then
+    --[[if identifyexecutor and identifyexecutor() == "Krampus" then
         task.wait(3.5)
-    end
+    end]]
 end
 local SpoofEvent = {}
 if GameSpoof then
@@ -155,37 +155,17 @@ getgenv().output = function(Text,Color)
 end
 
 if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
-    local Check = pcall(function()
-        UtilitiesConfig = game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
+    local Check, GetConfig = pcall(function()
+        return game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/UserConfig/UtilitiesConfig.txt"))
     end)
-    if not (Check and type(UtilitiesConfig) == "table") then
-        UtilitiesConfig = {  
-            Camera = tonumber(getgenv().DefaultCam) or 2,
-            LowGraphics = getgenv().PotatoPC or false,
-            BypassGroup = false,
-            AutoBuyMissing = false,
-            AutoPickups = false,
-            RestartMatch = false,
-            TowersPreview = false,
-            AutoSkip = false,
-            Webhook = {
-                Enabled = false,
-                Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
-                HideUser = false,
-                UseNewFormat = false,
-                PlayerInfo = true,
-                GameInfo = true,
-                TroopsInfo = true,
-                DisableCustomLog = true,
-            },
-        }
+    if Check then
+        UtilitiesConfig = GetConfig
     end
     if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
-    if getgenv().PotatoPC then
-        UtilitiesConfig.LowGraphics = true
-    end
+    UtilitiesConfig.LowGraphics = getgenv().PotatoPC or false
+    UtilitiesConfig.AutoSkip = getgenv().AutoSkip or false
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
