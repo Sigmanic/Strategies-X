@@ -270,9 +270,11 @@ local GenerateFunction = {
             ["Easy"] = "Easy",
             ["Normal"] = "Molten",
             ["Insane"] = "Fallen",
+
         }
-        SetStatus(`Vote {DiffTable[Difficulty]}`)
-        appendstrat(`TDS:Mode("{DiffTable[Difficulty]}")`)
+        local GetMode = DiffTable[Difficulty] or Difficulty
+        SetStatus(`Vote {GetMode}`)
+        appendstrat(`TDS:Mode("{GetMode}")`)
     end,
 }
 
