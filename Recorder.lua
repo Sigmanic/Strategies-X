@@ -162,34 +162,7 @@ getgenv().GetStateReplica = function()
         task.wait()
     until StateReplica
 end
-local Skipped = false
-GetStateReplica():GetAttributeChangedSignal("Enabled"):Connect(function()  
-    repeat task.wait() until mainwindow.flags.autoskip
-    if Skipped or not GetStateReplica():GetAttribute("Enabled") then
-        return
-    end
-    Skipped = true
-    local Timer = GetTimer()
-    task.spawn(GenerateFunction["Skip"], true, Timer)
-    ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-    task.wait(2.5)
-    Skipped = false
-end)
 
-for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
-    if (Tower.Equipped) then
-        table.insert(Recorder.Troops, TowerName)
-        if (Tower.GoldenPerks) then
-            table.insert(Recorder.Troops.Golden, TowerName)
-        end
-    end
-end
---print(table.concat(Recorder.Troops, ", "))
-writestrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
-State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
-    table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
-    table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
-)
 local GenerateFunction = {
     Place = function(Args, Timer, RemoteCheck)
         if typeof(RemoteCheck) ~= "Instance" then
@@ -277,6 +250,35 @@ local GenerateFunction = {
         appendstrat(`TDS:Mode("{GetMode}")`)
     end,
 }
+
+local Skipped = false
+GetStateReplica():GetAttributeChangedSignal("Enabled"):Connect(function()  
+    repeat task.wait() until mainwindow.flags.autoskip
+    if Skipped or not GetStateReplica():GetAttribute("Enabled") then
+        return
+    end
+    Skipped = true
+    local Timer = GetTimer()
+    task.spawn(GenerateFunction["Skip"], true, Timer)
+    ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+    task.wait(2.5)
+    Skipped = false
+end)
+
+for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
+    if (Tower.Equipped) then
+        table.insert(Recorder.Troops, TowerName)
+        if (Tower.GoldenPerks) then
+            table.insert(Recorder.Troops.Golden, TowerName)
+        end
+    end
+end
+--print(table.concat(Recorder.Troops, ", "))
+writestrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
+State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
+    table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
+    table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
+)
 
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
