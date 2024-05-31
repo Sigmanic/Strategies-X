@@ -185,7 +185,7 @@ function SaveUtilitiesConfig()
         BypassGroup = UtilitiesTab.flags.BypassGroup,
         AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
         AutoPickups = UtilitiesConfig.AutoPickups or UtilitiesTab.flags.AutoPickups,
-        --RestartMatch = UtilitiesTab.flags.RestartMatch,
+        RestartMatch = UtilitiesTab.flags.RestartMatch,
         TowersPreview = UtilitiesTab.flags.TowersPreview,
         AutoSkip = UtilitiesTab.flags.AutoSkip,
         Webhook = {
@@ -781,7 +781,7 @@ UtilitiesTab:Toggle("Low Graphics Mode",{default = UtilitiesConfig.LowGraphics o
 end)
 UtilitiesTab:Toggle("Bypass Group Checking",{default = UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
 UtilitiesTab:Toggle("Auto Buy Missing Tower",{default = UtilitiesConfig.AutoBuyMissing or false, flag = "AutoBuyMissing"})
---UtilitiesTab:Toggle("Auto Restart When Lose", {flag = "RestartMatch", default = UtilitiesConfig.RestartMatch})
+UtilitiesTab:Toggle("Auto Restart When Lose", {flag = "RestartMatch", default = UtilitiesConfig.RestartMatch})
 UtilitiesTab:Button("Rejoin To Lobby",function()
     task.wait()
     TeleportHandler(3260590327,2,7)
