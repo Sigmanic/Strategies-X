@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.13 [Alpha]"
+local Version = "Version: 0.3.14 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -632,6 +632,11 @@ if CheckPlace() then
                 task.wait(.5)
                 if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
                     return
+                end
+                if WebSocket and WebSocket.connect then
+                    local WS = WebSocket.connect("ws://localhost:8126")
+                    WS:Send("connect-to-vip-server")
+                    task.wait(30)
                 end
                 prints("Rejoining To Lobby")
                 TeleportHandler(3260590327,2,7)
