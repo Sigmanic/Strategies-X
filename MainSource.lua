@@ -634,8 +634,10 @@ if CheckPlace() then
                     return
                 end
                 if WebSocket and WebSocket.connect then
-                    local WS = WebSocket.connect("ws://localhost:8126")
-                    WS:Send("connect-to-vip-server")
+                    pcall(function()
+                        local WS = WebSocket.connect("ws://localhost:8126")
+                        WS:Send("connect-to-vip-server")
+                    end)
                     task.wait(12)
                 end
                 prints("Rejoining To Lobby")
