@@ -164,8 +164,12 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
-    UtilitiesConfig.LowGraphics = getgenv().PotatoPC or false
-    UtilitiesConfig.AutoSkip = getgenv().AutoSkip or false
+    if type(getgenv().PotatoPC) == "boolean" then
+        UtilitiesConfig.LowGraphics = getgenv().PotatoPC
+    end
+    if type(getgenv().AutoSkip) == "boolean" then
+        UtilitiesConfig.AutoSkip = getgenv().AutoSkip
+    end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
