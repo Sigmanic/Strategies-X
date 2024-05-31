@@ -636,7 +636,7 @@ if CheckPlace() then
                 if WebSocket and WebSocket.connect then
                     local WS = WebSocket.connect("ws://localhost:8126")
                     WS:Send("connect-to-vip-server")
-                    task.wait(30)
+                    task.wait(12)
                 end
                 prints("Rejoining To Lobby")
                 TeleportHandler(3260590327,2,7)
