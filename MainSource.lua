@@ -613,6 +613,11 @@ if CheckPlace() then
                 repeat task.wait() until StratXLibrary.ReadyState
                 prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
+                for i,v in ipairs(StratXLibrary.Strat) do
+                    if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map == ReplicatedStorage.State.Map.Value then
+                        StratXLibrary.Strat.ChosenID = i
+                    end
+                end
                 for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
                     if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
                         v.ListNum = 1 
