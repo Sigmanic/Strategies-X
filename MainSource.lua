@@ -519,8 +519,13 @@ if CheckPlace() then
         end
 
         repeat task.wait() until Workspace:FindFirstChild("NPCs")
+        local NPCObject
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if NPCObject then
+                CurrentCamera.CameraSubject = NPCObject
+            end
+        end)
         task.spawn(function()
-            local ViewCeck
             while true do
                 for i,v in next, Workspace.NPCs:GetChildren() do
                     if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("HumanoidRootPart").CFrame.Y > -5 then
@@ -528,14 +533,15 @@ if CheckPlace() then
                             v:Destroy()
                             continue
                         end
-                        if UtilitiesConfig.Camera == 2 and not ViewCeck then
-                            ViewCeck = true
+                        if UtilitiesConfig.Camera == 2 and not NPCObject then
+                            NPCObject = v:FindFirstChild("HumanoidRootPart")
                             task.spawn(function()
                                 repeat
-                                    CurrentCamera.CameraSubject = v:FindFirstChild("HumanoidRootPart")
+                                    --CurrentCamera.CameraSubject = v:FindFirstChild("HumanoidRootPart")
                                     task.wait() 
                                 until UtilitiesConfig.Camera ~= 2 or not (v:FindFirstChild("HumanoidRootPart") and v.RootPointer.Value.Parent)
                                 ViewCeck = false
+                                NPCObject = nil
                             end)
                         end
                     end
@@ -553,10 +559,10 @@ if CheckPlace() then
             end
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
-            if not type(GetGameInfo():GetAttribute("Won")) == "boolean" then
+            --[[if not type(GetGameInfo():GetAttribute("Won")) == "boolean" then
                 repeat task.wait() until type(GetGameInfo():GetAttribute("Won")) == "boolean"
                 task.wait(1.3)
-            end
+            end]]
             if UtilitiesConfig.Webhook.Enabled then
                 task.spawn(function()
                     loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
@@ -566,12 +572,13 @@ if CheckPlace() then
             if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
+            prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
             --[[local PlayerInfo = StratXLibrary.UI.PlayerInfo
             for i,v in next, PlayerInfo.Property do
                 PlayerInfo[i].Text = `{i}: {v.Value}`
             ]]
             prints("GameOver Changed1")
-            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Won") == false then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
                 task.wait()
