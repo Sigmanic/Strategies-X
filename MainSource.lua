@@ -581,7 +581,7 @@ if CheckPlace() then
             if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
-                task.wait()
+                task.wait(2)
                 for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
                         v.TowerModel:Destroy()
