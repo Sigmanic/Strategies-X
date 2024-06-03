@@ -48,9 +48,9 @@ return function(self, p1)
     task.spawn(function()
         if CheckPlace() then
             repeat task.wait() until #ReplicatedStorage.State.Map.Value > 1
-            if not MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")] then
-                print(MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameInfo():GetAttribute("GameMode")],GetGameInfo():GetAttribute("GameMode"))
-                ConsoleError("Wrong Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..GetGameInfo():GetAttribute("GameMode"))
+            if not MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameSate():GetAttribute("GameMode")] then
+                print(MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameSate():GetAttribute("GameMode")],GetGameSate():GetAttribute("GameMode"))
+                ConsoleError("Wrong Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..GetGameSate():GetAttribute("GameMode"))
                 task.wait(3)
                 TeleportHandler(3260590327,2,7)
                 --TeleportService:Teleport(3260590327, LocalPlayer)

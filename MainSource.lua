@@ -210,7 +210,7 @@ end
 loadstring(game:HttpGet(MainLink.."TDS/LowGraphics.lua", true))()
 
 local GameInfo
-getgenv().GetGameInfo = function()
+getgenv().GetGameSate = function()
     if not CheckPlace() then
         return
     end
@@ -302,7 +302,7 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-    if Debug or GetGameInfo():GetAttribute("Wave") > Wave then
+    if Debug or GetGameSate():GetAttribute("Wave") > Wave then
         return true
     end
     local CurrentCount = StratXLibrary.CurrentCount
@@ -311,7 +311,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
         if CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
-    until tonumber(GetGameInfo():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
+    until tonumber(GetGameSate():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
     if ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) < -1 then
         return true
     end
@@ -463,7 +463,7 @@ if CheckPlace() then
         end
         RemoteFunction:InvokeServer("Voting", "Skip")
         SetActionInfo("Skip")
-        ConsoleInfo(`Skipped Wave {GetGameInfo():GetAttribute("Wave")}`)
+        ConsoleInfo(`Skipped Wave {GetGameSate():GetAttribute("Wave")}`)
     end)
     
     task.spawn(function()
@@ -493,8 +493,8 @@ if CheckPlace() then
 
         local ModeSection = maintab:Section("Mode: Voting")
         task.spawn(function()
-            repeat task.wait() until GetGameInfo():GetAttribute("Difficulty")
-            ModeSection.Text = `Mode: {GetGameInfo():GetAttribute("Difficulty")}`
+            repeat task.wait() until GetGameSate():GetAttribute("Difficulty")
+            ModeSection.Text = `Mode: {GetGameSate():GetAttribute("Difficulty")}`
         end)
         maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
         maintab:Section("Tower Info:")
@@ -551,16 +551,16 @@ if CheckPlace() then
             end
         end) 
         --End Of Match
-        StratXLibrary.SignalEndMatch = GetGameInfo():GetAttributeChangedSignal("GameOver"):Connect(function()
+        StratXLibrary.SignalEndMatch = GetGameSate():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
             task.wait(.5)
-            if not GetGameInfo():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
+            if not GetGameSate():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
                 return
             end
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
-            --[[if not type(GetGameInfo():GetAttribute("Won")) == "boolean" then
-                repeat task.wait() until type(GetGameInfo():GetAttribute("Won")) == "boolean"
+            --[[if not type(GetGameSate():GetAttribute("Won")) == "boolean" then
+                repeat task.wait() until type(GetGameSate():GetAttribute("Won")) == "boolean"
                 task.wait(1.3)
             end]]
             if UtilitiesConfig.Webhook.Enabled then
@@ -578,7 +578,7 @@ if CheckPlace() then
                 PlayerInfo[i].Text = `{i}: {v.Value}`
             ]]
             prints("GameOver Changed1")
-            if UtilitiesConfig.RestartMatch and GetGameInfo():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameSate():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
                 task.wait(2)
@@ -637,7 +637,7 @@ if CheckPlace() then
 
                 --prints("RestartCount",StratXLibrary.RestartCount)
             else
-                prints(`Match {if GetGameInfo():GetAttribute("Won") then "Won" else "Lose"}`)
+                prints(`Match {if GetGameSate():GetAttribute("Won") then "Won" else "Lose"}`)
                 if AutoSkipCheck then
                     RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
                 end

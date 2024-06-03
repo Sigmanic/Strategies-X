@@ -16,6 +16,9 @@ return function(self, p1)
             Mode = RemoteFunction:InvokeServer("Difficulty", "Vote", ModeName)
             task.wait() 
         until Mode
+        if not GetGameSate():GetAttribute("HasDifficultyVoteCompleted") then
+            RemoteFunction:InvokeServer("Difficulty", "Ready")
+        end
         ConsoleInfo("Mode Selected: "..p1.Name)
     end)
 end
