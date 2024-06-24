@@ -403,9 +403,11 @@ UtilitiesTab = UI.UtilitiesTab
 
 --InGame Core
 if CheckPlace() then
+if getgenv().DebugMultiplayer == false or getgenv().DebugMultiplayer == nil then
     if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
         TeleportService:Teleport(3260590327, LocalPlayer)
     end
+end
     --Disable Auto Skip Feature
     local AutoSkipCheck
     task.spawn(function()
