@@ -93,15 +93,21 @@ return function(self, p1)
                 prints(if SpecialGameMode[MapName] then `Using MatchMaking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
                 return
             end
-            if not Elevators[require(v.Settings).Type] then
-                Elevators[require(v.Settings).Type] = {}
+            local Passed, ElevatorType = pcall(function()
+                return require(v.Settings).Type
+            end)
+            if not Passed then
+                ElevatorType = if v.Lift["Main part"].BrickColor == BrickColor.new("Lilac") then "Hardcore" else "Survival"
             end
-            table.insert(Elevators[require(v.Settings).Type],{
+            if not Elevators[ElevatorType] then
+                Elevators[ElevatorType] = {}
+            end
+            table.insert(Elevators[ElevatorType],{
                 ["Object"] = v,
                 ["MapName"] = v.State.Map.Title,
                 ["Time"] = v.State.Timer,
                 ["Playing"] = v.State.Players,
-                ["Mode"] = require(v.Settings).Type,
+                ["Mode"] = ElevatorType,
             })
         end
         --prints("Found",#Elevators,"Elevators")

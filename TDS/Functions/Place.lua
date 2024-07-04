@@ -31,6 +31,10 @@ NotGoodHightLight.Parent = PrewviewErrorFolder
 NotGoodHightLight.FillColor = Color3.fromRGB(255, 0, 0)
 NotGoodHightLight.FillTransparency = 0.3]]
 
+function CheckPlace()
+    return if not GameSpoof then (game.PlaceId == 5591597781) else if GameSpoof == "Ingame" then true else false
+end
+
 function StackPosition(Position,SkipCheck)
     local Position = if typeof(Position) == "Vector3" then Position else Vector3.new(0,0,0)
     local PositionY = Position.Y

@@ -1,5 +1,5 @@
 local BeautyTable = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/TableBeauty/master/repr.lua"))() --Supports More Features Made By: Ozzypig
-local ConsoleUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/RBX-ImGui/main/RBXImGuiSource.lua"))()
+local ConsoleUI = if getthreadidentity and getthreadidentity() <= 7 then loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/RBX-ImGui/main/RBXImGui3.lua"))() else loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/RBX-ImGui/main/RBXImGui.lua"))()
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
