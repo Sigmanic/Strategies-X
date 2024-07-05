@@ -6,7 +6,7 @@ local Lighting = game:GetService("Lighting")
 
 local MinimizeConfig = {
     [true] = {
-        fps = 30,
+        fps = 25,
         QualityLevel = Enum.QualityLevel.Level01,
         PhysicsThrottle = Enum.EnviromentalPhysicsThrottle.Disabled,
         Technology = Enum.Technology.Compatibility,
