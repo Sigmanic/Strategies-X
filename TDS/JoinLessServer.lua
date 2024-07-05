@@ -27,6 +27,10 @@ function TeleportHandler(Id,MinPlayers,MaxPlayers)
     local Id = Id or game.PlaceId
     local MinPlayers = MinPlayers or 1
     local MaxPlayers = MaxPlayers or 3
+    if string.match(identifyexecutor():lower(),"solara") then
+        game:GetService("TeleportService"):Teleport(Id)
+        return
+    end
     local GetServers = GetServersInfo(Id,MinPlayers,MaxPlayers)
     local GetServerId = GetServers[1]
     local FailedConnection = game:GetService("TeleportService").TeleportInitFailed:Connect(function(Player, Result, Msg)

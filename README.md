@@ -46,6 +46,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X
 
 ## Requirements
 Executors Supported:
+* Wave
+* Solara **(Partially)**
 * Codex
 * Delta
 * Hydrogen

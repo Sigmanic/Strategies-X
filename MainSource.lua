@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.14 [Alpha]"
+local Version = "Version: 0.3.15 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -553,18 +553,33 @@ end
             end
         end) 
         --End Of Match
+        local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+        local Info = MatchGui.content.info
+        local Rewards = Info.rewards
+        function CheckReward()
+            local RewardType
+            repeat task.wait() until Rewards[1] and Rewards[2]
+            if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
+               RewardType = "Coins"
+            else
+               RewardType = "Gems"
+            end
+            return {RewardType, tonumber(Rewards[2].content.textLabel.Text)}
+        end
         StratXLibrary.SignalEndMatch = GetGameSate():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
-            task.wait(.5)
             if not GetGameSate():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
                 return
             end
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
-            --[[if not type(GetGameSate():GetAttribute("Won")) == "boolean" then
-                repeat task.wait() until type(GetGameSate():GetAttribute("Won")) == "boolean"
-                task.wait(1.3)
-            end]]
+            local PlayerInfo = StratXLibrary.UI.PlayerInfo
+            local GetRewardInfo = CheckReward()
+            PlayerInfo.Property[GetGameSate():GetAttribute("Won") and "Triumphs" or "Loses"] += 1
+            PlayerInfo.Property[GetRewardInfo[1]] += GetRewardInfo[2]
+            for i,v in next, PlayerInfo.Property do
+                PlayerInfo[i].Text = `{i}: {v}`
+            end
             if UtilitiesConfig.Webhook.Enabled then
                 task.spawn(function()
                     loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
@@ -575,10 +590,6 @@ end
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
             prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
-            --[[local PlayerInfo = StratXLibrary.UI.PlayerInfo
-            for i,v in next, PlayerInfo.Property do
-                PlayerInfo[i].Text = `{i}: {v.Value}`
-            ]]
             prints("GameOver Changed1")
             if UtilitiesConfig.RestartMatch and GetGameSate():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
@@ -812,11 +823,11 @@ task.spawn(function()
     UI.PlayerInfo.Triumphs = PlayerInfoUI:Section(`Wins: {LocalPlayer:WaitForChild("Triumphs").Value}`)
     UI.PlayerInfo.Loses = PlayerInfoUI:Section(`Loses: {LocalPlayer:WaitForChild("Loses").Value}`)
     UI.PlayerInfo.Property = {
-        ["Level"] = LocalPlayer.Level,
-        ["Coins"] = LocalPlayer.Coins,
-        ["Gems"] = LocalPlayer.Gems,
-        ["Triumphs"] = LocalPlayer.Triumphs,
-        ["Loses"] = LocalPlayer.Loses,
+        ["Level"] = LocalPlayer.Level.Value,
+        ["Coins"] = LocalPlayer.Coins.Value,
+        ["Gems"] = LocalPlayer.Gems.Value,
+        ["Triumphs"] = LocalPlayer.Triumphs.Value,
+        ["Loses"] = LocalPlayer.Loses.Value,
     }
 end)
 --[[for i,v in next, UI.PlayerInfo.Property do

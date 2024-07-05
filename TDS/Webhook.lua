@@ -8,6 +8,7 @@ local Rewards = Info.rewards
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Executor = identifyexecutor and identifyexecutor() or "Not Identify"
 local UtilitiesConfig = StratXLibrary.UtilitiesConfig
+local PlayerInfo = StratXLibrary.UI.PlayerInfo.Property
 
 local CommaText = function(string)
    local String = tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
@@ -109,22 +110,22 @@ if UtilitiesConfig.Webhook.UseNewFormat then
          },
          {
             ["name"] = "Coins:",
-            ["value"] = CommaText(LocalPlayer.Coins.Value).." :coin:",
+            ["value"] = CommaText(PlayerInfo.Coins).." :coin:", --LocalPlayer.Coins.Value
             ["inline"] = true
          },
          {
             ["name"] = "Gems:",
-            ["value"] = CommaText(LocalPlayer.Gems.Value).." :gem:",
+            ["value"] = CommaText(PlayerInfo.Gems).." :gem:", --LocalPlayer.Gems.Value
             ["inline"] = true
          },
          {
             ["name"] = "Triumphs:",
-            ["value"] = CommaText(LocalPlayer.Triumphs.Value).." :trophy:",
+            ["value"] = CommaText(PlayerInfo.Triumphs).." :trophy:", --LocalPlayer.Triumphs.Value
             ["inline"] = true
          },
          {
             ["name"] = "Loses:",
-            ["value"] = CommaText(LocalPlayer.Loses.Value).." :skull:",
+            ["value"] = CommaText(PlayerInfo.Loses).." :skull:", --LocalPlayer.Loses.Value
             ["inline"] = true
          },
          {
@@ -191,9 +192,9 @@ else
    local PlayerInfo = if UtilitiesConfig.Webhook.PlayerInfo then
    "**--------------- ACCOUNT INFO --------------**"..
    "\n**Name : **" ..((UtilitiesConfig.Webhook.HideUser and "Anonymous") or LocalPlayer.Name).."** | DisplayName : **" ..((UtilitiesConfig.Webhook.HideUser and "Anony") or LocalPlayer.DisplayName)..
-  "\n**Coins : **" ..LocalPlayer.Coins.Value.." :coin:** | Gems : **" ..LocalPlayer.Gems.Value.." :gem:"..
+  "\n**Coins : **" ..PlayerInfo.Coins.." :coin:** | Gems : **" ..PlayerInfo.Gems.." :gem:"..
    "\n**Level : **" ..LocalPlayer.Level.Value.." :chart_with_upwards_trend: ** | Exp : **" ..LocalPlayer.Experience.Value.." :star:"..
-   "\n**Triumphs : **" ..LocalPlayer.Triumphs.Value.." :trophy: ** | Loses : **" ..LocalPlayer.Loses.Value.." :skull:"..
+   "\n**Triumphs : **" ..PlayerInfo.Triumphs.." :trophy: ** | Loses : **" ..PlayerInfo.Loses.." :skull:"..
    "\n**Executor Used : **"..Executor.."\n"
    else ""
    local GameInfo = if UtilitiesConfig.Webhook.GameInfo then
