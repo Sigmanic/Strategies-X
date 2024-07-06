@@ -626,6 +626,8 @@ if CheckPlace() then
                 end)
                 if GetGameSate():GetAttribute("GameMode") ~= "Survival" then
                     repeat task.wait() until StratXLibrary.ReadyState
+		else
+                    repeat task.wait() until StratXLibrary.ReadyState
                 end
                 prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
