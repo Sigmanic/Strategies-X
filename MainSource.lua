@@ -56,10 +56,10 @@ getgenv().GameSpoof = "Lobby"]]
 StratXLibrary.UtilitiesConfig = {  
     Camera = tonumber(getgenv().DefaultCam) or 2,
     LowGraphics = getgenv().PotatoPC or false,
-    BypassGroup = false,
+    BypassGroup = getgenv().BypassGroup or false,
     AutoBuyMissing = false,
     AutoPickups = false,
-    RestartMatch = false,
+    RestartMatch = getgenv().AutoRestart or false,
     TowersPreview = false,
     AutoSkip = getgenv().AutoSkip or false,
     Webhook = {
@@ -172,6 +172,12 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     end
     if type(getgenv().Debug) == "boolean" then
         UtilitiesConfig.TowersPreview = getgenv().Debug
+    end
+    if type(getgenv().BypassGroup) == "boolean" then
+        UtilitiesConfig.BypassGroup = getgenv().BypassGroup
+    end
+    if type(getgenv().AutoRestart) == "boolean" then
+        UtilitiesConfig.RestartMatch = getgenv().AutoRestart
     end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
