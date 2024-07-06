@@ -621,7 +621,9 @@ if CheckPlace() then
                     until VoteCheck
                     prints("VoteCheck Passed")
                 end)
-                repeat task.wait() until StratXLibrary.ReadyState
+                if GetGameSate():GetAttribute("GameMode") ~= "Survival" then
+                    repeat task.wait() until StratXLibrary.ReadyState
+                end
                 prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in ipairs(StratXLibrary.Strat) do
@@ -637,16 +639,6 @@ if CheckPlace() then
                 prints("Set All ListNum To 1")
                 task.wait(5)
                 StratXLibrary.ReadyState = false
-                --[[StratXLibrary.CurrentCount = StratXLibrary.RestartCount
-                for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
-                    if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
-                        task.delay(3, function()
-                            v.ListNum = 1 
-                        end)
-                    end
-                end]]
-
-                --prints("RestartCount",StratXLibrary.RestartCount)
             else
                 prints(`Match {if GetGameSate():GetAttribute("Won") then "Won" else "Lose"}`)
                 if AutoSkipCheck then
