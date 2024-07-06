@@ -170,6 +170,9 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if type(getgenv().AutoSkip) == "boolean" then
         UtilitiesConfig.AutoSkip = getgenv().AutoSkip
     end
+    if type(getgenv().Debug) == "boolean" then
+        UtilitiesConfig.TowersPreview = getgenv().Debug
+    end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
