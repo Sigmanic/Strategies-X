@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.15 [Alpha]"
+local Version = "Version: 0.3.16 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -213,7 +213,7 @@ end
 loadstring(game:HttpGet(MainLink.."TDS/LowGraphics.lua", true))()
 
 local GameInfo
-getgenv().GetGameSate = function()
+getgenv().GetGameState = function()
     if not CheckPlace() then
         return
     end
@@ -305,7 +305,7 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-    if Debug or GetGameSate():GetAttribute("Wave") > Wave then
+    if Debug or GetGameState():GetAttribute("Wave") > Wave then
         return true
     end
     local CurrentCount = StratXLibrary.CurrentCount
@@ -314,7 +314,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
         if CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
-    until tonumber(GetGameSate():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
+    until tonumber(GetGameState():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
     if ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) < -1 then
         return true
     end
@@ -466,7 +466,7 @@ if CheckPlace() then
         end
         RemoteFunction:InvokeServer("Voting", "Skip")
         SetActionInfo("Skip")
-        ConsoleInfo(`Skipped Wave {GetGameSate():GetAttribute("Wave")}`)
+        ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
     end)
     
     task.spawn(function()
@@ -496,8 +496,8 @@ if CheckPlace() then
 
         local ModeSection = maintab:Section("Mode: Voting")
         task.spawn(function()
-            repeat task.wait() until GetGameSate():GetAttribute("Difficulty")
-            ModeSection.Text = `Mode: {GetGameSate():GetAttribute("Difficulty")}`
+            repeat task.wait() until GetGameState():GetAttribute("Difficulty")
+            ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
         end)
         maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
         maintab:Section("Tower Info:")
@@ -559,7 +559,7 @@ if CheckPlace() then
         local Rewards = Info.rewards
         function CheckReward()
             local RewardType
-            repeat task.wait() until Rewards[1] and Rewards[2]
+            repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
             if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
                RewardType = "Coins"
             else
@@ -567,16 +567,16 @@ if CheckPlace() then
             end
             return {RewardType, tonumber(Rewards[2].content.textLabel.Text)}
         end
-        StratXLibrary.SignalEndMatch = GetGameSate():GetAttributeChangedSignal("GameOver"):Connect(function()
+        StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
-            if not GetGameSate():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
+            if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
                 return
             end
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
             local PlayerInfo = StratXLibrary.UI.PlayerInfo
             local GetRewardInfo = CheckReward()
-            PlayerInfo.Property[GetGameSate():GetAttribute("Won") and "Triumphs" or "Loses"] += 1
+            PlayerInfo.Property[GetGameState():GetAttribute("Won") and "Triumphs" or "Loses"] += 1
             PlayerInfo.Property[GetRewardInfo[1]] += GetRewardInfo[2]
             for i,v in next, PlayerInfo.Property do
                 PlayerInfo[i].Text = `{i}: {v}`
@@ -592,7 +592,7 @@ if CheckPlace() then
             end
             prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
             prints("GameOver Changed1")
-            if UtilitiesConfig.RestartMatch and GetGameSate():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameState():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
                 task.wait(2)
@@ -624,9 +624,7 @@ if CheckPlace() then
                     until VoteCheck
                     prints("VoteCheck Passed")
                 end)
-                if GetGameSate():GetAttribute("GameMode") ~= "Survival" then
-                    repeat task.wait() until StratXLibrary.ReadyState
-                end
+                repeat task.wait() until StratXLibrary.ReadyState or GetGameState():GetAttribute("Wave") <= 1 or (GetGameState():GetAttribute("Health") == GetGameState():GetAttribute("MaxHealth"))
                 prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in ipairs(StratXLibrary.Strat) do
@@ -643,7 +641,7 @@ if CheckPlace() then
                 task.wait(5)
                 StratXLibrary.ReadyState = false
             else
-                prints(`Match {if GetGameSate():GetAttribute("Won") then "Won" else "Lose"}`)
+                prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
                 if AutoSkipCheck then
                     RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
                 end
