@@ -429,6 +429,26 @@ if CheckPlace() then
             RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
         end
     end)
+    
+    --Part of Place function
+    local PreviewHolder = Instance.new("Folder")
+    PreviewHolder.Parent = ReplicatedStorage
+    PreviewHolder.Name = "PreviewHolder"
+    local AssetsHologram = Instance.new("Folder")
+    AssetsHologram.Parent = PreviewHolder
+    AssetsHologram.Name = "AssetsHologram"
+    local AssetsError = Instance.new("Folder")
+    AssetsError.Parent = PreviewHolder
+    AssetsError.Name = "AssetsError"
+
+    local PreviewFolder = Instance.new("Folder")
+    PreviewFolder.Parent = Workspace
+    PreviewFolder.Name = "PreviewFolder"
+
+    local PreviewErrorFolder = Instance.new("Folder")
+    PreviewErrorFolder.Parent = Workspace
+    PreviewErrorFolder.Name = "PreviewErrorFolder"
+
     --Check if InWave or not
     StratXLibrary.TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
         if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
@@ -704,7 +724,7 @@ if CheckPlace() then
     UtilitiesTab:Toggle("Rejoin Lobby After Match",{default = true, location = StratXLibrary, flag = "RejoinLobby"})
     UtilitiesTab:Toggle("Show Towers Preview", {flag = "TowersPreview", default = UtilitiesConfig.TowersPreview}, function(bool)
         local TowersFolder = if bool then Workspace.PreviewFolder else ReplicatedStorage.PreviewHolder
-        local ErrorsFolder = if bool then Workspace.PrewviewErrorFolder else ReplicatedStorage.PreviewHolder
+        local ErrorsFolder = if bool then Workspace.PreviewErrorFolder else ReplicatedStorage.PreviewHolder
         for i,v in ipairs(TowersContained) do
             if v.DebugTag then
                 v.DebugTag.Enabled = bool

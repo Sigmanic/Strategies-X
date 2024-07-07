@@ -6,30 +6,11 @@ local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("Rem
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 local TowerProps = {}
 
-local PreviewHolder = Instance.new("Folder")
-PreviewHolder.Parent = ReplicatedStorage
-PreviewHolder.Name = "PreviewHolder"
-local AssetsHologram = Instance.new("Folder")
-AssetsHologram.Parent = PreviewHolder
-AssetsHologram.Name = "AssetsHologram"
-local AssetsError = Instance.new("Folder")
-AssetsError.Parent = PreviewHolder
-AssetsError.Name = "AssetsError"
-
-local PreviewFolder = Instance.new("Folder")
-PreviewFolder.Parent = Workspace
-PreviewFolder.Name = "PreviewFolder"
---[[local PreviewHightLight = Instance.new("Highlight")
-PreviewHightLight.Parent = PreviewFolder
-PreviewHightLight.FillColor = Color3.fromRGB(255, 255, 255)]]
-
-local PrewviewErrorFolder = Instance.new("Folder")
-PrewviewErrorFolder.Parent = Workspace
-PrewviewErrorFolder.Name = "PrewviewErrorFolder"
---[[local NotGoodHightLight = Instance.new("Highlight")
-NotGoodHightLight.Parent = PrewviewErrorFolder
-NotGoodHightLight.FillColor = Color3.fromRGB(255, 0, 0)
-NotGoodHightLight.FillTransparency = 0.3]]
+local PreviewHolder = ReplicatedStorage.PreviewHolder
+local AssetsHologram = PreviewHolder.AssetsHologram
+local AssetsError = PreviewHolder.AssetsError
+local PreviewFolder = Workspace.PreviewFolder
+local PreviewErrorFolder = Workspace.PreviewErrorFolder
 
 function CheckPlace()
     return if not GameSpoof then (game.PlaceId == 5591597781) else if GameSpoof == "Ingame" then true else false
@@ -137,7 +118,7 @@ function AddFakeTower(Name,Type)
     local Tower = if Type == "Normal" then AssetsHologram[Name] else AssetsError[Name] --ReplicatedStorage.Assets.Troops[Name].Skins[SkinName]
     if Tower then
         Tower = Tower:Clone()
-        Tower.Parent = PreviewHolder --if Type == "Normal" then PreviewFolder else PrewviewErrorFolder
+        Tower.Parent = PreviewHolder --if Type == "Normal" then PreviewFolder else PreviewErrorFolder
         if Tower:FindFirstChild("AnimationController") then
             task.spawn(function()
                 local Success
@@ -225,7 +206,7 @@ return function(self, p1)
                 TowerTable.ErrorModel = ErrorModel 
                 TowerModel.Parent = PreviewHolder
                 if UtilitiesTab.flags.TowersPreview then
-                    ErrorModel.Parent = PrewviewErrorFolder
+                    ErrorModel.Parent = PreviewErrorFolder
                 end
             end
             if CurrentCount ~= StratXLibrary.RestartCount then
