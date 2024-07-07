@@ -138,6 +138,25 @@ function ConsoleWarn(...)
 end]]
 loadstring(game:HttpGet(MainLink.."TDS/JoinLessServer.lua", true))()
 
+--Part of Place function
+local PreviewHolder = Instance.new("Folder")
+PreviewHolder.Parent = ReplicatedStorage
+PreviewHolder.Name = "PreviewHolder"
+local AssetsHologram = Instance.new("Folder")
+AssetsHologram.Parent = PreviewHolder
+AssetsHologram.Name = "AssetsHologram"
+local AssetsError = Instance.new("Folder")
+AssetsError.Parent = PreviewHolder
+AssetsError.Name = "AssetsError"
+
+local PreviewFolder = Instance.new("Folder")
+PreviewFolder.Parent = Workspace
+PreviewFolder.Name = "PreviewFolder"
+
+local PreviewErrorFolder = Instance.new("Folder")
+PreviewErrorFolder.Parent = Workspace
+PreviewErrorFolder.Name = "PreviewErrorFolder"
+
 function prints(...)
     local TableText = {...}
     for i,v in next, TableText do
@@ -429,25 +448,6 @@ if CheckPlace() then
             RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
         end
     end)
-    
-    --Part of Place function
-    local PreviewHolder = Instance.new("Folder")
-    PreviewHolder.Parent = ReplicatedStorage
-    PreviewHolder.Name = "PreviewHolder"
-    local AssetsHologram = Instance.new("Folder")
-    AssetsHologram.Parent = PreviewHolder
-    AssetsHologram.Name = "AssetsHologram"
-    local AssetsError = Instance.new("Folder")
-    AssetsError.Parent = PreviewHolder
-    AssetsError.Name = "AssetsError"
-
-    local PreviewFolder = Instance.new("Folder")
-    PreviewFolder.Parent = Workspace
-    PreviewFolder.Name = "PreviewFolder"
-
-    local PreviewErrorFolder = Instance.new("Folder")
-    PreviewErrorFolder.Parent = Workspace
-    PreviewErrorFolder.Name = "PreviewErrorFolder"
 
     --Check if InWave or not
     StratXLibrary.TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
