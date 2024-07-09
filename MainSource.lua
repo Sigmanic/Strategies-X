@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.15 [Alpha]"
+local Version = "Version: 0.3.16 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -138,6 +138,25 @@ function ConsoleWarn(...)
 end]]
 loadstring(game:HttpGet(MainLink.."TDS/JoinLessServer.lua", true))()
 
+--Part of Place function
+local PreviewHolder = Instance.new("Folder")
+PreviewHolder.Parent = ReplicatedStorage
+PreviewHolder.Name = "PreviewHolder"
+local AssetsHologram = Instance.new("Folder")
+AssetsHologram.Parent = PreviewHolder
+AssetsHologram.Name = "AssetsHologram"
+local AssetsError = Instance.new("Folder")
+AssetsError.Parent = PreviewHolder
+AssetsError.Name = "AssetsError"
+
+local PreviewFolder = Instance.new("Folder")
+PreviewFolder.Parent = Workspace
+PreviewFolder.Name = "PreviewFolder"
+
+local PreviewErrorFolder = Instance.new("Folder")
+PreviewErrorFolder.Parent = Workspace
+PreviewErrorFolder.Name = "PreviewErrorFolder"
+
 function prints(...)
     local TableText = {...}
     for i,v in next, TableText do
@@ -169,6 +188,9 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     end
     if type(getgenv().AutoSkip) == "boolean" then
         UtilitiesConfig.AutoSkip = getgenv().AutoSkip
+    end
+    if type(getgenv().Debug) == "boolean" then
+        UtilitiesConfig.TowersPreview = getgenv().Debug
     end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
@@ -210,7 +232,7 @@ end
 loadstring(game:HttpGet(MainLink.."TDS/LowGraphics.lua", true))()
 
 local GameInfo
-getgenv().GetGameSate = function()
+getgenv().GetGameState = function()
     if not CheckPlace() then
         return
     end
@@ -302,7 +324,7 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-    if Debug or GetGameSate():GetAttribute("Wave") > Wave then
+    if Debug or GetGameState():GetAttribute("Wave") > Wave then
         return true
     end
     local CurrentCount = StratXLibrary.CurrentCount
@@ -311,7 +333,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
         if CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
-    until tonumber(GetGameSate():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
+    until tonumber(GetGameState():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
     if ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) < -1 then
         return true
     end
@@ -428,6 +450,7 @@ end
             RemoteFunction:InvokeServer("Settings","Update","Auto Skip",false)
         end
     end)
+
     --Check if InWave or not
     StratXLibrary.TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
         if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
@@ -465,7 +488,7 @@ end
         end
         RemoteFunction:InvokeServer("Voting", "Skip")
         SetActionInfo("Skip")
-        ConsoleInfo(`Skipped Wave {GetGameSate():GetAttribute("Wave")}`)
+        ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
     end)
     
     task.spawn(function()
@@ -495,8 +518,8 @@ end
 
         local ModeSection = maintab:Section("Mode: Voting")
         task.spawn(function()
-            repeat task.wait() until GetGameSate():GetAttribute("Difficulty")
-            ModeSection.Text = `Mode: {GetGameSate():GetAttribute("Difficulty")}`
+            repeat task.wait() until GetGameState():GetAttribute("Difficulty")
+            ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
         end)
         maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
         maintab:Section("Tower Info:")
@@ -558,7 +581,7 @@ end
         local Rewards = Info.rewards
         function CheckReward()
             local RewardType
-            repeat task.wait() until Rewards[1] and Rewards[2]
+            repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
             if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
                RewardType = "Coins"
             else
@@ -566,16 +589,16 @@ end
             end
             return {RewardType, tonumber(Rewards[2].content.textLabel.Text)}
         end
-        StratXLibrary.SignalEndMatch = GetGameSate():GetAttributeChangedSignal("GameOver"):Connect(function()
+        StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
-            if not GetGameSate():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
+            if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
                 return
             end
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
             local PlayerInfo = StratXLibrary.UI.PlayerInfo
             local GetRewardInfo = CheckReward()
-            PlayerInfo.Property[GetGameSate():GetAttribute("Won") and "Triumphs" or "Loses"] += 1
+            PlayerInfo.Property[GetGameState():GetAttribute("Won") and "Triumphs" or "Loses"] += 1
             PlayerInfo.Property[GetRewardInfo[1]] += GetRewardInfo[2]
             for i,v in next, PlayerInfo.Property do
                 PlayerInfo[i].Text = `{i}: {v}`
@@ -591,7 +614,7 @@ end
             end
             prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
             prints("GameOver Changed1")
-            if UtilitiesConfig.RestartMatch and GetGameSate():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+            if UtilitiesConfig.RestartMatch and GetGameState():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
                 task.wait(2)
@@ -623,7 +646,7 @@ end
                     until VoteCheck
                     prints("VoteCheck Passed")
                 end)
-                repeat task.wait() until StratXLibrary.ReadyState
+                repeat task.wait() until StratXLibrary.ReadyState or GetGameState():GetAttribute("Wave") <= 1 or (GetGameState():GetAttribute("Health") == GetGameState():GetAttribute("MaxHealth"))
                 prints("Prepare Set All ListNum To 1")
                 StratXLibrary.CurrentCount = StratXLibrary.RestartCount
                 for i,v in ipairs(StratXLibrary.Strat) do
@@ -639,18 +662,8 @@ end
                 prints("Set All ListNum To 1")
                 task.wait(5)
                 StratXLibrary.ReadyState = false
-                --[[StratXLibrary.CurrentCount = StratXLibrary.RestartCount
-                for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
-                    if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
-                        task.delay(3, function()
-                            v.ListNum = 1 
-                        end)
-                    end
-                end]]
-
-                --prints("RestartCount",StratXLibrary.RestartCount)
             else
-                prints(`Match {if GetGameSate():GetAttribute("Won") then "Won" else "Lose"}`)
+                prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
                 if AutoSkipCheck then
                     RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
                 end
@@ -713,7 +726,7 @@ if CheckPlace() then
     UtilitiesTab:Toggle("Rejoin Lobby After Match",{default = true, location = StratXLibrary, flag = "RejoinLobby"})
     UtilitiesTab:Toggle("Show Towers Preview", {flag = "TowersPreview", default = UtilitiesConfig.TowersPreview}, function(bool)
         local TowersFolder = if bool then Workspace.PreviewFolder else ReplicatedStorage.PreviewHolder
-        local ErrorsFolder = if bool then Workspace.PrewviewErrorFolder else ReplicatedStorage.PreviewHolder
+        local ErrorsFolder = if bool then Workspace.PreviewErrorFolder else ReplicatedStorage.PreviewHolder
         for i,v in ipairs(TowersContained) do
             if v.DebugTag then
                 v.DebugTag.Enabled = bool

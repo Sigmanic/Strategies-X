@@ -20,7 +20,7 @@ local TimeFormat = function(string)
 end
 
 local GameInfo
-local GetGameSate = getgenv().GetGameSate or function()
+local GetGameState = getgenv().GetGameState or function()
    if GameInfo then
       return GameInfo
    end
@@ -72,7 +72,7 @@ local Data = {
    ["embeds"] = {
       {
          ["title"] = `**Strategies X Webhook**`,
-         ["color"] = CheckColor[GetGameSate():GetAttribute("Won")], --decimal
+         ["color"] = CheckColor[GetGameState():GetAttribute("Won")], --decimal
          ["footer"] = {
             ["text"] = `{os.date("%X")} {os.date("%x")}`,
          },
@@ -153,7 +153,7 @@ if UtilitiesConfig.Webhook.UseNewFormat then
          },
          {
             ["name"] = "Wave / Health:",
-            ["value"] = GetGameSate():GetAttribute("Wave").." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")",
+            ["value"] = GetGameState():GetAttribute("Wave").." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")",
             ["inline"] = true
          },
          {
@@ -200,7 +200,7 @@ else
    local GameInfo = if UtilitiesConfig.Webhook.GameInfo then
       "**------------------ GAME INFO ----------------**"..
      "\n**Map : ** "..ReplicatedStorage.State.Map.Value.."** | Mode : **"..ReplicatedStorage.State.Difficulty.Value..
-      "\n**Wave : **" ..GetGameSate():GetAttribute("Wave").."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
+      "\n**Wave : **" ..GetGameState():GetAttribute("Wave").."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
      "\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:\n"
    else ""
    local TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then 
