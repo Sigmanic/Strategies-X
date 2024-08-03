@@ -444,7 +444,7 @@ if CheckPlace() then
         repeat 
             task.wait(1)
             Success = pcall(function()
-                AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal:WaitForChild("Settings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown")["Auto Skip"].button.toggle[1][2].Text == "Enabled")
+                AutoSkipCheck = (LocalPlayer.PlayerGui.ReactUniversal:WaitForChild("Settings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown")["Auto Skip"].button.toggle[1][2].Text == "Enabled")
             end)
         until Success or Skip
         if AutoSkipCheck then
