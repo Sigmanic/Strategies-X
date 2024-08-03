@@ -242,8 +242,8 @@ local GenerateFunction = {
         local DiffTable = {
             ["Easy"] = "Easy",
             ["Normal"] = "Molten",
-            ["Insane"] = "Fallen",
-
+            ["Intermediate"] = "Intermediate",
+            ["Fallen"] = "Fallen"
         }
         local GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
