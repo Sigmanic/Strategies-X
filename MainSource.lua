@@ -577,7 +577,7 @@ if CheckPlace() then
             end
         end) 
         --End Of Match
-        local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+        local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver
         local Info = MatchGui.content.info
         local Rewards = Info.rewards
         function CheckReward()
