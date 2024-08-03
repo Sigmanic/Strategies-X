@@ -564,7 +564,7 @@ local function passArgs(args, Msi, Wave, TM, TS, HalftTime, wasDid)
         sendw("Skipped Wave")
     elseif args[1] == "Difficulty" and args[2] == "Vote" then
         local Difficulty = args[3]
-        local DiffTable = {["Easy"] = "Normal", ["Normal"] = "Molten", ["Insane"] = "Fallen", ["Intermediate"] = "Intermediate"}
+        local DiffTable = {["Easy"] = "Normal", ["Normal"] = "Molten", ["Fallen"] = "Fallen", ["Intermediate"] = "Intermediate"}
         if game:GetService("ReplicatedStorage").State.Mode.Value == "Survival" then
             getgenv().Generated = getgenv().Generated .. getgenv().APIVar..":Mode('"..Difficulty.."' --[[ !DONT TOUCH! THIS IS CORRECT, IN GAME FILES "..DiffTable[Difficulty].." IS NAMED "..Difficulty.." ]])\n";
             getgenv().recstatus = "Voted For Difficulty"
