@@ -1,7 +1,7 @@
 local SendRequest = http_request or request or HttpPost or syn.request
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver
+local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver or LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
 local Info = MatchGui.content.info
 local Stats = Info.stats
 local Rewards = Info.rewards
