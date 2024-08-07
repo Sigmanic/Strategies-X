@@ -7,7 +7,8 @@ return function(self, p1)
     local DiffTable = {
         ["Easy"] = "Easy",
         ["Molten"] = "Normal",
-        ["Fallen"] = "Insane",
+        ["Intermediate"] = "Intermediate",
+        ["Fallen"] = "Fallen"
     }
     local ModeName = DiffTable[p1.Name] or p1.Name
     task.spawn(function()
