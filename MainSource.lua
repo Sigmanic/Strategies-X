@@ -13,7 +13,7 @@ local Items = {
 }
 
 local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -56,11 +56,11 @@ getgenv().GameSpoof = "Lobby"]]
 StratXLibrary.UtilitiesConfig = {  
     Camera = tonumber(getgenv().DefaultCam) or 2,
     LowGraphics = getgenv().PotatoPC or false,
-    BypassGroup = false,
-    AutoBuyMissing = false,
-    AutoPickups = false,
-    RestartMatch = false,
-    TowersPreview = false,
+    BypassGroup = getgenv().GroupBypass or false,
+    AutoBuyMissing = getgenv().BuyMissingTowers or false,
+    AutoPickups = getgenv().BattlePass or false,
+    RestartMatch = getgenv().AutoRestart or false,
+    TowersPreview = getgenv().Debug or false,
     AutoSkip = getgenv().AutoSkip or false,
     Webhook = {
         Enabled = false,
@@ -103,12 +103,12 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
     if type(...) == "table" and #{...} == 1 then --select("#",...)
         return ...
@@ -188,6 +188,15 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     end
     if type(getgenv().AutoSkip) == "boolean" then
         UtilitiesConfig.AutoSkip = getgenv().AutoSkip
+    end
+    if type(getgenv().AutoPickups) == "boolean" then
+        UtilitiesConfig.AutoPickups = getgenv().BattlePass
+    end
+    if type(getgenv().AutoBuyMissing) == "boolean" then
+        UtilitiesConfig.AutoBuyMissing = getgenv().BuyMissingTowers
+    end
+    if type(getgenv().RestartMatch) == "boolean" then
+        UtilitiesConfig.RestartMatch = getgenv().AutoRestart
     end
     if type(getgenv().Debug) == "boolean" then
         UtilitiesConfig.TowersPreview = getgenv().Debug
@@ -606,7 +615,7 @@ if CheckPlace() then
             end
             if UtilitiesConfig.Webhook.Enabled then
                 task.spawn(function()
-                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/Webhook.lua", true))()
                     prints("Sent Webhook Log")
                 end)
             end
