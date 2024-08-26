@@ -260,9 +260,11 @@ GetStateReplica():GetAttributeChangedSignal("Enabled"):Connect(function()
     Skipped = true
     local Timer = GetTimer()
     task.spawn(GenerateFunction["Skip"], true, Timer)
-    ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-    task.wait(2.5)
-    Skipped = false
+    if GetStateReplica():GetAttribute("Title") == "Skip Wave?" then
+        ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+        task.wait(2.5)
+        Skipped = false
+    end
 end)
 
 for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
