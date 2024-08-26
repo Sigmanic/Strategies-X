@@ -117,9 +117,6 @@ getgenv().GetGameInfo = function()
 end
 local VoteState
 getgenv().GetVoteState = function()
-    if not CheckPlace() then
-        return
-    end
     if VoteState then
         return VoteState
     end
