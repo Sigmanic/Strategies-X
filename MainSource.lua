@@ -496,9 +496,11 @@ if CheckPlace() then
                 end
             until UtilitiesConfig.AutoSkip
         end
-        RemoteFunction:InvokeServer("Voting", "Skip")
-        SetActionInfo("Skip")
-        ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
+        if GetVoteState():GetAttribute("Title") == "Skip Wave?" then
+            RemoteFunction:InvokeServer("Voting", "Skip")
+            SetActionInfo("Skip")
+            ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
+        end
     end)
     
     task.spawn(function()
