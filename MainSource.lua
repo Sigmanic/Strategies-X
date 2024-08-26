@@ -478,7 +478,7 @@ if CheckPlace() then
     StratXLibrary.ReadyState = false
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
         if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-            task.wait(1.5)
+            task.wait(2)
             --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
             end]]
@@ -627,7 +627,7 @@ if CheckPlace() then
             if UtilitiesConfig.RestartMatch and GetGameState():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
-                task.wait(2)
+                task.wait(3)
                 for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
                         v.TowerModel:Destroy()
@@ -646,7 +646,7 @@ if CheckPlace() then
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
                 end
-                task.wait(4.5)
+                task.wait(5)
                 prints("VoteCheck")
                 task.spawn(function()
                     local VoteCheck
