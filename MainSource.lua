@@ -911,7 +911,7 @@ Functions.MatchMaking = function()
     repeat
         task.wait()
         for i,v in ipairs(StratXLibrary.Strat) do
-            if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Mode == "Survival" and not MapProps then-- string.find(i:lower(),"survival")
+            if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Mode == "Survival" and not MapProps or v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Mode == "Hardcore" and not MapProps then-- string.find(i:lower(),"survival")
                 MapProps = v.Map.Lists[#v.Map.Lists]
                 Index = i
             end
