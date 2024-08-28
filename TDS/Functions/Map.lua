@@ -69,7 +69,7 @@ return function(self, p1)
             return
         end
         for i,v in next,Workspace.Elevators:GetChildren() do
-            if (Mode == "Survival" and v.State.Difficulty.Value == "Private Server") or Matchmaking then
+            if (Mode == "Survival" and v.State.Difficulty.Value == "Private Server" or Mode == "Hardcore" and v.State.Difficulty.Value == "Private Server") or Matchmaking then
                 UI.JoiningStatus.Text = "Teleporting To Matchmaking"
                 if SpecialGameMode[MapName] then
                     local Strat = StratXLibrary.Strat[self.Index]
@@ -87,7 +87,7 @@ return function(self, p1)
                 RemoteFunction:InvokeServer("Multiplayer","single_create")       
                 RemoteFunction:InvokeServer("Multiplayer","single_start",{
                     ["count"] = 1,
-                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else "survival",
+                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else if Mode == "Survival" then "survival" else "hardcore",
                     ["difficulty"] = Difficulty,
                 })
                 prints(if SpecialGameMode[MapName] then `Using MatchMaking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
