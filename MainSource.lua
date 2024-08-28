@@ -13,7 +13,7 @@ local Items = {
 }
 
 local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/"
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -103,12 +103,12 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/ROBLOX/main/WallyUI.lua", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
     if type(...) == "table" and #{...} == 1 then --select("#",...)
         return ...
@@ -617,7 +617,7 @@ if CheckPlace() then
             end
             if UtilitiesConfig.Webhook.Enabled then
                 task.spawn(function()
-                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/Webhook.lua", true))()
+                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
                     prints("Sent Webhook Log")
                 end)
             end
