@@ -729,8 +729,7 @@ end
 --UI Setup
 --getgenv().PlayersSection = {}
 if not CheckPlace() then
-    RemoteFunction:InvokeServer("Login", "Claim")
-    RemoteFunction:InvokeServer("Session", "Search", "Login")
+    ReplicatedStorage:WaitForChild("Network"):WaitForChild("DailySpin"):WaitForChild("RedeemReward"):InvokeServer()
 
     UI.EquipStatus = maintab:DropSection("Troops Loadout Status")
     UI.TowersStatus = {
