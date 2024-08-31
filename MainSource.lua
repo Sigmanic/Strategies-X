@@ -276,6 +276,24 @@ getgenv().GetVoteState = function()
         task.wait()
     until VoteState
 end
+local PlayerState
+getgenv().GetPlayerState = function()
+    if not CheckPlace() then
+        return
+    end
+    if PlayerState then
+        return PlayerState
+    end
+    repeat
+        for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
+            if typeof(v:GetAttribute("Name")) == "string" and v:GetAttribute("Name") == LocalPlayer.Name then
+                PlayerState = v
+                return v
+            end
+        end
+        task.wait()
+    until PlayerState
+end
 local TimerCheck = false
 function CheckTimer(bool)
     return (bool and TimerCheck) or true
@@ -588,18 +606,27 @@ if CheckPlace() then
             end
         end) 
         --End Of Match
-        local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver or LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+        local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver
         local Info = MatchGui.content.info
         local Rewards = Info.rewards
         function CheckReward()
-            local RewardType
-            repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
+            local RewardType,RewardAmount
+            --[[repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
             if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
                RewardType = "Coins"
             else
                RewardType = "Gems"
             end
-            return {RewardType, tonumber(Rewards[2].content.textLabel.Text)}
+            RewardAmount = tonumber(Rewards[2].content.textLabel.Text)
+            ]]
+            if GetPlayerState():GetAttribute("CoinsReward") then
+                RewardType = "Coins"
+                RewardAmount = GetPlayerState():GetAttribute("CoinsReward")
+            else
+                RewardType = "Gems"
+                RewardAmount = GetPlayerState():GetAttribute("GemsReward")
+            end
+            return {RewardType, RewardAmount}
         end
         StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
