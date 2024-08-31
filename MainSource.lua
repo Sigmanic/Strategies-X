@@ -630,9 +630,11 @@ if CheckPlace() then
         end
         StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
-            if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
-                return
-            end
+
+            prints("Restart function and webhook feature will now be disabled until fixed stuck error.")
+            task.wait(2)
+            TeleportService:Teleport(3260590327)
+            wait(100)
             StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
             task.wait(1)
             local PlayerInfo = StratXLibrary.UI.PlayerInfo
