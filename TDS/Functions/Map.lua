@@ -6,11 +6,16 @@ local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("Rem
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 local TeleportService = game:GetService("TeleportService")
 
-local SpecialGameMode = {
+--[[local SpecialGameMode = {
     ["Pizza Party"] = "halloween",
     ["Badlands II"] = "badlands",
     ["Polluted Wastelands II"] = "polluted", 
-    ["Huevous Hunt"] = {"egg_hunt"},
+    ["Huevous Hunt"] = "egg_hunt",
+}]]
+local SpecialGameMode = {
+    ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
+    ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
+    ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"}, 
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
@@ -47,16 +52,19 @@ return function(self, p1)
     MapGlobal.ChangeCheck = false
     task.spawn(function()
         if CheckPlace() then
-            repeat task.wait() until #ReplicatedStorage.State.Map.Value > 1
-            if not MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameState():GetAttribute("GameMode")] then
-                print(MapGlobal[ReplicatedStorage.State.Map.Value..":"..GetGameState():GetAttribute("GameMode")],GetGameState():GetAttribute("GameMode"))
-                ConsoleError("Wrong Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..GetGameState():GetAttribute("GameMode"))
+            repeat task.wait() until GetGameState():GetAttribute("MapName") and typeof(GetGameState():GetAttribute("MapName")) == "string" and GetGameState():GetAttribute("GameMode") --#ReplicatedStorage.State.Map.Value > 1
+            local GameMapName = GetGameState():GetAttribute("MapName")
+            local GameMode = GetGameState():GetAttribute("GameMode")
+            local MapTable = MapGlobal[GameMapName..":"..GameMode]
+            if not MapTable then --or not StratXLibrary.Strat[MapTable.Index].Loadout.AllowTeleport then
+                print(MapGlobal[GameMapName..":"..GameMode],GameMode)
+                ConsoleError("Wrong Map Selected: "..GameMapName..", ".."Mode: "..GameMode)
                 task.wait(3)
                 TeleportHandler(3260590327,2,7)
                 --TeleportService:Teleport(3260590327, LocalPlayer)
                 return
             end
-            ConsoleInfo("Map Selected: "..ReplicatedStorage.State.Map.Value..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
+            ConsoleInfo("Map Selected: "..GameMapName..", ".."Mode: "..Mode..", ".."Solo Only: "..tostring(Solo))
             return
         end
         local Elevators = {
@@ -69,28 +77,71 @@ return function(self, p1)
             return
         end
         for i,v in next,Workspace.Elevators:GetChildren() do
-            if (Mode == "Survival" and v.State.Difficulty.Value == "Private Server" or Mode == "Hardcore" and v.State.Difficulty.Value == "Private Server") or Matchmaking then
-                UI.JoiningStatus.Text = "Teleporting To Matchmaking"
-                if SpecialGameMode[MapName] then
-                    local Strat = StratXLibrary.Strat[self.Index]
-                    if Strat.Loadout and not Strat.Loadout.AllowTeleport then
-                        prints("Waiting Loadout Allowed")
-                        repeat task.wait() until Strat.Loadout.AllowTeleport
-                    end
-                    local LoadoutInfo = Strat.Loadout.Lists[#Strat.Loadout.Lists]
-                    LoadoutInfo.AllowEquip = true
-                    LoadoutInfo.SkipCheck = true
-                    print("Loadout Selecting")
-                    Functions.Loadout(Strat,LoadoutInfo)
-                    task.wait(2)
+            if SpecialGameMode[MapName] then
+                local SpecialTable = SpecialGameMode[MapName]
+                UI.JoiningStatus.Text = `Special Gamemode Found. Checking Loadout`
+                local Strat = StratXLibrary.Strat[self.Index]
+                if Strat.Loadout and not Strat.Loadout.AllowTeleport then
+                    prints("Waiting Loadout Allowed")
+                    repeat task.wait() until Strat.Loadout.AllowTeleport
                 end
-                RemoteFunction:InvokeServer("Multiplayer","single_create")       
-                RemoteFunction:InvokeServer("Multiplayer","single_start",{
+                local LoadoutInfo = Strat.Loadout.Lists[#Strat.Loadout.Lists]
+                LoadoutInfo.AllowEquip = true
+                LoadoutInfo.SkipCheck = true
+                prints("Loadout Selecting")
+                Functions.Loadout(Strat,LoadoutInfo)
+                task.wait(2)
+                UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
+                RemoteFunction:InvokeServer("Multiplayer","single_create")
+                RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                     ["count"] = 1,
-                    ["mode"] = if SpecialGameMode[MapName] then SpecialGameMode[MapName] else if Mode == "Survival" then "survival" else "hardcore",
-                    ["difficulty"] = Difficulty,
+                    ["mode"] = SpecialTable.mode,
+                    ["challenge"] = SpecialTable.challenge,
                 })
-                prints(if SpecialGameMode[MapName] then `Using MatchMaking To Teleport To Special GameMode: {SpecialGameMode[MapName]}` else "Teleport To Matchmaking Place")
+                --[[RemoteFunction:InvokeServer("Multiplayer","single_start",{
+                    ["count"] = 1,
+                    ["mode"] = if SpecialTable then SpecialTable else string.lower(Mode),
+                    ["difficulty"] = Difficulty,
+                })]] --Still working but i still upadted to the new tds format 
+                prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
+                return
+            elseif v.State.Difficulty.Value == "Private Server" or Matchmaking then
+                local PrivateCheck = v.State.Difficulty.Value == "Private Server"
+                UI.JoiningStatus.Text = `{if PrivateCheck then "Private Server Elevator Found" else "Matchmaking Enabled"}. Checking Loadout`
+                prints("Waiting Loadout Allowed")
+                local Strat = StratXLibrary.Strat
+                local MapProps
+                repeat
+                    task.wait()
+                    for i,v in next, Strat do
+                        if v.Loadout and v.Loadout.AllowTeleport then
+                            MapProps = v.Map.Lists[1]
+                            break
+                        end
+                    end
+                until MapProps
+                local DiffTable = {
+                    ["Easy"] = "Easy",
+                    ["Normal"] = "Molten",
+                    ["Intermediate"] = "Intermediate",
+                    ["Fallen"] = "Fallen",
+                }
+                local Strat = Strat[MapProps.Index]
+                local DifficultyName = Strat.Mode.Lists[1] and DiffTable[Strat.Mode.Lists[1].Name]
+                local LoadoutInfo = Strat.Loadout.Lists[1]
+                LoadoutInfo.AllowEquip = true
+                LoadoutInfo.SkipCheck = true
+                prints("Loadout Selecting")
+                Functions.Loadout(Strat,LoadoutInfo)
+                task.wait(2)
+                UI.JoiningStatus.Text = `Teleporting to Matchmaking Place`
+                RemoteFunction:InvokeServer("Multiplayer","single_create")
+                RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                    ["count"] = 1,
+                    ["mode"] = string.lower(MapProps.Mode),
+                    ["difficulty"] = DifficultyName,
+                })
+                prints("Teleporting To Matchmaking Place")
                 return
             end
             local Passed, ElevatorType = pcall(function()
