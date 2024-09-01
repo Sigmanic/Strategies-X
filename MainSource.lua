@@ -62,6 +62,7 @@ StratXLibrary.UtilitiesConfig = {
     RestartMatch = getgenv().AutoRestart or false,
     TowersPreview = getgenv().Debug or false,
     AutoSkip = getgenv().AutoSkip or false,
+    PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking  or false,
     Webhook = {
         Enabled = false,
         Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -180,7 +181,7 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if Check then
         UtilitiesConfig = GetConfig
     end
-    if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
+    if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
     if type(getgenv().PotatoPC) == "boolean" then
@@ -201,6 +202,9 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if type(getgenv().Debug) == "boolean" then
         UtilitiesConfig.TowersPreview = getgenv().Debug
     end
+    if type(getgenv().PreferMatchmaking) == "boolean" or type(getgenv().Matchmaking) == "boolean" then
+        UtilitiesConfig.PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking
+    end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
@@ -219,6 +223,7 @@ function SaveUtilitiesConfig()
         RestartMatch = UtilitiesTab.flags.RestartMatch,
         TowersPreview = UtilitiesTab.flags.TowersPreview,
         AutoSkip = UtilitiesTab.flags.AutoSkip,
+        PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
             UseNewFormat = WebSetting.flags.UseNewFormat or false,
@@ -856,6 +861,7 @@ WebSetting:Toggle("Game Info",{default = UtilitiesConfig.Webhook.GameInfo or fal
 WebSetting:Toggle("Troops Info",{default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
 UtilitiesTab:Section("Universal Settings")
+UtilitiesTab:Toggle("Prefer Matchmaking", {flag = "PreferMatchmaking", default = UtilitiesConfig.PreferMatchmaking})
 UtilitiesTab:Toggle("Auto Skip Wave", {flag = "AutoSkip", default = UtilitiesConfig.AutoSkip})
 UtilitiesTab:Toggle("Low Graphics Mode",{default = UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
     StratXLibrary.LowGraphics(bool)
@@ -936,14 +942,14 @@ Functions.MatchMaking = function()
         "Polluted Wastelands II", 
         "Huevous Hunt",
     }
-    task.wait(1)
-    if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
-        return
-    end
     local MapGlobal = StratXLibrary.Global.Map
     local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
     local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
     if not Workspace[Lobby] then 
+        return
+    end
+    task.wait(1)
+    if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
         return
     end
     local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
@@ -1127,7 +1133,7 @@ task.spawn(function()
         StratsListNum += 1
     end
 
-    if Matchmaking or GetGameState():GetAttribute("IsPrivateServer") then
+    if UtilitiesConfig.PreferMatchmaking or GetGameState():GetAttribute("IsPrivateServer") then
         prints("MatchMaking Enabled")
         Functions.MatchMaking()
     end

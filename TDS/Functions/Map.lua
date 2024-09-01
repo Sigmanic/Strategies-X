@@ -105,7 +105,7 @@ return function(self, p1)
                 })]] --Still working but i still upadted to the new tds format 
                 prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
                 return
-            elseif v.State.Difficulty.Value == "Private Server" or Matchmaking then
+            elseif v.State.Difficulty.Value == "Private Server" or UtilitiesConfig.PreferMatchmaking then
                 local PrivateCheck = v.State.Difficulty.Value == "Private Server"
                 UI.JoiningStatus.Text = `{if PrivateCheck then "Private Server Elevator Found" else "Matchmaking Enabled"}. Checking Loadout`
                 prints("Waiting Loadout Allowed")
