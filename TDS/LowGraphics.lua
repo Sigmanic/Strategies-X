@@ -49,6 +49,13 @@ Folder.Parent = ReplicatedStorage
 Folder.Name = "Map"
 StratXLibrary.LowGraphics = function(bool)
     local Location = if CheckPlace() then "Map" else "Environment"
+    if not Workspace:FindFirstChild(Location) then
+        prints("Waiting Map Loaded to Use LowGraphics")
+        repeat
+            task.wait()
+        until Workspace:FindFirstChild(Location)
+        task.wait(1)
+    end
     if bool then
         repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
         LocalPlayer.Character.Humanoid.PlatformStand = true
