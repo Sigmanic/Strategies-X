@@ -945,7 +945,7 @@ Functions.MatchMaking = function()
     local MapGlobal = StratXLibrary.Global.Map
     local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
     local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-    if not Workspace[Lobby] then 
+    if not Workspace:FindFirstChild(Lobby) then 
         return
     end
     task.wait(1)
