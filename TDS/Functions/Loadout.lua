@@ -22,7 +22,7 @@ return function(self, p1)
     local LoadoutProps = self.Loadout
     local AllowEquip = tableinfo["AllowEquip"] or false
     local SkipCheck = tableinfo["SkipCheck"] or false
-    LoadoutProps.AllowTeleport = type(LoadoutProps.AllowTeleport) == "boolean" and LoadoutProps.AllowTeleport or true
+    LoadoutProps.AllowTeleport = type(LoadoutProps.AllowTeleport) == "boolean" and LoadoutProps.AllowTeleport or false
     local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
     for i,v in next, LoadoutProps do
         if string.find(typeof(v):lower(),"thread") then
@@ -84,8 +84,8 @@ return function(self, p1)
                     task.wait(.5)
                 until #MissingTowers == 0
             end
-            LoadoutProps.AllowTeleport = true
         end
+        LoadoutProps.AllowTeleport = true
         if AllowEquip then
             local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
             for i,v in next, TroopsOwned do
