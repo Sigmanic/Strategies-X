@@ -23,7 +23,7 @@ return function(self, p1)
     local AllowEquip = tableinfo["AllowEquip"] or false
     local SkipCheck = tableinfo["SkipCheck"] or false
     LoadoutProps.AllowTeleport = type(LoadoutProps.AllowTeleport) == "boolean" and LoadoutProps.AllowTeleport or false
-    local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    local TroopsOwned = GetTowersInfo()
     for i,v in next, LoadoutProps do
         if string.find(typeof(v):lower(),"thread") then
             task.cancel(v)
@@ -58,7 +58,7 @@ return function(self, p1)
             --UI.EquipStatus:SetText("Troops Loadout: Missing")
             LoadoutProps.AllowTeleport = false
                 repeat
-                    TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+                    TroopsOwned = GetTowersInfo()
                     for i,v in next, MissingTowers do
                         if not TroopsOwned[v] then
                             if true then
@@ -87,7 +87,7 @@ return function(self, p1)
         end
         LoadoutProps.AllowTeleport = true
         if AllowEquip then
-            local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+            local TroopsOwned = GetTowersInfo()
             for i,v in next, TroopsOwned do
                 if v.Equipped then
                     RemoteEvent:FireServer("Inventory","Unequip","Tower",i)

@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.17 [Alpha]"
+local Version = "Version: 0.3.18 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -356,13 +356,13 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-    if Debug or GetGameState():GetAttribute("Wave") > Wave then
+    if Debug or GetGameState():GetAttribute("Wave") > Wave and not GetGameState():GetAttribute("GameOver") then
         return true
     end
     local CurrentCount = StratXLibrary.CurrentCount
     repeat 
         task.wait()
-        if CurrentCount ~= StratXLibrary.RestartCount then
+        if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
     until tonumber(GetGameState():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
@@ -372,7 +372,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
     local Timer = 0
     repeat 
         task.wait()
-        if CurrentCount ~= StratXLibrary.RestartCount then
+        if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
         Timer = ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) --math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
@@ -409,6 +409,22 @@ function SetActionInfo(String,Type)
         end
         ActionInfoTable[String][3].Text = `{String} : {Current}/{Total}`
     end)
+end
+
+function GetTowersInfo()
+    local GetResult
+    task.delay(6, function()
+        if not type(GetResult) == "table" then
+            GetResult = {}
+            prints("Can't Get Towers Information From Game")
+        end
+    end)
+    repeat 
+        task.wait()
+        GetResult = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    until type(GetResult) == "table"
+    StratXLibrary.GetTowersInfo = GetResult
+    return GetResult
 end
 
 --Main Ui Setup
@@ -563,7 +579,7 @@ if CheckPlace() then
         maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
         maintab:Section("Tower Info:")
         StratXLibrary.TowerInfo = {}
-        for i,v in next, RemoteFunction:InvokeServer("Session","Search","Inventory.Troops") do
+        for i,v in next, GetTowersInfo() do
             if v.Equipped then
                 StratXLibrary.TowerInfo[i] = {maintab:Section(i.." : 0"), 0, i}
             end
@@ -952,7 +968,7 @@ Functions.MatchMaking = function()
     if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
         return
     end
-    local TroopsOwned = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    local TroopsOwned = GetTowersInfo()
     local CanChangeMap = GetGameState():GetAttribute("IsPrivateServer") or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
     local CurrentMapList = {}
     local UsedVecto
@@ -987,9 +1003,12 @@ Functions.MatchMaking = function()
             end
             if table.find(CurrentMapList,v.Map.Lists[1].Map) then
                 MapProps = v.Map.Lists[#v.Map.Lists]
+                Index = v.Index
                 break
             elseif CanChangeMap then
                 MapProps = v.Map.Lists[#v.Map.Lists]
+                Index = v.Index
+                prints("Overrided Map")
                 RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
                 break
             end
@@ -1012,9 +1031,10 @@ Functions.MatchMaking = function()
     RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
     RemoteEvent:FireServer("LobbyVoting", "Vote", MapProps.Map, LocalPlayer.Character.HumanoidRootPart.Position)
     RemoteEvent:FireServer("LobbyVoting","Ready")
+    prints(`Picked Map: "{MapProps.Map}", Id Strat: {Index}`)
     task.wait(6)
+    StratXLibrary.Strat.ChosenID = Index
     ConsoleInfo(`Map Selected: {MapProps.Map}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
-    StratXLibrary.Strat.ChosenID = MapProps.Index
 end
 
 function Tutorial()
