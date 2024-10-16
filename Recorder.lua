@@ -115,7 +115,21 @@ getgenv().GetGameInfo = function()
         task.wait()
     until GameInfo
 end
-GetGameInfo()
+local VoteState
+getgenv().GetVoteState = function()
+    if VoteState then
+        return VoteState
+    end
+    repeat
+        for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
+            if v:GetAttribute("MaxVotes") then
+                VoteState = v
+                return v
+            end
+        end
+        task.wait()
+    until VoteState
+end
 
 function ConvertTimer(number : number)
    return math.floor(number/60), number % 60
@@ -146,22 +160,6 @@ State.Timer.Time:GetPropertyChangedSignal("Value"):Connect(function()
         Recorder.SecondMili += 0.1
     end
 end)
-
-local StateReplica
-getgenv().GetStateReplica = function()
-    if StateReplica then
-        return StateReplica
-    end
-    repeat
-        for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
-            if v:GetAttribute("MaxVotes") then
-                StateReplica = v
-                return v
-            end
-        end
-        task.wait()
-    until StateReplica
-end
 
 local GenerateFunction = {
     Place = function(Args, Timer, RemoteCheck)
@@ -242,8 +240,8 @@ local GenerateFunction = {
         local DiffTable = {
             ["Easy"] = "Easy",
             ["Normal"] = "Molten",
-            ["Insane"] = "Fallen",
-
+            ["Intermediate"] = "Intermediate",
+            ["Fallen"] = "Fallen"
         }
         local GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
@@ -252,17 +250,19 @@ local GenerateFunction = {
 }
 
 local Skipped = false
-GetStateReplica():GetAttributeChangedSignal("Enabled"):Connect(function()  
+GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()  
     repeat task.wait() until mainwindow.flags.autoskip
-    if Skipped or not GetStateReplica():GetAttribute("Enabled") then
+    if Skipped or not GetVoteState():GetAttribute("Enabled") then
         return
     end
-    Skipped = true
-    local Timer = GetTimer()
-    task.spawn(GenerateFunction["Skip"], true, Timer)
-    ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-    task.wait(2.5)
-    Skipped = false
+    if GetVoteState():GetAttribute("Title") == "Skip Wave?" then
+        Skipped = true
+        local Timer = GetTimer()
+        task.spawn(GenerateFunction["Skip"], true, Timer)
+        ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+        task.wait(2.5)
+        Skipped = false
+    end
 end)
 
 for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do

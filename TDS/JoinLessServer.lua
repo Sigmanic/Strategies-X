@@ -31,6 +31,9 @@ function TeleportHandler(Id,MinPlayers,MaxPlayers)
         game:GetService("TeleportService"):Teleport(Id)
         return
     end
+    task.delay(20, function()
+        game:GetService("TeleportService"):Teleport(Id)
+    end)
     local GetServers = GetServersInfo(Id,MinPlayers,MaxPlayers)
     local GetServerId = GetServers[1]
     local FailedConnection = game:GetService("TeleportService").TeleportInitFailed:Connect(function(Player, Result, Msg)

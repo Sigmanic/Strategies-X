@@ -62,16 +62,20 @@ StratXLibrary.AllowPlace = false
 
 if CheckPlace() then
     task.spawn(function()
-        for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
-            if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
-                repeat
-                    task.wait()
-                until ReplicatedStorage.Assets:FindFirstChild("Troops")
-            end
-            if v.Equipped and not (ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
+        if not ReplicatedStorage.Assets:FindFirstChild("Troops") then
+            repeat
+                task.wait()
+            until ReplicatedStorage.Assets:FindFirstChild("Troops")
+        end
+        local TroopsFolder = ReplicatedStorage.Assets:FindFirstChild("Troops")
+        for i,v in next, GetTowersInfo() do
+            if v.Equipped and not (TroopsFolder:FindFirstChild(i) and TroopsFolder:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
                 repeat 
-                    task.wait()
-                until ReplicatedStorage.Assets.Troops:FindFirstChild(i) and ReplicatedStorage.Assets.Troops:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
+                    task.wait(1)
+                    if not (TroopsFolder:FindFirstChild(i) and TroopsFolder:FindFirstChild(i).Skins:FindFirstChild(v.Skin)) then
+                        RemoteEvent:FireServer("Streaming", "SelectTower", i, v.Skin)
+                    end
+                until TroopsFolder:FindFirstChild(i) and TroopsFolder:FindFirstChild(i).Skins:FindFirstChild(v.Skin)
             end
         end
         StratXLibrary.AllowPlace = true
@@ -84,7 +88,7 @@ function PreviewInitial()
             task.wait()
         until ReplicatedStorage.Assets:FindFirstChild("Troops")
     end
-    for i,v in next, RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
+    for i,v in next, GetTowersInfo() do
         if v.Equipped then
             TowerProps[i] = v.Skin
             local Tower = ReplicatedStorage.Assets.Troops[i].Skins[v.Skin]:Clone()

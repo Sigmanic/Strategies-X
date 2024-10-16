@@ -6,7 +6,7 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
     end
 end
 
-local Version = "Version: 0.3.16 [Alpha]"
+local Version = "Version: 0.3.18 [Alpha]"
 local Items = {
     Enabled = false,
     Name = "Cookie"
@@ -56,12 +56,13 @@ getgenv().GameSpoof = "Lobby"]]
 StratXLibrary.UtilitiesConfig = {  
     Camera = tonumber(getgenv().DefaultCam) or 2,
     LowGraphics = getgenv().PotatoPC or false,
-    BypassGroup = false,
-    AutoBuyMissing = false,
-    AutoPickups = false,
-    RestartMatch = false,
-    TowersPreview = false,
+    BypassGroup = getgenv().GroupBypass or false,
+    AutoBuyMissing = getgenv().BuyMissingTowers or false,
+    AutoPickups = getgenv().BattlePass or false,
+    RestartMatch = getgenv().AutoRestart or false,
+    TowersPreview = getgenv().Debug or false,
     AutoSkip = getgenv().AutoSkip or false,
+    PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking  or false,
     Webhook = {
         Enabled = false,
         Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -180,7 +181,7 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if Check then
         UtilitiesConfig = GetConfig
     end
-    if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 and tonumber(getgenv().DefaultCam) ~= UtilitiesConfig.Camera then
+    if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 then
         UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
     end
     if type(getgenv().PotatoPC) == "boolean" then
@@ -189,8 +190,20 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
     if type(getgenv().AutoSkip) == "boolean" then
         UtilitiesConfig.AutoSkip = getgenv().AutoSkip
     end
+    if type(getgenv().AutoPickups) == "boolean" then
+        UtilitiesConfig.AutoPickups = getgenv().BattlePass
+    end
+    if type(getgenv().AutoBuyMissing) == "boolean" then
+        UtilitiesConfig.AutoBuyMissing = getgenv().BuyMissingTowers
+    end
+    if type(getgenv().RestartMatch) == "boolean" then
+        UtilitiesConfig.RestartMatch = getgenv().AutoRestart
+    end
     if type(getgenv().Debug) == "boolean" then
         UtilitiesConfig.TowersPreview = getgenv().Debug
+    end
+    if type(getgenv().PreferMatchmaking) == "boolean" or type(getgenv().Matchmaking) == "boolean" then
+        UtilitiesConfig.PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking
     end
 else
     writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
@@ -210,6 +223,7 @@ function SaveUtilitiesConfig()
         RestartMatch = UtilitiesTab.flags.RestartMatch,
         TowersPreview = UtilitiesTab.flags.TowersPreview,
         AutoSkip = UtilitiesTab.flags.AutoSkip,
+        PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
         Webhook = {
             Enabled = WebSetting.flags.Enabled or false,
             UseNewFormat = WebSetting.flags.UseNewFormat or false,
@@ -266,6 +280,24 @@ getgenv().GetVoteState = function()
         end
         task.wait()
     until VoteState
+end
+local PlayerState
+getgenv().GetPlayerState = function()
+    if not CheckPlace() then
+        return
+    end
+    if PlayerState then
+        return PlayerState
+    end
+    repeat
+        for i,v in next, ReplicatedStorage.StateReplicators:GetChildren() do
+            if typeof(v:GetAttribute("UserId")) == "number" and v:GetAttribute("UserId") == LocalPlayer.UserId then
+                PlayerState = v
+                return v
+            end
+        end
+        task.wait()
+    until PlayerState
 end
 local TimerCheck = false
 function CheckTimer(bool)
@@ -324,13 +356,13 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-    if Debug or GetGameState():GetAttribute("Wave") > Wave then
+    if Debug or GetGameState():GetAttribute("Wave") > Wave and not GetGameState():GetAttribute("GameOver") then
         return true
     end
     local CurrentCount = StratXLibrary.CurrentCount
     repeat 
         task.wait()
-        if CurrentCount ~= StratXLibrary.RestartCount then
+        if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
     until tonumber(GetGameState():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
@@ -340,7 +372,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
     local Timer = 0
     repeat 
         task.wait()
-        if CurrentCount ~= StratXLibrary.RestartCount then
+        if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
             return false
         end
         Timer = ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) --math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
@@ -377,6 +409,22 @@ function SetActionInfo(String,Type)
         end
         ActionInfoTable[String][3].Text = `{String} : {Current}/{Total}`
     end)
+end
+
+function GetTowersInfo()
+    local GetResult
+    task.delay(6, function()
+        if not type(GetResult) == "table" then
+            GetResult = {}
+            prints("Can't Get Towers Information From Game")
+        end
+    end)
+    repeat 
+        task.wait()
+        GetResult = RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops")
+    until type(GetResult) == "table"
+    StratXLibrary.GetTowersInfo = GetResult
+    return GetResult
 end
 
 --Main Ui Setup
@@ -417,6 +465,9 @@ else
     prints("Bypassed Group Checking")
 end
 prints("Group Checking Completed")
+maintab:Button("Join Server For More Strat",function()
+    setclipboard("https://discord.gg/WACYcNzKpd")
+end)
 maintab:Section(Version)
 maintab:Section(`Current Place: {CheckPlace() and "Ingame" or "Lobby"}`)
 
@@ -443,7 +494,7 @@ end
         repeat 
             task.wait(1)
             Success = pcall(function()
-                AutoSkipCheck = (LocalPlayer.PlayerGui.RoactUniversal:WaitForChild("Settings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown")["Auto Skip"].button.toggle[1][2].Text == "Enabled")
+                AutoSkipCheck = (LocalPlayer.PlayerGui.ReactUniversal:WaitForChild("Settings"):WaitForChild("window"):WaitForChild("scrollingFrame"):WaitForChild("Unknown")["Auto Skip"].button.toggle[1][2].Text == "Enabled")
             end)
         until Success or Skip
         if AutoSkipCheck then
@@ -467,8 +518,11 @@ end
     end
     StratXLibrary.ReadyState = false
     StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
+        if not GetVoteState():GetAttribute("Enabled") then
+            return
+        end
         if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-            task.wait(1.5)
+            task.wait(2)
             --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
             end]]
@@ -486,9 +540,12 @@ end
                 end
             until UtilitiesConfig.AutoSkip
         end
-        RemoteFunction:InvokeServer("Voting", "Skip")
-        SetActionInfo("Skip")
-        ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
+        if GetVoteState():GetAttribute("Title") == "Skip Wave?" then
+            RemoteFunction:InvokeServer("Voting", "Skip")
+            SetActionInfo("Skip","Total")
+            SetActionInfo("Skip")
+            ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
+        end
     end)
     
     task.spawn(function()
@@ -524,7 +581,7 @@ end
         maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
         maintab:Section("Tower Info:")
         StratXLibrary.TowerInfo = {}
-        for i,v in next, RemoteFunction:InvokeServer("Session","Search","Inventory.Troops") do
+        for i,v in next, GetTowersInfo() do
             if v.Equipped then
                 StratXLibrary.TowerInfo[i] = {maintab:Section(i.." : 0"), 0, i}
             end
@@ -576,18 +633,27 @@ end
             end
         end) 
         --End Of Match
-        local MatchGui = LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
+        local MatchGui = LocalPlayer.PlayerGui.ReactGame.Rewards.content.gameOver or LocalPlayer.PlayerGui.RoactGame.Rewards.content.gameOver
         local Info = MatchGui.content.info
         local Rewards = Info.rewards
         function CheckReward()
-            local RewardType
-            repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
+            local RewardType,RewardAmount
+            --[[repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
             if Rewards[2].content.icon.Image == "rbxassetid://5870325376" then
                RewardType = "Coins"
             else
                RewardType = "Gems"
             end
-            return {RewardType, tonumber(Rewards[2].content.textLabel.Text)}
+            RewardAmount = tonumber(Rewards[2].content.textLabel.Text)
+            ]]
+            if GetPlayerState():GetAttribute("CoinsReward") then
+                RewardType = "Coins"
+                RewardAmount = GetPlayerState():GetAttribute("CoinsReward")
+            else
+                RewardType = "Gems"
+                RewardAmount = GetPlayerState():GetAttribute("GemsReward")
+            end
+            return {RewardType, RewardAmount}
         end
         StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
             prints("GameOver Changed")
@@ -609,15 +675,16 @@ end
                     prints("Sent Webhook Log")
                 end)
             end
+            prints("GameOver Changed1")
             if not (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby) then
                 repeat task.wait() until (UtilitiesConfig.RestartMatch or StratXLibrary.RejoinLobby)
             end
             prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
-            prints("GameOver Changed1")
+            prints("GameOver Changed2")
             if UtilitiesConfig.RestartMatch and GetGameState():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
                 prints(`Match Lose. Strat Will Restart Shortly`)
                 StratXLibrary.ReadyState = false
-                task.wait(2)
+                task.wait(3)
                 for i,v in ipairs(TowersContained) do
                     if v.TowerModel then
                         v.TowerModel:Destroy()
@@ -636,7 +703,7 @@ end
                 for i,v in next, StratXLibrary.TowerInfo do
                     v[2] = 0
                 end
-                task.wait(4.5)
+                task.wait(5)
                 prints("VoteCheck")
                 task.spawn(function()
                     local VoteCheck
@@ -690,8 +757,7 @@ end
 --UI Setup
 --getgenv().PlayersSection = {}
 if not CheckPlace() then
-    RemoteFunction:InvokeServer("Login", "Claim")
-    RemoteFunction:InvokeServer("Session", "Search", "Login")
+    ReplicatedStorage:WaitForChild("Network"):WaitForChild("DailySpin"):WaitForChild("RedeemReward"):InvokeServer()
 
     UI.EquipStatus = maintab:DropSection("Troops Loadout Status")
     UI.TowersStatus = {
@@ -813,6 +879,7 @@ WebSetting:Toggle("Game Info",{default = UtilitiesConfig.Webhook.GameInfo or fal
 WebSetting:Toggle("Troops Info",{default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
 UtilitiesTab:Section("Universal Settings")
+UtilitiesTab:Toggle("Prefer Matchmaking", {flag = "PreferMatchmaking", default = UtilitiesConfig.PreferMatchmaking})
 UtilitiesTab:Toggle("Auto Skip Wave", {flag = "AutoSkip", default = UtilitiesConfig.AutoSkip})
 UtilitiesTab:Toggle("Low Graphics Mode",{default = UtilitiesConfig.LowGraphics or false ,flag = "LowGraphics"}, function(bool) 
     StratXLibrary.LowGraphics(bool)
@@ -893,24 +960,83 @@ Functions.MatchMaking = function()
         "Polluted Wastelands II", 
         "Huevous Hunt",
     }
-    if table.find(SpecialMap,ReplicatedStorage.State.Map.Value) then
+    local MapGlobal = StratXLibrary.Global.Map
+    local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+    local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
+    if not Workspace:FindFirstChild(Lobby) then 
         return
     end
-    repeat
-        task.wait()
+    task.wait(1)
+    if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
+        return
+    end
+    local TroopsOwned = GetTowersInfo()
+    local CanChangeMap = GetGameState():GetAttribute("IsPrivateServer") or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
+    local CurrentMapList = {}
+    local UsedVecto
+    for i,v in next, Workspace[Lobby].Boards:GetChildren() do
+        table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
+    end
+    task.wait(3)
+    while not MapProps do
+        task.wait(.1)
+        if #StratXLibrary.Strat == 0 then
+            continue
+        end
         for i,v in ipairs(StratXLibrary.Strat) do
-            if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Mode == "Survival" and not MapProps then-- string.find(i:lower(),"survival")
+            if typeof(v.Loadout.Lists[1]) ~= "table" or #v.Loadout.Lists[1] == 0 then
+                continue
+            end
+            if not (v.Map.Lists[1] and v.Map.Lists[1].Mode == GameMode) then
+                continue
+            end
+            if not v.Loadout.AllowTeleport then
+                v.Loadout.AllowTeleport = true
+                for Index, Name in ipairs(v.Loadout.Lists[1]) do
+                    if not TroopsOwned[Name] then
+                        prints("Missing:",Name)
+                        v.Loadout.AllowTeleport = false
+                        continue
+                    end
+                end
+            end
+            if MapProps then
+                break
+            end
+            if table.find(CurrentMapList,v.Map.Lists[1].Map) then
                 MapProps = v.Map.Lists[#v.Map.Lists]
-                Index = i
+                Index = v.Index
+                break
+            elseif CanChangeMap then
+                MapProps = v.Map.Lists[#v.Map.Lists]
+                Index = v.Index
+                prints("Overrided Map")
+                RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+                break
             end
         end
-    until MapProps
+        if not UsedVecto and not CanChangeMap then
+            UsedVecto = true
+            RemoteEvent:FireServer("LobbyVoting", "Vecto")
+            task.wait(1)
+            table.clear(CurrentMapList)
+            for i,v in next, Workspace[Lobby].Boards:GetChildren() do
+                table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
+            end
+            task.delay(5,function()
+                if not MapProps then
+                    TeleportHandler(3260590327,2,7)
+                end
+            end)
+        end
+    end
     RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
     RemoteEvent:FireServer("LobbyVoting", "Vote", MapProps.Map, LocalPlayer.Character.HumanoidRootPart.Position)
     RemoteEvent:FireServer("LobbyVoting","Ready")
+    prints(`Picked Map: "{MapProps.Map}", Id Strat: {Index}`)
     task.wait(6)
-    ConsoleInfo(`Map Selected: {ReplicatedStorage.State.Map.Value}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
     StratXLibrary.Strat.ChosenID = Index
+    ConsoleInfo(`Map Selected: {MapProps.Map}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
 end
 
 function Tutorial()
@@ -956,6 +1082,10 @@ StratXLibrary.__index = StratXLibrary
 getgenv().Strat = {Lib = StratXLibrary}
 Strat.__index = Strat;
 
+local FunctionConfig = {
+    Replace = {"Map","Mode","Loadout"},
+}
+
 function Strat.new()
     local t = setmetatable({}, Strat)
     for Funcname, Functable in next, StratXLibrary.Functions do
@@ -963,16 +1093,29 @@ function Strat.new()
             Name = Funcname,
             --InQueue = {},
             --Loaded = {},
-            Lists = {}
+            Lists = {},
+            ListNum = 1,
         }
-        setmetatable(t[Funcname], {
-            __call = function(self,...) --self is Functions, ...[1] is parent of self
-                local tableinfo = (select(1,...) == t) and (select(2,...) == StratXLibrary and {select(3,...)} or {select(2,...)}) or {...}
-                table.insert(t[Funcname].Lists, ParametersPatch(Funcname,unpack(tableinfo)))
-                t.Active = true
-                --print(t[Funcname].Lists,#t[Funcname].Lists)
-            end
-        })
+        if table.find(FunctionConfig.Replace, Funcname) then
+            setmetatable(t[Funcname], {
+                __call = function(self,...) --self is Functions, ...[1] is parent of self
+                    local tableinfo = (select(1,...) == t) and (select(2,...) == StratXLibrary and {select(3,...)} or {select(2,...)}) or {...}
+                    t[Funcname].Lists = {ParametersPatch(Funcname,unpack(tableinfo))}
+                    t.Active = true
+                    t[Funcname].ListNum = 1
+                    --print(t[Funcname].Lists,#t[Funcname].Lists)
+                end
+            })
+        else
+            setmetatable(t[Funcname], {
+                __call = function(self,...) --self is Functions, ...[1] is parent of self
+                    local tableinfo = (select(1,...) == t) and (select(2,...) == StratXLibrary and {select(3,...)} or {select(2,...)}) or {...}
+                    table.insert(t[Funcname].Lists, ParametersPatch(Funcname,unpack(tableinfo)))
+                    t.Active = true
+                    --print(t[Funcname].Lists,#t[Funcname].Lists)
+                end
+            })
+        end
     end
     table.insert(StratXLibrary.Strat, t)
     t.Index = #StratXLibrary.Strat
@@ -994,17 +1137,17 @@ task.spawn(function()
                 if not Strat[i] then
                     repeat task.wait() until Strat[i]
                 end
-                local ListNum = 1
+                Strat[i].ListNum = 1
                 while true do
-                    if ListNum > #Strat[i].Lists then
-                        repeat task.wait() until ListNum <= #Strat[i].Lists
+                    if Strat[i].ListNum > #Strat[i].Lists then
+                        repeat task.wait() until Strat[i].ListNum <= #Strat[i].Lists
                     end
-                    if not Strat[i].Lists[ListNum] then 
-                        ListNum += 1 
+                    if not Strat[i].Lists[Strat[i].ListNum] then 
+                        Strat[i].ListNum += 1 
                         continue
                     end
-                    Functions[i](Strat,Strat[i].Lists[ListNum])
-                    ListNum += 1
+                    Functions[i](Strat,Strat[i].Lists[Strat[i].ListNum])
+                    Strat[i].ListNum += 1
                     task.wait()
                 end
             end)
@@ -1012,7 +1155,7 @@ task.spawn(function()
         StratsListNum += 1
     end
 
-    if Matchmaking then
+    if UtilitiesConfig.PreferMatchmaking or GetGameState():GetAttribute("IsPrivateServer") then
         prints("MatchMaking Enabled")
         Functions.MatchMaking()
     end
@@ -1022,8 +1165,9 @@ task.spawn(function()
         repeat
             task.wait()
             for i,v in ipairs(StratXLibrary.Strat) do
-                if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map == ReplicatedStorage.State.Map.Value and not StratXLibrary.Strat.ChosenID then -- not apply same map dfferent mode
+                if v.Map.Lists[#v.Map.Lists] and typeof(GetGameState():GetAttribute("MapName")) == "string" and v.Map.Lists[#v.Map.Lists].Map == GetGameState():GetAttribute("MapName") and not StratXLibrary.Strat.ChosenID then -- not apply same map dfferent mode
                     StratXLibrary.Strat.ChosenID = i
+                    break
                 end
             end
         until StratXLibrary.Strat.ChosenID
