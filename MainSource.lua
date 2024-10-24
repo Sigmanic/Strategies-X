@@ -846,6 +846,7 @@ if CheckPlace() then
                         if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                         end
+                        repeat
                         game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = Object.CFrame}):Play() 
                             task.wait(.5)
                         until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
