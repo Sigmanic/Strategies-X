@@ -794,15 +794,14 @@ if CheckPlace() then
         for i,v in ipairs(TowersContained) do
             if v.DebugTag then
                 v.DebugTag.Enabled = bool
-                end
-                if v.Placed then
-                    continue
-                end
-                if v.ErrorModel then
-                    v.ErrorModel.Parent = ErrorsFolder
-                elseif v.TowerModel then
-                    v.TowerModel.Parent = TowersFolder
-                end
+            end
+            if v.Placed then
+                continue
+            end
+            if v.ErrorModel then
+                v.ErrorModel.Parent = ErrorsFolder
+            elseif v.TowerModel then
+                v.TowerModel.Parent = TowersFolder
             end
         end
     end)
@@ -847,6 +846,7 @@ if CheckPlace() then
                         if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                         end
+                        repeat
                         game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = Object.CFrame}):Play() 
                             task.wait(.5)
                         until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -861,6 +861,7 @@ if CheckPlace() then
         end)
     end
 end
+
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
 WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
