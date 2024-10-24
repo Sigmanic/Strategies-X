@@ -12,7 +12,7 @@ local Items = {
 }
 
 local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -103,12 +103,12 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
     if type(...) == "table" and #{...} == 1 then --select("#",...)
         return ...
@@ -668,7 +668,7 @@ if CheckPlace() then
             end
             if UtilitiesConfig.Webhook.Enabled then
                 task.spawn(function()
-                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+                    loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/Webhook.lua", true))()
                     prints("Sent Webhook Log")
                 end)
             end
@@ -852,13 +852,13 @@ if CheckPlace() then
                     if getgenv().DefaultCam ~= 1 then
                         LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = (StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0))
                     task.wait(.1)
-                end
+                    end
                 task.wait()
+                end
             end
-        end
-    end)
+        end)
+    end
 end
-
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
 WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
