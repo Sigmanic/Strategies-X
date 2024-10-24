@@ -852,13 +852,13 @@ if CheckPlace() then
                     if getgenv().DefaultCam ~= 1 then
                         LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = (StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0))
                     task.wait(.1)
-                end
+                    end
                 task.wait()
+                end
             end
-        end
-    end)
+        end)
+    end
 end
-
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
 WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
