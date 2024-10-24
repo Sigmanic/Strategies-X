@@ -9,6 +9,7 @@ end
 local Version = "Version: 0.3.18 [Alpha]"
 local Items = {
     Enabled = true,
+    ItemName = "Pumpkin"
 }
 
 local LoadLocal = false
@@ -841,7 +842,7 @@ if CheckPlace() then
             local Pickups = workspace.Pickups
                 while true do            
                     for Index, Object in next, Pickups:GetChildren() do
-                        if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and Object.CFrame.Y < 200 then
+                        if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(), ItemName:lower()) and Object.CFrame.Y < 200 then
                             if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                                 repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                             end
