@@ -860,8 +860,8 @@ if CheckPlace() then
             end
         end)
     end
-  end
 end
+
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
 WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
