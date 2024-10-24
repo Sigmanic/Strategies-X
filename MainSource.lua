@@ -9,7 +9,6 @@ end
 local Version = "Version: 0.3.18 [Alpha]"
 local Items = {
     Enabled = true,
-    Name = "Pumpkin"
 }
 
 local LoadLocal = false
@@ -839,27 +838,25 @@ if CheckPlace() then
     end)
     if Items.Enabled then
         task.spawn(function()
-            local Pickups = Workspace.Pickups
-            while true do            
-                for Index, Object in next, Pickups:GetChildren() do
-                    if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
-                        if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        end
+            local Pickups = workspace.Pickups
+                while true do            
+                    for Index, Object in next, Pickups:GetChildren() do
+                        if Object:IsA("MeshPart") and Object.CFrame.Y < 200 then
+                            if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                                repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                            end
                         repeat
-                            game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = Object.CFrame}):Play() 
-                            task.wait(.5)
-                        until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    end
-                end
-                if getgenv().DefaultCam ~= 1 then
-                    game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0, Enum.EasingStyle.Linear), {CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)}):Play()
+                            LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = Object.CFrame
+                            task.wait(.5) until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                        end
+                    if getgenv().DefaultCam ~= 1 then
+                        LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = (StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0))
                     task.wait(.1)
                 end
                 task.wait()
             end
-        end)
-    end
+        end
+    end)
 end
 
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
