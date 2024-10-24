@@ -794,14 +794,15 @@ if CheckPlace() then
         for i,v in ipairs(TowersContained) do
             if v.DebugTag then
                 v.DebugTag.Enabled = bool
-            end
-            if v.Placed then
-                continue
-            end
-            if v.ErrorModel then
-                v.ErrorModel.Parent = ErrorsFolder
-            elseif v.TowerModel then
-                v.TowerModel.Parent = TowersFolder
+                end
+                if v.Placed then
+                    continue
+                end
+                if v.ErrorModel then
+                    v.ErrorModel.Parent = ErrorsFolder
+                elseif v.TowerModel then
+                    v.TowerModel.Parent = TowersFolder
+                end
             end
         end
     end)
