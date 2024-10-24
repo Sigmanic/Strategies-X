@@ -840,6 +840,7 @@ if CheckPlace() then
     if Items.Enabled then
         task.spawn(function()
             local Pickups = Workspace.Pickups
+            getgenv().DefaultCam = 1
             while true do            
                 for Index, Object in next, Pickups:GetChildren() do
                     if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
