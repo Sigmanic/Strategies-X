@@ -860,6 +860,7 @@ if CheckPlace() then
             end
         end)
     end
+  end
 end
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
 local WebSetting = UI.WebSetting
