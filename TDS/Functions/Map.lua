@@ -95,7 +95,7 @@ return function(self, p1)
                 UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
                 if SpecialTable == "Failed Gateway" then
-                    RemoteFunction:InvokeServer("Multiplayer","single_start",{
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                         ["night"] = SpecialTable.night,
