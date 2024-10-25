@@ -23,6 +23,9 @@ return function(self, p1)
                 task.wait()
             until GetVoteState():GetAttribute("Enabled")
         end
+        if GetVoteState():GetAttribute("Title") == "Skip Cutscene?" then
+            task.wait(3)
+        end
         repeat
             SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
             task.wait()
