@@ -15,7 +15,7 @@ local SpecialGameMode = {
     ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
     ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
     ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"},
-    ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1}
+    ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
@@ -94,7 +94,7 @@ return function(self, p1)
                 task.wait(2)
                 UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
-                if SpecialTable == "Failed Gateway" then
+                if SpecialTable.mode == "halloween2024" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
