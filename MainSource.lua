@@ -880,14 +880,8 @@ if CheckPlace() then
 	end)
     UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimescale", default = UtilitiesConfig.CanTimescale or false})
     local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
-    TimescaleSetting:Button("1x Speed", function()
-        getgenv().TimescaleOption = 1
-    end)
-    TimescaleSetting:Button("1.5x Speed", function()
-        getgenv().TimescaleOption = 1.5
-    end)
     TimescaleSetting:Button("2x Speed", function()
-        getgenv().TimescaleOption = 2
+        getgenv().TimescaleOption = 1
     end)
 	if Items.Enabled then
 		UtilitiesTab:Toggle("Auto Pick Items [EVENT]",{flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
