@@ -873,7 +873,7 @@ if CheckPlace() then
 	end)
     UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimescale", default = UtilitiesConfig.CanTimescale or false})
     local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
-    TimescaleSetting:Button("2x Speed", function()
+    TimescaleSetting:Button("1.5x Speed", function()
         getgenv().TimescaleOption = 1
     end)
 	if Items.Enabled then
