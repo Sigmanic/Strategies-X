@@ -16,11 +16,13 @@ local SpecialGameMode = {
     ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
     ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
     ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"}, 
+    ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1}, -- difficulty: Act1, Act1Easy
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
     ["Hardcore"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = 4.2, WaitTimeJoin = 1.7},
-    ["Tutorial"] = {Enabled = false,},
+    ["Tutorial"] = {Enabled = false},
+    ["Halloween2024"] = {Enabled = false},
 }
 
 return function(self, p1)
@@ -93,11 +95,20 @@ return function(self, p1)
                 task.wait(2)
                 UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
-                RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                    ["count"] = 1,
-                    ["mode"] = SpecialTable.mode,
-                    ["challenge"] = SpecialTable.challenge,
-                })
+                if SpecialTable.mode == "halloween2024" then
+                    RemoteFunction:InvokeServer("Multiplayer", "v2:start", {
+                        ["difficulty"] = SpecialTable.difficulty,
+                        ["night"] = SpecialTable.night,
+                        ["count"] = 1,
+                        ["mode"] = SpecialTable.mode
+                    })
+                else
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                        ["count"] = 1,
+                        ["mode"] = SpecialTable.mode,
+                        ["challenge"] = SpecialTable.challenge,
+                    })
+                end
                 --[[RemoteFunction:InvokeServer("Multiplayer","single_start",{
                     ["count"] = 1,
                     ["mode"] = if SpecialTable then SpecialTable else string.lower(Mode),
