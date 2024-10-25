@@ -94,7 +94,7 @@ return function(self, p1)
                 task.wait(2)
                 UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
-                if SpecialTable == "Failed Gateway" then
+                if SpecialTable.mode == "halloween2024" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["difficulty"] = SpecialTable.difficulty,
                         ["night"] = SpecialTable.night,
