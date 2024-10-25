@@ -605,7 +605,7 @@ if CheckPlace() then
 					end
 				end
 			end
-			prints("Can Timescale: "..tostring(Getgenv().CanTimescale))
+			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
 			getgenv().OldCorn = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Hexscape Event"].text.Text
 		end)
 		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
