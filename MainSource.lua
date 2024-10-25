@@ -542,13 +542,6 @@ if CheckPlace() then
 			prints("Ready Signal Fired")
 			return
 		end
-        if GetVoteState():GetAttribute("Title") == "Skip Cutscene?" then
-            getgenv().CanTimescale = false
-            task.wait(3)
-			RemoteFunction:InvokeServer("Voting", "Skip")
-			StratXLibrary.ReadyState = true
-			prints("Ready Signal Fired")
-		end
 		if not UtilitiesConfig.AutoSkip then
 			repeat
 				task.wait()
