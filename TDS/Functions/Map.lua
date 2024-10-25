@@ -9,18 +9,19 @@ local TeleportService = game:GetService("TeleportService")
 --[[local SpecialGameMode = {
     ["Pizza Party"] = "halloween",
     ["Badlands II"] = "badlands",
-    ["Polluted Wastelands II"] = "polluted", 
-    ["Huevous Hunt"] = "egg_hunt",
+    ["Polluted Wastelands II"] = "polluted",
 }]]
 local SpecialGameMode = {
     ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
     ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
-    ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"}, 
+    ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"},
+    ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1}
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
     ["Hardcore"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = 4.2, WaitTimeJoin = 1.7},
-    ["Tutorial"] = {Enabled = false,},
+    ["Tutorial"] = {Enabled = false},
+    ["Halloween2024"] = {Enabled = false},
 }
 
 return function(self, p1)
@@ -93,16 +94,20 @@ return function(self, p1)
                 task.wait(2)
                 UI.JoiningStatus.Text = `Teleporting to Special Gamemode`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
-                RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                    ["count"] = 1,
-                    ["mode"] = SpecialTable.mode,
-                    ["challenge"] = SpecialTable.challenge,
-                })
-                --[[RemoteFunction:InvokeServer("Multiplayer","single_start",{
-                    ["count"] = 1,
-                    ["mode"] = if SpecialTable then SpecialTable else string.lower(Mode),
-                    ["difficulty"] = Difficulty,
-                })]] --Still working but i still upadted to the new tds format 
+                if SpecialTable == "Failed Gateway" then
+                    RemoteFunction:InvokeServer("Multiplayer","single_start",{
+                        ["count"] = 1,
+                        ["mode"] = SpecialTable.mode,
+                        ["night"] = SpecialTable.night,
+                        ["difficulty"] = SpecialTable.difficulty,
+                    })
+                else
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                        ["count"] = 1,
+                        ["mode"] = SpecialTable.mode,
+                        ["challenge"] = SpecialTable.challenge,
+                    })
+                end
                 prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
                 return
             elseif v.State.Difficulty.Value == "Private Server" or UtilitiesConfig.PreferMatchmaking then
