@@ -154,7 +154,7 @@ return function(self, p1)
                 return require(v.Settings).Type
             end)
             if not Passed then
-                ElevatorType = if v.Lift["Main part"].BrickColor == BrickColor.new("Lilac") then "Hardcore" else "Survival"
+                ElevatorType = if v:WaitForChild("Lift")["Main part"].BrickColor == BrickColor.new("Lilac") then "Hardcore" else "Survival"
             end
             if not Elevators[ElevatorType] then
                 Elevators[ElevatorType] = {}
