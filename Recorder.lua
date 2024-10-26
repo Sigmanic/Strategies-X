@@ -88,14 +88,39 @@ getgenv().Recorder = {
 }
 getgenv().TowersList = Recorder.TowersList
 local TowerCount = 0
+local GetMode = nil
+
 local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 UILibrary.options.toggledisplay = 'Fill'
+
 local mainwindow = UILibrary:CreateWindow('Recorder')
 UILibrary.container.Parent.Parent = LocalPlayer.PlayerGui
 Recorder.Status = mainwindow:Section("Loading")
---[[mainwindow:Button("Auto Sell Farms Last Wave", function()
-end)]]
+
+local timeSection = mainwindow:Section("Time Passed: ")
+task.spawn(function()
+    function TimeConverter(v)
+        if v <= 9 then
+            local conv = "0" .. v
+            return conv
+        else
+            return v
+        end
+    end
+    local startTime = os.time()
+
+    while task.wait(0.1) do
+        local t = os.time() - startTime
+        local seconds = t % 60
+        local minutes = math.floor(t / 60) % 60
+        timeSection.Text = "Time Passed: " .. TimeConverter(minutes) .. ":" .. TimeConverter(seconds)
+    end
+end)
+
 mainwindow:Toggle('Auto Skip', {flag = "autoskip"})
+mainwindow:Section("\\/ LAST WAVE \\/")
+mainwindow:Toggle('Auto Sell Farms', {default = true, flag = "autosellfarms"})
+
 function SetStatus(string)
     Recorder.Status.Text = string
 end
@@ -191,7 +216,6 @@ local GenerateFunction = {
             print(`Upgraded Failed ID: {TowerIndex}`,RemoteCheck)
             return
         end
-        --Recorder.Status.Text = `Upgraded TowerIndex {TowerIndex}`
         SetStatus(`Upgraded ID: {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Upgrade({TowerIndex}, {TimerStr})`)
@@ -203,7 +227,6 @@ local GenerateFunction = {
             print(`Sell Failed ID: {TowerIndex}`,RemoteCheck)
             return
         end
-        --Recorder.Status.Text = `Sold TowerIndex {TowerIndex}`
         SetStatus(`Sold TowerIndex {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Sell({TowerIndex}, {TimerStr})`)
@@ -243,9 +266,8 @@ local GenerateFunction = {
             ["Intermediate"] = "Intermediate",
             ["Fallen"] = "Fallen"
         }
-        local GetMode = DiffTable[Difficulty] or Difficulty
+        GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
-        appendstrat(`TDS:Mode("{GetMode}")`)
     end,
 }
 
@@ -265,6 +287,36 @@ GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
     end
 end)
 
+task.spawn(function()
+    local StateReplicatorPath = nil
+    for i,v in pairs(ReplicatedStorage.StateReplicators:GetChildren()) do
+        if v:GetAttribute("Wave") then
+            StateReplicatorPath = v
+            break
+        end
+    end
+    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Wait()
+    local FinalWaveAtDifferentMode = {
+        ["Easy"] = 25,
+        ["Normal"] = 40,
+        ["Intermediate"] = 30,
+        ["Fallen"] = 40,
+        ["Hardcore"] = 50
+    }
+    local FinalWave = FinalWaveAtDifferentMode[ReplicatedStorage.State.Difficulty.Value]
+    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Connect(function()
+        if StateReplicatorPath:GetAttribute("Wave") == FinalWave then
+            repeat task.wait() until mainwindow.flags.autosellfarms
+            for i,v in ipairs(game.Workspace.Towers:GetChildren()) do
+                if v.Owner.Value == LocalPlayer.UserId and v:WaitForChild("TowerReplicator"):GetAttribute("Type") == "Farm" then
+                    ReplicatedStorage.RemoteFunction:InvokeServer("Troops", "Sell", {["Troop"] = v})
+                end
+            end
+            SetStatus(`Sold All Farms`)
+        end
+    end)
+end)
+
 for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
     if (Tower.Equipped) then
         table.insert(Recorder.Troops, TowerName)
@@ -273,12 +325,27 @@ for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Ses
         end
     end
 end
---print(table.concat(Recorder.Troops, ", "))
-writestrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
+writestrat("getgenv().StratCreditsAuthor = \"" .. LocalPlayer.Name .. "\"")
+appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
 State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
     table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
     table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
 )
+task.spawn(function()
+    local DiffTable = {
+        ["Easy"] = "Easy",
+        ["Normal"] = "Molten",
+        ["Intermediate"] = "Intermediate",
+        ["Fallen"] = "Fallen"
+    }
+    repeat task.wait() until GetMode ~= nil or State.Difficulty.Value ~= ""
+    if GetMode then
+        repeat task.wait() until GetMode == State.Difficulty.Value
+        appendstrat(`TDS:Mode("{GetMode}")`)
+    elseif DiffTable[State.Difficulty.Value] then
+        appendstrat(`TDS:Mode("{DiffTable[State.Difficulty.Value]}")`)
+    end
+end)
 
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
@@ -288,8 +355,6 @@ OldNamecall = hookmetamethod(game, '__namecall', function(...)
         coroutine.wrap(function(Args)
             local Timer = GetTimer()
             local RemoteFired = Self.InvokeServer(Self, unpack(Args))
-            print(table.concat(Timer, ", "))
-            print(Args[2],RemoteFired)
             if GenerateFunction[Args[2]] then
                 GenerateFunction[Args[2]](Args, Timer, RemoteFired)
             end

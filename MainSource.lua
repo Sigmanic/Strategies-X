@@ -987,16 +987,7 @@ end)
 end]]
 
 task.spawn(function()
-	repeat task.wait(.3)
-	until getgenv().StratCreditsAuthor ~= nil
-	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
-	if getgenv().Mulitplayer.Enabled then
-		multitab:SetText("Multiplayer: On")
-		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
-		for i =1, getgenv().Mulitplayer.Players do
-			getgenv().PlayersSection[v] = multitab:Section("")
-		end
-	end
+	repeat task.wait(.3) until getgenv().StratCreditsAuthor ~= nil
 	if (type(getgenv().StratCreditsAuthor) == "string" and #getgenv().StratCreditsAuthor > 0) or type(getgenv().StratCreditsAuthor) == "number" then
 		UtilitiesTab:Section("==Strat Creators==")
 		UtilitiesTab:Section(tostring(getgenv().StratCreditsAuthor))
@@ -1005,6 +996,16 @@ task.spawn(function()
 			if (type(v) == "string" and #v > 0) or type(v) == "number" then
 				UtilitiesTab:Section(tostring(v))
 			end
+		end
+	end
+
+	repeat task.wait(.3) until getgenv().Mulitplayer ~= nil
+	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
+	if getgenv().Mulitplayer.Enabled then
+		multitab:SetText("Multiplayer: On")
+		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
+		for i =1, getgenv().Mulitplayer.Players do
+			getgenv().PlayersSection[v] = multitab:Section("")
 		end
 	end
 end)
