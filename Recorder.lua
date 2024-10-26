@@ -97,17 +97,29 @@ local mainwindow = UILibrary:CreateWindow('Recorder')
 UILibrary.container.Parent.Parent = LocalPlayer.PlayerGui
 Recorder.Status = mainwindow:Section("Loading")
 
-mainwindow:Toggle('Auto Skip', {flag = "autoskip"})
-mainwindow:Section("\\/ DANGER ZONE \\/")
-mainwindow:Button("Sell All Farms", function()
-    for i,v in pairs(game.Workspace.Towers:GetChildren()) do
-        if v:WaitForChild("TowerReplicator"):GetAttribute("Type") == "Farm" and v:WaitForChild("Owner").Value == LocalPlayer.UserId then
-            ReplicatedStorage.RemoteFunction:InvokeServer("Troops", "Sell", {["Troop"] = v})
-            task.wait()
+local timeSection = mainwindow:Section("Time Passed: ")
+task.spawn(function()
+    function TimeConverter(v)
+        if v <= 9 then
+            local conv = "0" .. v
+            return conv
+        else
+            return v
         end
     end
-    SetStatus(`Sold All Farms`)
+    local startTime = os.time()
+
+    while task.wait(0.1) do
+        local t = os.time() - startTime
+        local seconds = t % 60
+        local minutes = math.floor(t / 60) % 60
+        timeSection.Text = "Time Passed: " .. TimeConverter(minutes) .. ":" .. TimeConverter(seconds)
+    end
 end)
+
+mainwindow:Toggle('Auto Skip', {flag = "autoskip"})
+mainwindow:Section("\\/ LAST WAVE \\/")
+mainwindow:Toggle('Auto Sell Farms', {default = true, flag = "autosellfarms"})
 
 function SetStatus(string)
     Recorder.Status.Text = string
@@ -273,6 +285,36 @@ GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
         task.wait(2.5)
         Skipped = false
     end
+end)
+
+task.spawn(function()
+    local StateReplicatorPath = nil
+    for i,v in pairs(ReplicatedStorage.StateReplicators:GetChildren()) do
+        if v:GetAttribute("Wave") then
+            StateReplicatorPath = v
+            break
+        end
+    end
+    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Wait()
+    local FinalWaveAtDifferentMode = {
+        ["Easy"] = 25,
+        ["Normal"] = 40,
+        ["Intermediate"] = 30,
+        ["Fallen"] = 40,
+        ["Hardcore"] = 50
+    }
+    local FinalWave = FinalWaveAtDifferentMode[ReplicatedStorage.State.Difficulty.Value]
+    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Connect(function()
+        if StateReplicatorPath:GetAttribute("Wave") == FinalWave then
+            repeat task.wait() until mainwindow.flags.autosellfarms
+            for i,v in ipairs(game.Workspace.Towers:GetChildren()) do
+                if v.Owner.Value == LocalPlayer.UserId and v:WaitForChild("TowerReplicator"):GetAttribute("Type") == "Farm" then
+                    ReplicatedStorage.RemoteFunction:InvokeServer("Troops", "Sell", {["Troop"] = v})
+                end
+            end
+            SetStatus(`Sold All Farms`)
+        end
+    end)
 end)
 
 for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Session", "Search", "Inventory.Troops") do
