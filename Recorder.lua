@@ -88,14 +88,27 @@ getgenv().Recorder = {
 }
 getgenv().TowersList = Recorder.TowersList
 local TowerCount = 0
+local GetMode = nil
+
 local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/ModificationWallyUi", true))()
 UILibrary.options.toggledisplay = 'Fill'
+
 local mainwindow = UILibrary:CreateWindow('Recorder')
 UILibrary.container.Parent.Parent = LocalPlayer.PlayerGui
 Recorder.Status = mainwindow:Section("Loading")
---[[mainwindow:Button("Auto Sell Farms Last Wave", function()
-end)]]
+
 mainwindow:Toggle('Auto Skip', {flag = "autoskip"})
+mainwindow:Section("\\/ DANGER ZONE \\/")
+mainwindow:Button("Sell All Farms", function()
+    for i,v in pairs(game.Workspace.Towers:GetChildren()) do
+        if v:WaitForChild("TowerReplicator"):GetAttribute("Type") == "Farm" and v:WaitForChild("Owner").Value == LocalPlayer.UserId then
+            ReplicatedStorage.RemoteFunction:InvokeServer("Troops", "Sell", {["Troop"] = v})
+            task.wait()
+        end
+    end
+    SetStatus(`Sold All Farms`)
+end)
+
 function SetStatus(string)
     Recorder.Status.Text = string
 end
@@ -191,7 +204,6 @@ local GenerateFunction = {
             print(`Upgraded Failed ID: {TowerIndex}`,RemoteCheck)
             return
         end
-        --Recorder.Status.Text = `Upgraded TowerIndex {TowerIndex}`
         SetStatus(`Upgraded ID: {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Upgrade({TowerIndex}, {TimerStr})`)
@@ -203,7 +215,6 @@ local GenerateFunction = {
             print(`Sell Failed ID: {TowerIndex}`,RemoteCheck)
             return
         end
-        --Recorder.Status.Text = `Sold TowerIndex {TowerIndex}`
         SetStatus(`Sold TowerIndex {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Sell({TowerIndex}, {TimerStr})`)
@@ -243,9 +254,8 @@ local GenerateFunction = {
             ["Intermediate"] = "Intermediate",
             ["Fallen"] = "Fallen"
         }
-        local GetMode = DiffTable[Difficulty] or Difficulty
+        GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
-        appendstrat(`TDS:Mode("{GetMode}")`)
     end,
 }
 
@@ -273,12 +283,27 @@ for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Ses
         end
     end
 end
---print(table.concat(Recorder.Troops, ", "))
-writestrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
+writestrat("getgenv().StratCreditsAuthor = \"" .. LocalPlayer.Name .. "\"")
+appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
 State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
     table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
     table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
 )
+task.spawn(function()
+    local DiffTable = {
+        ["Easy"] = "Easy",
+        ["Normal"] = "Molten",
+        ["Intermediate"] = "Intermediate",
+        ["Fallen"] = "Fallen"
+    }
+    repeat task.wait() until GetMode ~= nil or State.Difficulty.Value ~= ""
+    if GetMode then
+        repeat task.wait() until GetMode == State.Difficulty.Value
+        appendstrat(`TDS:Mode("{GetMode}")`)
+    elseif DiffTable[State.Difficulty.Value] then
+        appendstrat(`TDS:Mode("{DiffTable[State.Difficulty.Value]}")`)
+    end
+end)
 
 local OldNamecall
 OldNamecall = hookmetamethod(game, '__namecall', function(...)
@@ -288,8 +313,6 @@ OldNamecall = hookmetamethod(game, '__namecall', function(...)
         coroutine.wrap(function(Args)
             local Timer = GetTimer()
             local RemoteFired = Self.InvokeServer(Self, unpack(Args))
-            print(table.concat(Timer, ", "))
-            print(Args[2],RemoteFired)
             if GenerateFunction[Args[2]] then
                 GenerateFunction[Args[2]](Args, Timer, RemoteFired)
             end
