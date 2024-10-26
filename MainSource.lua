@@ -606,7 +606,6 @@ if CheckPlace() then
 				end
 			end
 			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
-			getgenv().OldCorn = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Hexscape Event"].text.Text
 		end)
 		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
 		maintab:Section("Tower Info:")
@@ -907,7 +906,7 @@ if CheckPlace() then
 	end)
 	if Items.Enabled then
 		task.spawn(function()
-			local Pickups = Workspace.Pickups
+			local Pickups = Workspace:WaitForChild("Pickups")
 			while true do            
 				for Index, Object in next, Pickups:GetChildren() do
 					if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
