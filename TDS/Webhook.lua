@@ -111,7 +111,7 @@ local Data = {
 	}
 }
 local Exp = GetEXP()
-local Before = getgenv().OldCorn
+local Before = getgenv().CandyCornAmountOriginal
 local Now = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Hexscape Event"].text.Text
 Before = string.gsub(Before, "%D", "")
 Now = string.gsub(Now, "%D", "")
