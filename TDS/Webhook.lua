@@ -264,9 +264,9 @@ else
 		"**------------------ GAME INFO ----------------**"..
 		"\n**Map : ** "..ReplicatedStorage.State.Map.Value.."** | Mode : **"..ReplicatedStorage.State.Difficulty.Value..
 		"\n**Wave : **" ..GetGameState():GetAttribute("Wave").."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
-		"\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:\n"..
-		"\n**Won Candy Corn : **"..Math.."**"
-		else ""
+		"\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:"..
+		"\n**Won Candy Corn : **"..Math.."\n"
+	    else ""
 	local TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then 
 		"**-------------- TROOPS INFO -----------------**".."```m\n"..CheckTower().."```"
 		else ""
