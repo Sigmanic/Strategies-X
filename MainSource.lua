@@ -606,6 +606,7 @@ if CheckPlace() then
 				end
 			end
 			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
+			getgenv().CandyCornAmountOriginal = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items").["Hexscape Event"].text.Text
 		end)
 		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
 		maintab:Section("Tower Info:")
