@@ -997,6 +997,8 @@ task.spawn(function()
 			end
 		end
 	end
+
+	repeat task.wait(.3) until getgenv().Mulitplayer ~= nil
 	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
 	if getgenv().Mulitplayer.Enabled then
 		multitab:SetText("Multiplayer: On")
