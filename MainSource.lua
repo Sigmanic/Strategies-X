@@ -520,7 +520,6 @@ if CheckPlace() then
 		end
 	end)
 	if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
-		getgenv().CanTimescale = false
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
 			RemoteFunction:InvokeServer("Voting", "Skip")
@@ -532,7 +531,6 @@ if CheckPlace() then
 			return
 		end
 		if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-			getgenv().CanTimescale = false
 			task.wait(2)
             --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
@@ -588,9 +586,10 @@ if CheckPlace() then
 			repeat task.wait() until GetGameState():GetAttribute("Difficulty")
 			ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
 			task.wait(1.5)
+			getgenv().CanTimescale = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
 			prints("Timescale: "..tostring(getgenv().CanTimescale))
 			prints("Option: "..tostring(getgenv().TimescaleOption))
-			if getgenv().CanTimescale == true then
+			if getgenv().CanTimescale == true and CanTimescale == true then
 				if getgenv().TimescaleOption ~= 0 then
 					if LocalPlayer.TimescaleTickets.Value >= 1 then
 						task.spawn(function()
@@ -600,7 +599,7 @@ if CheckPlace() then
 							task.wait(0.35)
 							task.spawn(function()
 								ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-							end)							
+							end)
 						end
 					end
 				end
@@ -666,20 +665,20 @@ if CheckPlace() then
 		local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver")
 		local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 		local Rewards = Info:WaitForChild("rewards")
-		function CheckReward()												
+		function CheckReward()
 			local RewardType,RewardAmount
 
 			repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
-			for i , v in ipairs(Rewards:GetChildren()) do												
-				if v:IsA("Frame") then											
-					if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then											
-						if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://5870325376" then													
+			for i , v in ipairs(Rewards:GetChildren()) do
+				if v:IsA("Frame") then
+					if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then
+						if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://5870325376" then
 							RewardType = "Coins"
-							RewardAmount = tonumber(v.content.textLabel.Text)												
+							RewardAmount = tonumber(v.content.textLabel.Text)
 							break
-						else												
+						else
 							RewardType = "Gems"
-							RewardAmount = tonumber(v.content.textLabel.Text)												
+							RewardAmount = tonumber(v.content.textLabel.Text)
 						end
 					end
 				end
@@ -699,9 +698,9 @@ if CheckPlace() then
 			]]
 			return {RewardType, RewardAmount}
 		end
-		warn("Connected?")												
+		warn("Connected?")
 		StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
-			warn("Connection Ran!?")													
+			warn("Connection Ran!?")
 			prints("GameOver Changed")
 			if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
 				return
@@ -716,9 +715,9 @@ if CheckPlace() then
 				PlayerInfo[i].Text = `{i}: {v}`
 			end
 			if UtilitiesConfig.Webhook.Enabled then
-				task.spawn(function()												
+				task.spawn(function()
 					loadstring(game:HttpGet(MainLink.."TDS/Webhook.lua", true))()
-					--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Webhook.lua", true))()
+					repeat task.wait() until type(getgenv().SendCheck) == "table"
 					prints("Sent Webhook Log")
 				end)
 			end
@@ -781,7 +780,7 @@ if CheckPlace() then
 				if AutoSkipCheck then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
-				task.wait(1)
+				task.wait(0.5)
 				--if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
 				--	return
 				--end
@@ -796,7 +795,7 @@ if CheckPlace() then
 				local attemptIndex = 0
 				local success, result
 				local ATTEMPT_LIMIT = 25
-				local RETRY_DELAY = 3														
+				local RETRY_DELAY = 3
 				repeat
 					success, result = pcall(function()
 						return TeleportService:Teleport(3260590327)
@@ -805,7 +804,7 @@ if CheckPlace() then
 					if not success then
 						task.wait(RETRY_DELAY)
 					end
-				until success or attemptIndex == ATTEMPT_LIMIT 												
+				until success or attemptIndex == ATTEMPT_LIMIT
 				--TeleportHandler(3260590327,2,7)
 				--TeleportService:Teleport(3260590327)
 				--StratXLibrary.SignalEndMatch:Disconnect()
@@ -987,16 +986,7 @@ end)
 end]]
 
 task.spawn(function()
-	repeat task.wait(.3)
-	until getgenv().StratCreditsAuthor ~= nil
-	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
-	if getgenv().Mulitplayer.Enabled then
-		multitab:SetText("Multiplayer: On")
-		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
-		for i =1, getgenv().Mulitplayer.Players do
-			getgenv().PlayersSection[v] = multitab:Section("")
-		end
-	end
+	repeat task.wait(.3) until getgenv().StratCreditsAuthor ~= nil
 	if (type(getgenv().StratCreditsAuthor) == "string" and #getgenv().StratCreditsAuthor > 0) or type(getgenv().StratCreditsAuthor) == "number" then
 		UtilitiesTab:Section("==Strat Creators==")
 		UtilitiesTab:Section(tostring(getgenv().StratCreditsAuthor))
@@ -1005,6 +995,14 @@ task.spawn(function()
 			if (type(v) == "string" and #v > 0) or type(v) == "number" then
 				UtilitiesTab:Section(tostring(v))
 			end
+		end
+	end
+	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
+	if getgenv().Mulitplayer.Enabled then
+		multitab:SetText("Multiplayer: On")
+		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
+		for i =1, getgenv().Mulitplayer.Players do
+			getgenv().PlayersSection[v] = multitab:Section("")
 		end
 	end
 end)
