@@ -606,7 +606,7 @@ if CheckPlace() then
 				end
 			end
 			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
-			getgenv().CandyCornAmountOriginal = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items")["Hexscape Event"].text.Text
+			getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items")["Hexscape Event"].text.Text
 		end)
 		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
 		maintab:Section("Tower Info:")
@@ -661,7 +661,7 @@ if CheckPlace() then
 				end
 				task.wait(.8)
 			end
-		end) 
+		end)
 		--End Of Match
 		local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver")
 		local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
@@ -781,7 +781,7 @@ if CheckPlace() then
 				if AutoSkipCheck then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
-				task.wait(0.5)
+				task.wait(1)
 				--if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
 				--	return
 				--end
@@ -987,7 +987,16 @@ end)
 end]]
 
 task.spawn(function()
-	repeat task.wait(.3) until getgenv().StratCreditsAuthor ~= nil
+	repeat task.wait(.3)
+	until getgenv().StratCreditsAuthor ~= nil
+	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
+	if getgenv().Mulitplayer.Enabled then
+		multitab:SetText("Multiplayer: On")
+		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
+		for i =1, getgenv().Mulitplayer.Players do
+			getgenv().PlayersSection[v] = multitab:Section("")
+		end
+	end
 	if (type(getgenv().StratCreditsAuthor) == "string" and #getgenv().StratCreditsAuthor > 0) or type(getgenv().StratCreditsAuthor) == "number" then
 		UtilitiesTab:Section("==Strat Creators==")
 		UtilitiesTab:Section(tostring(getgenv().StratCreditsAuthor))
@@ -996,16 +1005,6 @@ task.spawn(function()
 			if (type(v) == "string" and #v > 0) or type(v) == "number" then
 				UtilitiesTab:Section(tostring(v))
 			end
-		end
-	end
-
-	repeat task.wait(.3) until getgenv().Mulitplayer ~= nil
-	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
-	if getgenv().Mulitplayer.Enabled then
-		multitab:SetText("Multiplayer: On")
-		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
-		for i =1, getgenv().Mulitplayer.Players do
-			getgenv().PlayersSection[v] = multitab:Section("")
 		end
 	end
 end)
