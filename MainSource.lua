@@ -520,6 +520,7 @@ if CheckPlace() then
 		end
 	end)
 	if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
+		getgenv().CanTimescale = false
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
 			RemoteFunction:InvokeServer("Voting", "Skip")
@@ -531,6 +532,7 @@ if CheckPlace() then
 			return
 		end
 		if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
+			getgenv().CanTimescale = false
 			task.wait(2)
             --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
@@ -586,10 +588,9 @@ if CheckPlace() then
 			repeat task.wait() until GetGameState():GetAttribute("Difficulty")
 			ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
 			task.wait(1.5)
-			getgenv().CanTimescale = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
 			prints("Timescale: "..tostring(getgenv().CanTimescale))
 			prints("Option: "..tostring(getgenv().TimescaleOption))
-			if getgenv().CanTimescale == true and CanTimescale == true then
+			if getgenv().CanTimescale == true then
 				if getgenv().TimescaleOption ~= 0 then
 					if LocalPlayer.TimescaleTickets.Value >= 1 then
 						task.spawn(function()
