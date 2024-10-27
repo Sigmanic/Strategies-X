@@ -64,7 +64,7 @@ StratXLibrary.UtilitiesConfig = {
 	AutoSkip = getgenv().AutoSkip or false,
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
     CanTimescale = getgenv().CanTimescale or false,
-    TimescaleOption = getgenv().TimescaleOption or 1,
+	TimescaleOption = tonumber(getgenv().TimescaleOption) or 0,
 	Webhook = {
 		Enabled = true,
 		Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -210,9 +210,6 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
 	end
     if type(getgenv().CanTimescale) == "boolean" then
 		UtilitiesConfig.CanTimescale = getgenv().CanTimescale
-    end
-    if tonumber(getgenv().TimeScaleOption) and tonumber(getgenv().TimescaleOption) <= 2 then
-		UtilitiesConfig.TimeScaleOption = tonumber(getgenv().TimescaleOption)
 	end
 else
 	writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
@@ -234,7 +231,7 @@ function SaveUtilitiesConfig()
 		AutoSkip = UtilitiesTab.flags.AutoSkip,
 		PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
         CanTimescale = UtilitiesConfig.CanTimescale or UtilitiesTab.flags.CanTimescale,
-        TimeScaleOption = tonumber(getgenv().TimescaleOption) or 1,
+		TimescaleOption = tonumber(getgenv().TimescaleOption) or 0,
 		Webhook = {
 			Enabled = WebSetting.flags.Enabled or false,
 			UseNewFormat = WebSetting.flags.UseNewFormat or false,
@@ -520,7 +517,6 @@ if CheckPlace() then
 		end
 	end)
 	if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
-		getgenv().CanTimescale = false
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
 			RemoteFunction:InvokeServer("Voting", "Skip")
@@ -532,7 +528,6 @@ if CheckPlace() then
 			return
 		end
 		if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-			getgenv().CanTimescale = false
 			task.wait(2)
             --[[if not UtilitiesConfig.RestartMatch then
                 repeat task.wait() until UtilitiesConfig.RestartMatch
@@ -588,9 +583,10 @@ if CheckPlace() then
 			repeat task.wait() until GetGameState():GetAttribute("Difficulty")
 			ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
 			task.wait(1.5)
-			prints("Timescale: "..tostring(getgenv().CanTimescale))
+			local TimescaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
+			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
 			prints("Option: "..tostring(getgenv().TimescaleOption))
-			if getgenv().CanTimescale == true then
+			if TimeScaleUI == true and getgenv().CanTimescale == true then
 				if getgenv().TimescaleOption ~= 0 then
 					if LocalPlayer.TimescaleTickets.Value >= 1 then
 						task.spawn(function()
@@ -605,7 +601,6 @@ if CheckPlace() then
 					end
 				end
 			end
-			prints("Can Timescale: "..tostring(getgenv().CanTimescale))
 			getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items")["Hexscape Event"].text.Text
 		end)
 		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
@@ -875,9 +870,10 @@ if CheckPlace() then
     local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
     TimescaleSetting:Button("1.5x Speed", function()
         getgenv().TimescaleOption = 1
+		SaveUtilitiesConfig()
     end)
 	if Items.Enabled then
-		UtilitiesTab:Toggle("Auto Pick Items [EVENT]",{flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
+		UtilitiesTab:Toggle("Auto Pick Items [EVENT]", {flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
 	end
 	local CamSetting = UtilitiesTab:DropSection("Camera Settings")
 	CamSetting:Button("Normal Camera",function()
