@@ -832,10 +832,10 @@ if not CheckPlace() then
         repeat task.wait(.3)
         until getgenv().StratCreditsAuthor ~= nil
         local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
-        if getgenv().Mulitplayer.Enabled then
+        if getgenv().Multiplayer.Enabled then
             multitab:SetText("Multiplayer: On")
-            multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
-            for i =1, getgenv().Mulitplayer.Players do
+            multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Multiplayer.Host))
+            for i =1, getgenv().Multiplayer.Players do
                 getgenv().PlayersSection[v] = multitab:Section("")
             end
         end
@@ -995,15 +995,15 @@ task.spawn(function()
 		end
 	end
 
-	repeat task.wait(.3) until getgenv().Mulitplayer ~= nil
+	--[[repeat task.wait(.3) until getgenv().Multiplayer ~= nil
 	local multitab = UtilitiesTab:DropSection("Multiplayer: Off")
-	if getgenv().Mulitplayer.Enabled then
+	if getgenv().Multiplayer.Enabled then
 		multitab:SetText("Multiplayer: On")
-		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Mulitplayer.Host))
-		for i =1, getgenv().Mulitplayer.Players do
+		multitab:Section("Host:"..Players:GetNameFromUserIdAsync(getgenv().Multiplayer.Host))
+		for i =1, getgenv().Multiplayer.Players do
 			getgenv().PlayersSection[v] = multitab:Section("")
 		end
-	end
+	end]]
 end)
 
 prints("Loaded GUI")
