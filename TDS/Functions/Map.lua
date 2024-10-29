@@ -154,7 +154,7 @@ return function(self, p1)
                 return require(v.Settings).Type
             end)
             if not Passed then
-                ElevatorType = if v.State["Level"].Value == "50" then "Hardcore" else "Survival"
+                ElevatorType = if v:GetAttribute("Level") == "50" then "Hardcore" else "Survival"
             end
             if not Elevators[ElevatorType] then
                 Elevators[ElevatorType] = {}
