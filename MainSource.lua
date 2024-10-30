@@ -858,12 +858,13 @@ if CheckPlace() then
 		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
 	end)
 
-	local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
+	
 	UtilitiesTab:Toggle("Use Timescale Next Match", {flag = "UseTimeScaleNextMatch", default = UtilitiesConfig.UseTimeScaleNextMatch or false}, function()
 		getgenv().UseTimeScaleNextMatch = true
 		prints("Use Timescale Next Match: "..tostring(getgenv().UseTimeScaleNextMatch))
 	end)
     UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimeScale", default = UtilitiesConfig.CanTimeScale or false}, function()
+    local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
 		getgenv().CanTimeScale = true
 		prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
 		if TimeScaleUI == true and getgenv().CanTimeScale == true then
@@ -882,6 +883,7 @@ if CheckPlace() then
 		    prints("Option Saved: "..tostring(getgenv().TimeScaleOption))
 		    SaveUtilitiesConfig()
 		end
+    local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
 		if TimeScaleUI == true and getgenv().CanTimeScale == true and getgenv().TimeScaleOption ~= 0 then
 			prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
 			prints("Option Used: "..tostring(getgenv().TimeScaleOption))
