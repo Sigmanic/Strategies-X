@@ -17,6 +17,7 @@ local SpecialGameMode = {
     ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"},
     ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
+    ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
