@@ -761,6 +761,7 @@ if CheckPlace() then
 				end
 				prints("Set All ListNum To 1")
 				task.wait(5)
+			        getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Hexscape Event"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
 			else
 				prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
