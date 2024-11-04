@@ -48,23 +48,51 @@ local Folder = Instance.new("Folder")
 Folder.Parent = ReplicatedStorage
 Folder.Name = "Map"
 StratXLibrary.LowGraphics = function(bool)
-    local Location = if CheckPlace() then "Map" else "Environment"
-    if not Workspace:FindFirstChild(Location) then
-        prints("Waiting Map Loaded to Use LowGraphics")
-        repeat
-            task.wait()
-        until Workspace:FindFirstChild(Location)
-        task.wait(1)
+    local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
+    local Location = if not CheckPlace() then "Environment" elseif Workspace:FindFirstChild(Lobby) then "Environment" else "Map"
+    if Location == "Environment" then
+        if Workspace:FindFirstChild(Lobby) then
+            if not Workspace:FindFirstChild(Lobby):FindFirstChild(Location) then 
+                prints("Waiting Map Loaded to Use LowGraphics")
+                repeat
+                    task.wait()
+                until Workspace:FindFirstChild(Lobby):FindFirstChild(Location)
+                task.wait(1)
+            end
+        elseif not Workspace:FindFirstChild(Lobby) then
+            if not Workspace.NewLobby:FindFirstChild(Location) then 
+                prints("Waiting Map Loaded to Use LowGraphics")
+                repeat
+                    task.wait()
+                until Workspace.NewLobby:FindFirstChild(Location)
+                task.wait(1)
+            end
+        end
+    elseif Location == "Map" then
+        if not Workspace:FindFirstChild(Location) then
+            prints("Waiting Map Loaded to Use LowGraphics")
+            repeat
+                task.wait()
+            until Workspace:FindFirstChild(Location)
+            task.wait(1)
+        end
     end
     if bool then
         repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
         LocalPlayer.Character.Humanoid.PlatformStand = true
         LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        for i,v in next, Workspace[Location]:GetChildren() do
-            if Location == "Map" and v.Name == "Paths" then
-                continue
+        if CheckPlace() and not Workspace:FindFirstChild(Lobby) then
+            for i,v in next, Workspace:FindFirstChild(Location):GetChildren() do
+                if Location == "Map" and v.Name == "Paths" then
+                    continue
+                end
+                v.Parent = Folder
             end
-            v.Parent = Folder
+        elseif CheckPlace() and Workspace:FindFirstChild(Lobby) then
+            for i,v in next, Folder:GetChildren() do
+                v.Parent = Workspace:FindFirstChild(Lobby)[Location]
+            end
         end
     else
         if not (CheckPlace() and getgenv().DefaultCam ~= 1) then
@@ -73,7 +101,7 @@ StratXLibrary.LowGraphics = function(bool)
             LocalPlayer.Character.HumanoidRootPart.Anchored = false
         end
         for i,v in next, Folder:GetChildren() do
-            v.Parent = Workspace[Location]
+            v.Parent = Workspace.NewLobby[Location]
         end
     end
     MinimizeClient(bool)
