@@ -174,6 +174,7 @@ function prints(...)
 	--print(Text)
 	ConsoleInfo(Text)
 end
+
 getgenv().output = function(Text,Color)
 	ConsolePrint(Color,"Info",Text)
 end
@@ -761,7 +762,7 @@ if CheckPlace() then
 				end
 				prints("Set All ListNum To 1")
 				task.wait(5)
-			        getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Hexscape Event"):WaitForChild("text").Text
+				getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Hexscape Event"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
 			else
 				prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
@@ -859,61 +860,65 @@ if CheckPlace() then
 		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
 	end)
 
-	
-	UtilitiesTab:Toggle("Use Timescale Next Match", {flag = "UseTimeScaleNextMatch", default = UtilitiesConfig.UseTimeScaleNextMatch or false}, function()
-		getgenv().UseTimeScaleNextMatch = true
-		prints("Use Timescale Next Match: "..tostring(getgenv().UseTimeScaleNextMatch))
-	end)
-    UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimeScale", default = UtilitiesConfig.CanTimeScale or false}, function()
-    local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
-		getgenv().CanTimeScale = true
-		prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
-		if TimeScaleUI == true and getgenv().CanTimeScale == true then
-		    if LocalPlayer.TimescaleTickets.Value >= 1 then
-			    task.spawn(function()
-				    ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
-			    end)
-		    end
-		end
-	end)
-
-    local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
-    TimescaleSetting:Button("1.5x Speed", function()
-		if getgenv().CanTimeScale == true and getgenv().UseTimeScaleNextMatch == true then
-		    getgenv().TimeScaleOption = 1
-		    prints("Option Saved: "..tostring(getgenv().TimeScaleOption))
-		    SaveUtilitiesConfig()
-		end
-    local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
-		if TimeScaleUI == true and getgenv().CanTimeScale == true and getgenv().TimeScaleOption ~= 0 then
-			prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
-			prints("Option Used: "..tostring(getgenv().TimeScaleOption))
-			for i=1, getgenv().TimeScaleOption do
-				task.wait(0.35)
-				task.spawn(function()
-					ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-				end)
-			end
-		elseif TimeScaleUI == true and getgenv().CanTimeScale == true then
-			prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
-			for i=1, 1 do
-				task.wait(0.35)
-				task.spawn(function()
-					 ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-				end)
-			end
-	    end
-	end)
-	TimescaleSetting:Button("Disable Timescale Settings", function()
-		prints("All Settings Have Disabled")
-		getgenv().TimeScaleOption = 0
-		getgenv().UseTimeScaleNextMatch = false
-		getgenv().CanTimeScale = false
-		prints("Option Changed To: "..tonumber(getgenv().TimeScaleOption))
-		prints("Disabled Use Timescale Next Match: "..tostring(getgenv().UseTimeScaleNextMatch))
-		prints("Disabled Timescale Toggle: "..tostring(getgenv().CanTimeScale))
-		SaveUtilitiesConfig()
-	end)
+	--[[local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
+	if Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" or ReplicatedStorage.State.Difficulty.Value == "Hardcore" then
+		prints("Timescale Is Not Supported in Hardcore!")
+    else]]
+       	UtilitiesTab:Toggle("Use Timescale Next Match", {flag = "UseTimeScaleNextMatch", default = UtilitiesConfig.UseTimeScaleNextMatch or false}, function()
+       		getgenv().UseTimeScaleNextMatch = true
+       		prints("Use Timescale Next Match: "..tostring(getgenv().UseTimeScaleNextMatch))
+       	end)
+       	UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimeScale", default = UtilitiesConfig.CanTimeScale or false}, function()
+			local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
+       		getgenv().CanTimeScale = true
+       		prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
+       		if TimeScaleUI == true and getgenv().CanTimeScale == true then
+       			if LocalPlayer.TimescaleTickets.Value >= 1 then
+       				task.spawn(function()				    	
+       					ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
+       				end)
+       			end
+       		end
+       	end)
+       	local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
+       	TimescaleSetting:Button("1.5x Speed", function()
+			local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
+       		if getgenv().CanTimeScale == true and getgenv().UseTimeScaleNextMatch == true then
+       			getgenv().TimeScaleOption = 1		
+       			prints("Option Saved: "..tostring(getgenv().TimeScaleOption))
+       			SaveUtilitiesConfig()
+       		end
+       		if TimeScaleUI == true and getgenv().CanTimeScale == true and getgenv().TimeScaleOption ~= 0 then
+       			prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
+       			prints("Option Used: "..tostring(getgenv().TimeScaleOption))
+       			for i=1, getgenv().TimeScaleOption do
+              			task.wait(0.35)
+              			task.spawn(function()
+              				ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
+              			end)
+              		end
+       		elseif TimeScaleUI == true and getgenv().CanTimeScale == true then
+       			prints("Can Timescale: "..tostring(getgenv().CanTimeScale))
+       			for i=1, 1 do
+       				task.wait(0.35)
+       				task.spawn(function()
+       				    ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
+       				end)
+       			end
+       		end
+       	end)
+       	TimescaleSetting:Button("Disable Timescale Settings", function()
+       		prints("All Settings Have Disabled")
+       		getgenv().TimeScaleOption = 0
+       		getgenv().UseTimeScaleNextMatch = false
+       		getgenv().CanTimeScale = false
+       		prints("Option Changed To: "..tonumber(getgenv().TimeScaleOption))
+       		prints("Disabled Use Timescale Next Match: "..tostring(getgenv().UseTimeScaleNextMatch))
+       		prints("Disabled Timescale Toggle: "..tostring(getgenv().CanTimeScale))
+       		SaveUtilitiesConfig()
+       	end)
+	--end
 
 	if Items.Enabled then
 		UtilitiesTab:Toggle("Auto Pick Items [EVENT]", {flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
@@ -1077,7 +1082,7 @@ Functions.MatchMaking = function()
 	local MapGlobal = StratXLibrary.Global.Map
 	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	if not Workspace:FindFirstChild(Lobby) then 
+	if not Workspace:FindFirstChild(Lobby) then
 		return
 	end
 	task.wait(1)
@@ -1157,12 +1162,15 @@ end
 function Tutorial()
 	loadstring(game:HttpGet(MainLink.."TDS/Tutorial.lua", true))()
 end
-function Act1Easy()
+--[[function Act1Easy()
 	loadstring(game:HttpGet(MainLink.."TDS/Act1Easy.lua", true))()
 end
 function Act2Easy()
 	loadstring(game:HttpGet(MainLink.."TDS/Act2Easy.lua", true))()
 end
+function Act3Easy()
+	loadstring(game:HttpGet(MainLink.."TDS/Act3Easy.lua", true))()
+end]]
 prints("Loaded Functions")
 
 --[[local GetConnects = getconnections or get_signal_cons
