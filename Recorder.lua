@@ -6,6 +6,8 @@ local State = ReplicatedStorage.State
 local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteFunction") else SpoofEvent
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 
+local fullData = tostring(os.date("%d.%m.%Y_%H.%M"))
+
 getgenv().WriteFile = function(check,name,location,str)
     if not check then
         return
@@ -61,7 +63,7 @@ local writestrat = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return WriteFile(true,LocalPlayer.Name.."'s strat","StrategiesX/Recorder",tostring(Text).."\n")
+        return WriteFile(true,--[[LocalPlayer.Name.."'s strat"]]fullData,"StrategiesX/Recorder",tostring(Text).."\n")
     end)
 end
 local appendstrat = function(...)
@@ -77,7 +79,7 @@ local appendstrat = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return AppendFile(true,LocalPlayer.Name.."'s strat","StrategiesX/Recorder",tostring(Text).."\n")
+        return WriteFile(true,--[[LocalPlayer.Name.."'s strat"]]fullData,"StrategiesX/Recorder",tostring(Text).."\n")
     end)
 end
 getgenv().Recorder = {
@@ -325,7 +327,7 @@ for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Ses
         end
     end
 end
-writestrat("getgenv().StratCreditsAuthor = \"" .. LocalPlayer.Name .. "\"")
+--writestrat("getgenv().StratCreditsAuthor = \"" .. LocalPlayer.Name .. "\"") --don't disclose roblox usernames
 appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
 State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
     table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
