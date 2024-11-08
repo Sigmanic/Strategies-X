@@ -93,15 +93,13 @@ StratXLibrary.LowGraphics = function(bool)
             for i,v in next, Folder:GetChildren() do
                 v.Parent = Workspace:FindFirstChild(Lobby)[Location]
             end
-        end
-    else
-        if not (CheckPlace() and getgenv().DefaultCam ~= 1) then
+        elseif not CheckPlace() and getgenv().DefaultCam ~= 1 then
             repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
             LocalPlayer.Character.Humanoid.PlatformStand = false
             LocalPlayer.Character.HumanoidRootPart.Anchored = false
-        end
-        for i,v in next, Folder:GetChildren() do
-            v.Parent = Workspace.NewLobby[Location]
+            for i,v in next, Folder:GetChildren() do
+                v.Parent = Workspace.NewLobby[Location]
+            end
         end
     end
     MinimizeClient(bool)
