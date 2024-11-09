@@ -859,7 +859,7 @@ if CheckPlace() then
 	UtilitiesTab:Button("Teleport Back To Platform",function()
 		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
 	end)
-	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+	--[[local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
 	UtilitiesTab:Toggle("Use Timescale Next Match", {flag = "UseTimeScaleNextMatch", default = UtilitiesConfig.UseTimeScaleNextMatch or false}, function()
 		if ReplicatedStorage.State.Difficulty.Value == "Hardcore" or Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" then
@@ -923,7 +923,7 @@ if CheckPlace() then
 		prints("Disabled Use Timescale Next Match: "..tostring(UtilitiesConfig.UseTimeScaleNextMatch))
 		prints("Disabled Timescale Toggle: "..tostring(UtilitiesConfig.CanTimeScale))
 		SaveUtilitiesConfig()
-    end)
+    end)]]
 
 	if Items.Enabled then
 		UtilitiesTab:Toggle("Auto Pick Items [EVENT]", {flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
