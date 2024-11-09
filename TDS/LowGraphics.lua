@@ -79,9 +79,6 @@ StratXLibrary.LowGraphics = function(bool)
         end
     end
     if bool then
-        repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-        LocalPlayer.Character.Humanoid.PlatformStand = true
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
         if CheckPlace() and not Workspace:FindFirstChild(Lobby) then
             for i,v in next, Workspace:FindFirstChild(Location):GetChildren() do
                 if Location == "Map" and v.Name == "Paths" then
@@ -94,9 +91,6 @@ StratXLibrary.LowGraphics = function(bool)
                 v.Parent = Workspace:FindFirstChild(Lobby)[Location]
             end
         elseif not CheckPlace() and getgenv().DefaultCam ~= 1 then
-            repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
-            LocalPlayer.Character.Humanoid.PlatformStand = false
-            LocalPlayer.Character.HumanoidRootPart.Anchored = false
             for i,v in next, Folder:GetChildren() do
                 v.Parent = Workspace.NewLobby[Location]
             end
