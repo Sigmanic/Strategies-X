@@ -169,9 +169,9 @@ return function(self, p1)
             end
             table.insert(Elevators[ElevatorType],{
                 ["Object"] = v,
-                ["MapName"] = v.State.Map.Title,
-                ["Time"] = v.State.Timer,
-                ["Playing"] = v.State.Players,
+                ["MapName"] = v:GetAttribute("Map"),
+                ["Time"] = v:GetAttribute("Timer"),
+                ["Playing"] = v:GetAttribute("Players"),
                 ["Mode"] = ElevatorType,
             })
         end
