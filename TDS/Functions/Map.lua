@@ -18,7 +18,7 @@ local SpecialGameMode = {
     ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
     ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
-    ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"}
+    ["Pls Donate"] = {mode = "PlsDonate", difficulty = "PlsDonateHard"}
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
@@ -104,7 +104,7 @@ return function(self, p1)
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
-                elseif SpecialTable.mode == "PlsDonateHard" then
+                elseif SpecialTable.mode == "PlsDonate" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                     ["difficulty"] = SpecialTable.difficulty,
                     ["count"] = 1,
