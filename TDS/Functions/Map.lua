@@ -25,6 +25,7 @@ local ElevatorSettings = {
     ["Hardcore"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = 4.2, WaitTimeJoin = 1.7},
     ["Tutorial"] = {Enabled = false},
     ["Halloween2024"] = {Enabled = false},
+    ["PlsDonate"] = {Enabled = false},
 }
 
 return function(self, p1)
