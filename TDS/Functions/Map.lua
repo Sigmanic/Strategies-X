@@ -18,6 +18,7 @@ local SpecialGameMode = {
     ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
     ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
+    ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"}
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ReMap = true, JoinMap = true, WaitTimeRe = .1, WaitTimeJoin = .25},
@@ -103,6 +104,12 @@ return function(self, p1)
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
+                elseif SpecialTable.mode == "PlsDonateHard" then
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                    ["difficulty"] = SpecialTable.difficulty,
+                    ["count"] = 1,
+                    ["mode"] = SpecialTable.mode,
+                    })
                 else
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["count"] = 1,
@@ -112,9 +119,8 @@ return function(self, p1)
                 end
                 prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
                 return
-            elseif v.State.Difficulty.Value == "Private Server" or UtilitiesConfig.PreferMatchmaking then
-                local PrivateCheck = v.State.Difficulty.Value == "Private Server"
-                UI.JoiningStatus.Text = `{if PrivateCheck then "Private Server Elevator Found" else "Matchmaking Enabled"}. Checking Loadout`
+            elseif UtilitiesConfig.PreferMatchmaking then
+                UI.JoiningStatus.Text = `Matchmaking Enabled. Checking Loadout`
                 prints("Waiting Loadout Allowed")
                 local Strat = StratXLibrary.Strat
                 local MapProps
