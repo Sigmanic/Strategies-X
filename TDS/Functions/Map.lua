@@ -187,6 +187,7 @@ return function(self, p1)
 				if not Check.Enabled then
 					continue
 				end
+				--[[
 				if Check.ReMap then
 					ElevatorSettings[Name].ReMap = false
 					task.wait()
@@ -210,7 +211,7 @@ return function(self, p1)
 						task.wait()
 						ElevatorSettings[Name].ReMap = true
 					end)
-				end
+				end ]]
 				if Check.JoinMap then
 					ElevatorSettings[Name].JoinMap = false
 					task.wait()
