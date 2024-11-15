@@ -220,8 +220,8 @@ return function(self, p1)
 							task.wait(ElevatorSettings[Name].WaitTimeJoin)
 							UI.JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
 							local Map = v["Object"]:GetAttribute("Map")
+							local Modee = v["Mode"]
 							local Playing = v["Object"]:GetAttribute("Players")
-							local Modee = v["Object"]:GetAttribute("Mode")
 							UI.MapFind.Text = "Map: "..Map
 							UI.CurrentPlayer.Text = "Player Joined: "..Playing
 							prints("Trying elevator",i,"Map:","\""..Map.."\"",", Player Joined:",Playing)
@@ -254,7 +254,7 @@ return function(self, p1)
 
 								MapGlobal.ConnectionEvent = v["Object"]:GetAttributeChangedSignal("Time"):Connect(function(numbertime)
 									local Map = v["Object"]:GetAttribute("Map")
-									local Modee = v["Object"]:GetAttribute("Mode")
+									local Modee = v["Mode"]
 									local Playing = v["Object"]:GetAttribute("Players")
 									local MapTableName = Map..":"..Modee
 									UI.MapFind.Text = "Map: "..Map
