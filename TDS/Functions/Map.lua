@@ -169,6 +169,9 @@ return function(self, p1)
 			if not Elevators[ElevatorType] then
 				Elevators[ElevatorType] = {}
 			end
+			if v:GetAttribute("Type") then
+				ElevatorType = v:GetAttribute("Type")
+			end
 			table.insert(Elevators[ElevatorType],{
 				["Object"] = v,
 				["MapName"] = v:GetAttribute("Map"),
@@ -220,11 +223,12 @@ return function(self, p1)
 							task.wait(ElevatorSettings[Name].WaitTimeJoin)
 							UI.JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
 							local Map = v["Object"]:GetAttribute("Map")
+							local Modee = v["Mode"]
 							local Playing = v["Object"]:GetAttribute("Players")
 							UI.MapFind.Text = "Map: "..Map
 							UI.CurrentPlayer.Text = "Player Joined: "..Playing
 							prints("Trying elevator",i,"Map:","\""..Map.."\"",", Player Joined:",Playing)
-							local MapTableName = Map--..":"..Modee
+							local MapTableName = Map..":"..Modee
 							local MapTable = MapGlobal[MapTableName]
 							if MapTable and v["Time"] > 5 and Playing < 4 then
 								if MapTable.Solo and Playing ~= 0 then
@@ -254,7 +258,8 @@ return function(self, p1)
 								MapGlobal.ConnectionEvent = v["Object"]:GetAttributeChangedSignal("Time"):Connect(function(numbertime)
 									local Map = v["Object"]:GetAttribute("Map")
 									local Playing = v["Object"]:GetAttribute("Players")
-									local MapTableName = Map--..":"..Modee
+									local Modee = v["Mode"]
+									local MapTableName = Map..":"..Modee
 									UI.MapFind.Text = "Map: "..Map
 									UI.CurrentPlayer.Text = "Player Joined: "..Playing
 									UI.TimerLeft.Text = "Time Left: "..tostring(numbertime)
