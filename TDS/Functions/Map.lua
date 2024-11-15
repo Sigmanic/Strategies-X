@@ -230,7 +230,7 @@ return function(self, p1)
 							prints("Trying elevator",i,"Map:","\""..Map.."\"",", Player Joined:",Playing)
 							local MapTableName = Map..":"..Modee
 							local MapTable = MapGlobal[MapTableName]
-							if MapTable and v["Time"] > 5 and Playing < 4 then
+							if MapTable and Playing < 4 then
 								if MapTable.Solo and Playing ~= 0 then
 									continue
 								end
