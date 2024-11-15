@@ -197,8 +197,8 @@ return function(self, p1)
 							if MapGlobal.JoiningCheck then
 								repeat task.wait() until MapGlobal.JoiningCheck == false
 							end
-							local MapTableName = v["MapName"]..":"..v["Mode"]
-							if not MapGlobal[MapTableName] and v["Playing"] == 0 and not MapGlobal.JoiningCheck then
+							local MapTableName = v["Object"]:GetAttribute("Map")..":"..v["Object"]:GetAttribute("Mode")
+							if not MapGlobal[MapTableName] and v["Object"]:GetAttribute("Playing") == 0 and not MapGlobal.JoiningCheck then
 								MapGlobal.ChangeCheck = true
 								prints("Changing Elevator",i)
 								ElevatorEnter:InvokeServer(v["Object"])
@@ -219,13 +219,16 @@ return function(self, p1)
 						for i,v in ipairs(Elevators[Name]) do
 							task.wait(ElevatorSettings[Name].WaitTimeJoin)
 							UI.JoiningStatus.Text = "Trying Elevator: " ..tostring(i)
-							UI.MapFind.Text = "Map: "..v["MapName"]
-							UI.CurrentPlayer.Text = "Player Joined: "..v["Playing"]
-							prints("Trying elevator",i,"Map:","\""..v["MapName"].."\"",", Player Joined:",v["Playing"])
-							local MapTableName = v["MapName"]..":"..v["Mode"]
+							local Map = v["Object"]:GetAttribute("Map")
+							local Playing = v["Object"]:GetAttribute("Playing")
+							local Modee = v["Object"]:GetAttribute("Mode")
+							UI.MapFind.Text = "Map: "..Map
+							UI.CurrentPlayer.Text = "Player Joined: "..Playing
+							prints("Trying elevator",i,"Map:","\""..Map.."\"",", Player Joined:",Playing)
+							local MapTableName = Map..":"..Modee
 							local MapTable = MapGlobal[MapTableName]
-							if MapTable and v["Time"] > 5 and v["Playing"] < 4 then
-								if MapTable.Solo and v["Playing"] ~= 0 then
+							if MapTable and v["Time"] > 5 and Playing < 4 then
+								if MapTable.Solo and Playing ~= 0 then
 									continue
 								end
 								local MapIndex = MapTable.Index
@@ -250,9 +253,12 @@ return function(self, p1)
 								Functions.Loadout(StratXLibrary.Strat[MapIndex],LoadoutInfo)
 
 								MapGlobal.ConnectionEvent = v["Object"]:GetAttributeChangedSignal("Time"):Connect(function(numbertime)
-									local MapTableName = v["MapName"]..":"..v["Mode"]
-									UI.MapFind.Text = "Map: "..v["MapName"]
-									UI.CurrentPlayer.Text = "Player Joined: "..v["Playing"]
+									local Map = v["Object"]:GetAttribute("Map")
+									local Modee = v["Object"]:GetAttribute("Mode")
+									local Playing = v["Object"]:GetAttribute("Playing")
+									local MapTableName = Map..":"..Modee
+									UI.MapFind.Text = "Map: "..Map
+									UI.CurrentPlayer.Text = "Player Joined: "..Playing
 									UI.TimerLeft.Text = "Time Left: "..tostring(numbertime)
 									prints("Time Left: ",numbertime)
 									--Scenario: Player Died
@@ -267,13 +273,13 @@ return function(self, p1)
 										MapGlobal.JoiningCheck = false
 										return
 									end
-									if numbertime > 0 and (not MapGlobal[MapTableName] or (MapGlobal[MapTableName].Solo and v["Playing"] > 1)) then
+									if numbertime > 0 and (not MapGlobal[MapTableName] or (MapGlobal[MapTableName].Solo and Playing > 1)) then
 										print("Event Disconnected 1")
 										MapGlobal.ConnectionEvent:Disconnect()
-										local Text = (not MapGlobal[MapTableName] and "Map Has Been Changed") or ((MapGlobal[MapTableName].Solo and v["Playing"] > 1) and "Someone Has Joined") or "Error"
+										local Text = (not MapGlobal[MapTableName] and "Map Has Been Changed") or ((MapGlobal[MapTableName].Solo and Playing > 1) and "Someone Has Joined") or "Error"
 										ElevatorLeave:InvokeServer()
 										UI.JoiningStatus.Text = Text..", Leaving Elevator "..tostring(i)
-										prints(Text..", Leaving Elevator",i,"Map:","\""..v["MapName"].."\"",", Player Joined:",v["Playing"])
+										prints(Text..", Leaving Elevator",i,"Map:","\""..Map.."\"",", Player Joined:",Playing)
 										UI.TimerLeft.Text = "Time Left: NaN"
 										MapGlobal.JoiningCheck = false
 										return
