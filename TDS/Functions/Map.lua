@@ -255,7 +255,8 @@ return function(self, p1)
 								print("Loadout Selecting")
 								Functions.Loadout(StratXLibrary.Strat[MapIndex],LoadoutInfo)
 
-								MapGlobal.ConnectionEvent = v["Object"]:GetAttributeChangedSignal("Timer"):Connect(function(numbertime)
+								MapGlobal.ConnectionEvent = v["Object"]:GetAttributeChangedSignal("Timer"):Connect(function()
+									local numbertime = v["Object"]:GetAttribute("Timer")
 									local Map = v["Object"]:GetAttribute("Map")
 									local Playing = v["Object"]:GetAttribute("Players")
 									local Modee = v["Mode"]
