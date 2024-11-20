@@ -6,19 +6,24 @@ local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("Rem
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 local TeleportService = game:GetService("TeleportService")
 
---[[local SpecialGameMode = {
-    ["Pizza Party"] = "halloween",
-    ["Badlands II"] = "badlands",
-    ["Polluted Wastelands II"] = "polluted",
-}]]
 local SpecialGameMode = {
     ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
     ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
     ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"},
+    --Current Special Maps ^^^^^^
     ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
     ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
-    ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"}
+    ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"},
+    --Temporary Special Maps ^^^^^^
+    ["Classic Candy Cane Lane"] = {mode = "Event", part = "ClassicRobloxPart1"},
+    ["Classic Winter"] = {mode = "Event", part = "ClassicRobloxPart2"},
+    ["Classic Forest Camp"] = {mode = "Event", part = "ClassicRobloxPart3"},
+    ["Classic Island Chaos"] = {mode = "Event", part = "ClassicRobloxPart4"},
+    ["Classic Castle"] = {mode = "Event", part = "ClassicRobloxPart5"},
+    --The Classic Event Maps ^^^^^^ [STILL EXIST IN GAME FILES]
+    ["Huevous Hunt"] = {""},
+    --The Hunt Event Maps [NO LONGER EXIST IN GAME FILES]
 }
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ChangeMap = true, JoinMap = true, WaitTimeToChange = .1, WaitTimeToJoin = .25},
@@ -26,6 +31,7 @@ local ElevatorSettings = {
     ["Tutorial"] = {Enabled = false},
     ["Halloween2024"] = {Enabled = false},
     ["plsDonate"] = {Enabled = false},
+    ["Event"] = {Enabled = false},
 }
 
 return function(self, p1)
@@ -41,7 +47,7 @@ return function(self, p1)
     ElevatorSettings[Mode].Enabled = true
     MapGlobal[NameTable] = tableinfo
     if MapGlobal.Active then
-        print("Execute One Actived")
+        print("One-time Execution")
         return
     end
     MapGlobal.Active = true
@@ -111,6 +117,8 @@ return function(self, p1)
                     ["count"] = 1,
                     ["mode"] = SpecialTable.mode,
                     })
+                elseif SpecialTable.mode == "Event" then
+                    RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
                 else
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["count"] = 1,
