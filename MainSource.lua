@@ -62,10 +62,8 @@ StratXLibrary.UtilitiesConfig = {
 	RestartMatch = getgenv().AutoRestart or false,
 	TowersPreview = getgenv().Debug or false,
 	AutoSkip = getgenv().AutoSkip or false,
+	UseTimeScale = getgenv().UseTimeScale or false,
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
-    CanTimeScale = getgenv().CanTimeScale or false,
-	UseTimeScaleNextMatch = getgenv().UseTimeScaleNextMatch or false,
-	TimeScaleOption = tonumber(getgenv().TimeScaleOption) or 0,
 	Webhook = {
 		Enabled = true,
 		Link = (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
@@ -195,9 +193,6 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
 	if type(getgenv().AutoSkip) == "boolean" then
 		UtilitiesConfig.AutoSkip = getgenv().AutoSkip
 	end
-	if type(getgenv().AutoPickups) == "boolean" then
-		UtilitiesConfig.AutoPickups = getgenv().BattlePass
-	end
 	if type(getgenv().AutoBuyMissing) == "boolean" then
 		UtilitiesConfig.AutoBuyMissing = getgenv().BuyMissingTowers
 	end
@@ -207,17 +202,11 @@ if isfile("StrategiesX/UserConfig/UtilitiesConfig.txt") then
 	if type(getgenv().Debug) == "boolean" then
 		UtilitiesConfig.TowersPreview = getgenv().Debug
 	end
+	if type(getgenv().UseTimeScale) == "boolean" then
+		UtilitiesConfig.UseTimeScale = getgenv().UseTimeScale
+	end
 	if type(getgenv().PreferMatchmaking) == "boolean" or type(getgenv().Matchmaking) == "boolean" then
 		UtilitiesConfig.PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking
-	end
-    if type(getgenv().CanTimeScale) == "boolean" then
-		UtilitiesConfig.CanTimeScale = getgenv().CanTimeScale
-	end
-	if type(getgenv().UseTimeScaleNextMatch) == "boolean" then
-		UtilitiesConfig.UseTimeScaleNextMatch = getgenv().UseTimeScaleNextMatch
-	end
-	if tonumber(getgenv().TimeScaleOption) and tonumber(getgenv().TimeScaleOption) == 1 then
-		UtilitiesConfig.TimeScaleOption = tonumber(getgenv().TimeScaleOption)
 	end
 else
 	writefile("StrategiesX/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
@@ -233,18 +222,15 @@ function SaveUtilitiesConfig()
 		LowGraphics = UtilitiesTab.flags.LowGraphics,
 		BypassGroup = UtilitiesTab.flags.BypassGroup,
 		AutoBuyMissing = UtilitiesTab.flags.AutoBuyMissing,
-		AutoPickups = UtilitiesConfig.AutoPickups or UtilitiesTab.flags.AutoPickups,
 		RestartMatch = UtilitiesTab.flags.RestartMatch,
 		TowersPreview = UtilitiesTab.flags.TowersPreview,
 		AutoSkip = UtilitiesTab.flags.AutoSkip,
+		UseTimeScale = UtilitiesTab.flags.UseTimeScale,
 		PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
-        CanTimeScale = UtilitiesConfig.CanTimeScale or UtilitiesTab.flags.CanTimeScale,
-		UseTimeScaleNextMatch = UtilitiesConfig.UseTimeScaleNextMatch or UtilitiesTab.flags.UseTimeScaleNextMatch,
-		TimeScaleOption = tonumber(getgenv().TimeScaleOption) or 0,
 		Webhook = {
 			Enabled = WebSetting.flags.Enabled or false,
 			UseNewFormat = WebSetting.flags.UseNewFormat or false,
-			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or (isfile("TDS_AutoStrat/Webhook (Logs).txt") and readfile("TDS_AutoStrat/Webhook (Logs).txt")) or "",
+			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or "",
 			HideUser = WebSetting.flags.HideUser or false,
 			PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
 			GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
@@ -473,7 +459,7 @@ if not UtilitiesConfig.BypassGroup then
 			JoinButton:Button("Continue To Use Script", function()
 				BypassGroup = true
 			end)
-			repeat 
+			repeat
 				task.wait()
 			until BypassGroup or UtilitiesConfig.BypassGroup
 		end
@@ -654,7 +640,7 @@ if CheckPlace() then
 		local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 		local Rewards = Info:WaitForChild("rewards")
 		function CheckReward()
-			local RewardType,RewardAmount
+			local RewardType, RewardAmount
 
 			repeat task.wait() until Rewards:FindFirstChild(1) and Rewards:FindFirstChild(2)--Rewards[1] and Rewards[2]
 			for i , v in ipairs(Rewards:GetChildren()) do
@@ -687,7 +673,7 @@ if CheckPlace() then
 			return {RewardType, RewardAmount}
 		end
 		warn("Connected?")
-		StratXLibrary.SignalEndMatch = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
+		StratXLibrary.SignalMatchEnd = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
 			warn("Connection Ran!?")
 			prints("GameOver Changed")
 			if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
@@ -757,46 +743,59 @@ if CheckPlace() then
 				end
 				for i,v in next, StratXLibrary.Strat[StratXLibrary.Strat.ChosenID] do
 					if type(v) == "table" and v.ListNum and type(v.ListNum) == "number" then
-						v.ListNum = 1 
+						v.ListNum = 1
 					end
 				end
 				prints("Set All ListNum To 1")
 				task.wait(5)
 				getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Hexscape Event"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
+				if ReplicatedStorage.State.Difficulty.Value == "Hardcore" then
+					return
+				end
+				local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
+				if UtilitiesConfig.UseTimeScale then
+					if TimeScaleUI:FindFirstChild("Lock") then
+       					task.spawn(function()
+       						ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
+       					task.wait(0.5)
+       						ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
+       					end)
+					end
+				end
 			else
-				prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
+				prints(`Match {if GetGameState():GetAttribue("Won") then "Won" else "Lose"}`)
 				if AutoSkipCheck then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
 				task.wait(0.5)
-				--if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
-				--	return
-				--end
-				--if WebSocket and WebSocket.connect then
-				--	pcall(function()
-				--		local WS = WebSocket.connect("ws://localhost:8126")
-				--		WS:Send("connect-to-vip-server")
-				--	end)
-				--	task.wait(12)
-				--end
-				prints("Rejoining To Lobby")
-				local attemptIndex = 0
-				local success, result
-				local ATTEMPT_LIMIT = 25
-				local RETRY_DELAY = 3
-				repeat
-					success, result = pcall(function()
-						return TeleportHandler(3260590327,2,7)
+				--[[if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
+					return
+				end
+				if WebSocket and WebSocket.connect then
+					pcall(function()
+						local WS = WebSocket.connect("ws://localhost:8126")
+						WS:Send("connect-to-vip-server")
 					end)
-					attemptIndex += 1
-					if not success then
-						task.wait(RETRY_DELAY)
-					end
-				until success or attemptIndex == ATTEMPT_LIMIT
-				--TeleportHandler(3260590327,2,7)
-				--TeleportService:Teleport(3260590327)
-				--StratXLibrary.SignalEndMatch:Disconnect()
+					task.wait(12)
+				end]]
+   				prints("Rejoining To Lobby")
+   				local attemptIndex = 0
+   				local success, result
+   				local ATTEMPT_LIMIT = 25
+   				local RETRY_DELAY = 3
+   				repeat
+   					success, result = pcall(function()
+   						return TeleportHandler(3260590327,2,7)
+   					end)
+   					attemptIndex += 1
+   					if not success then
+   						task.wait(RETRY_DELAY)
+   					end
+   				until success or attemptIndex == ATTEMPT_LIMIT
+   				--TeleportHandler(3260590327,2,7)
+   				--TeleportService:Teleport(3260590327)
+   				--StratXLibrary.SignalMatchEnd:Disconnect()
 			end
 		end)
 	end)
@@ -859,74 +858,48 @@ if CheckPlace() then
 	UtilitiesTab:Button("Teleport Back To Platform",function()
 		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
 	end)
-	--[[local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	UtilitiesTab:Toggle("Use Timescale Next Match", {flag = "UseTimeScaleNextMatch", default = UtilitiesConfig.UseTimeScaleNextMatch or false}, function()
-		if ReplicatedStorage.State.Difficulty.Value == "Hardcore" or Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" then
+	UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
+		if (bool and ReplicatedStorage.State.Difficulty.Value == "Hardcore") or (bool and Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby") then
 			prints("Timescale Is Not Supported In Hardcore!")
 			return
 		end
-	end)
-	UtilitiesTab:Toggle("Timescale Toggle", {flag = "CanTimeScale", default = UtilitiesConfig.CanTimeScale or false}, function()
-		if not ReplicatedStorage.State.Difficulty.Value == "Hardcore" or not Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" then
-       		local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
-       		prints("Can Timescale: "..tostring(UtilitiesConfig.CanTimeScale))
-       		if TimeScaleUI and UtilitiesConfig.CanTimeScale then
-       		   if LocalPlayer.TimescaleTickets.Value >= 1 then
-       			   task.spawn(function()				    	
-       				   ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
-       			   end)
-       		   end
-       		end
-		elseif ReplicatedStorage.State.Difficulty.Value == "Hardcore" or Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" then
-			prints("Timescale Is Not Supported In Hardcore!")
-			return
+		local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
+		prints(`{if bool then "Enabled" else "Disabled"} Timescale`)
+      	if TimeScaleUI.Visible and bool then
+		    if TimeScaleUI:FindFirstChild("Lock") then
+     		    task.spawn(function()
+     			    ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
+     			task.wait(0.5)
+     				ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
+     		    end)
+		    end
 		end
 	end)
-	local TimescaleSetting = UtilitiesTab:DropSection("Timescale Speed Options")
-	TimescaleSetting:Button("1.5x Speed", function()
-		if ReplicatedStorage.State.Difficulty.Value == "Hardcore" or Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby" then
-			prints("Timescale Is Not Supported In Hardcore!")
-			return
-		end
-		local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale").Visible
-		if UtilitiesConfig.CanTimeScale and UtilitiesConfig.UseTimeScaleNextMatch then
-			UtilitiesConfig.TimeScaleOption = 1
-			prints("Option Saved: "..tostring(UtilitiesConfig.TimeScaleOption))
-			SaveUtilitiesConfig()
-		end
-		if TimeScaleUI and UtilitiesConfig.CanTimeScale and UtilitiesConfig.TimeScaleOption ~= 0 then
-			prints("Can Timescale: "..tostring(UtilitiesConfig.CanTimeScale))
-			prints("Option Used: "..tostring(UtilitiesConfig.TimeScaleOption))
-			for i=1, UtilitiesConfig.TimeScaleOption do
-			task.wait(0.35)
-				task.spawn(function()
-					ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-				end)
-			end
-		elseif TimeScaleUI and UtilitiesConfig.CanTimeScale then
-			prints("Can Timescale: "..tostring(UtilitiesConfig.CanTimeScale))
-			for i=1, 1 do
-				task.wait(0.35)
-				task.spawn(function()
-					ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-				end)
-			end
-		end
-	end)
-	TimescaleSetting:Button("Disable Timescale Settings", function()
-		UtilitiesConfig.TimeScaleOption = 0
-		UtilitiesConfig.UseTimeScaleNextMatch = false
-		UtilitiesConfig.CanTimeScale = false
-		prints("All Settings Have Disabled")
-		prints("Option Changed To: "..tonumber(UtilitiesConfig.TimeScaleOption))
-		prints("Disabled Use Timescale Next Match: "..tostring(UtilitiesConfig.UseTimeScaleNextMatch))
-		prints("Disabled Timescale Toggle: "..tostring(UtilitiesConfig.CanTimeScale))
-		SaveUtilitiesConfig()
-    end)]]
 
 	if Items.Enabled then
-		UtilitiesTab:Toggle("Auto Pick Items [EVENT]", {flag = "AutoPickups", default = UtilitiesConfig.AutoPickups or false})
+		task.spawn(function()
+			local Pickups = Workspace:WaitForChild("Pickups")
+			while true do
+				for Index, Object in next, Pickups:GetChildren() do
+					if getgenv().DefaultCam ~= 1 then
+						game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0, Enum.EasingStyle.Linear), {CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)}):Play()
+						task.wait(.1)
+					end
+					if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
+						if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+							repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+						end
+						repeat
+							game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = Object.CFrame}):Play() 
+							task.wait(.5)
+						until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+					end
+				end
+				task.wait()
+			end
+		end)
 	end
 
 	local CamSetting = UtilitiesTab:DropSection("Camera Settings")
@@ -955,30 +928,6 @@ if CheckPlace() then
 		CurrentCamera.CameraType = Enum.CameraType.Scriptable
 		LocalPlayer.DevCameraOcclusionMode = OldCameraOcclusionMode
 	end)
-	
-	if Items.Enabled then
-		task.spawn(function()
-			local Pickups = Workspace:WaitForChild("Pickups")
-			while true do            
-				for Index, Object in next, Pickups:GetChildren() do
-					if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
-						if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-							repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-						end
-						repeat
-							game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = Object.CFrame}):Play() 
-							task.wait(.5)
-						until Object.CFrame.Y >= 200 or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-					end
-				end
-				if getgenv().DefaultCam ~= 1 then
-					game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0, Enum.EasingStyle.Linear), {CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)}):Play()
-					task.wait(.1)
-				end
-				task.wait()
-			end
-		end)
-	end
 end
 
 UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
@@ -998,7 +947,7 @@ WebSetting:Toggle("Troops Info", {default = UtilitiesConfig.Webhook.TroopsInfo o
 UtilitiesTab:Section("Universal Settings")
 UtilitiesTab:Toggle("Prefer Matchmaking", {flag = "PreferMatchmaking", default = UtilitiesConfig.PreferMatchmaking})
 UtilitiesTab:Toggle("Auto Skip Wave", {flag = "AutoSkip", default = UtilitiesConfig.AutoSkip})
-UtilitiesTab:Toggle("Low Graphics Mode", {default = UtilitiesConfig.LowGraphics or false, flag = "LowGraphics"}, function(bool) 
+UtilitiesTab:Toggle("Low Graphics Mode", {default = UtilitiesConfig.LowGraphics or false, flag = "LowGraphics"}, function(bool)
 	StratXLibrary.LowGraphics(bool)
 end)
 UtilitiesTab:Toggle("Bypass Group Checking",{default = UtilitiesConfig.BypassGroup or false, flag = "BypassGroup"})
@@ -1030,7 +979,7 @@ task.spawn(function()
 		["Loses"] = LocalPlayer.Loses.Value,
 		["TimescaleTickets"] = LocalPlayer.TimescaleTickets.Value,
 		["ReviveTickets"] = LocalPlayer.ReviveTickets.Value,
-		["SpinTickets"] = LocalPlayer.SpinTickets.Value,															
+		["SpinTickets"] = LocalPlayer.SpinTickets.Value,
 	}
 end)
 --[[for i,v in next, UI.PlayerInfo.Property do
@@ -1078,11 +1027,24 @@ Functions.Option = loadstring(game:HttpGet(MainLink.."TDS/Functions/Option.lua",
 
 Functions.MatchMaking = function()
 	local MapProps,Index
-	local SpecialMap = {
+	local SpecialMaps = {
 		"Pizza Party",
 		"Badlands II",
-		"Polluted Wastelands II", 
+		"Polluted Wastelands II",
+		--Current Special Maps ^^^^^^
+		"Failed Gateway",
+		"The Nightmare Realm",
+		"Containment",
+		"Pls Donate",
+		--Temporary Special Maps ^^^^^^
+		"Classic Candy Cane Lane",
+		"Classic Winter",
+		"Classic Forest Camp",
+		"Classic Island Chaos",
+		"Classic Castle",
+		--The Classic Roblox Event Special Maps ^^^^^^
 		"Huevous Hunt",
+		--The Hunt Roblox Event Special Maps ^^^^^^
 	}
 	local MapGlobal = StratXLibrary.Global.Map
 	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
@@ -1091,7 +1053,7 @@ Functions.MatchMaking = function()
 		return
 	end
 	task.wait(1)
-	if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
+	if table.find(SpecialMaps, GetGameState():GetAttribute("MapName")) then
 		return
 	end
 	local TroopsOwned = GetTowersInfo()
