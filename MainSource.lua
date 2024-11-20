@@ -764,7 +764,7 @@ if CheckPlace() then
 					end
 				end
 			else
-				prints(`Match {if GetGameState():GetAttribue("Won") then "Won" else "Lose"}`)
+				prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
 				if AutoSkipCheck then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
