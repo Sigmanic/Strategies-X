@@ -769,33 +769,33 @@ if CheckPlace() then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
 				task.wait(0.5)
-				--[[if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
-					return
-				end
-				if WebSocket and WebSocket.connect then
-					pcall(function()
-						local WS = WebSocket.connect("ws://localhost:8126")
-						WS:Send("connect-to-vip-server")
+				--if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
+				--	return
+				--end
+				--if WebSocket and WebSocket.connect then
+				--	pcall(function()
+				--		local WS = WebSocket.connect("ws://localhost:8126")
+				--		WS:Send("connect-to-vip-server")
+				--	end)
+				--	task.wait(12)
+				--end
+				prints("Rejoining To Lobby")
+				local attemptIndex = 0
+				local success, result
+				local ATTEMPT_LIMIT = 25
+				local RETRY_DELAY = 3
+				repeat
+					success, result = pcall(function()
+						return TeleportHandler(3260590327,2,7)
 					end)
-					task.wait(12)
-				end]]
-   				prints("Rejoining To Lobby")
-   				local attemptIndex = 0
-   				local success, result
-   				local ATTEMPT_LIMIT = 25
-   				local RETRY_DELAY = 3
-   				repeat
-   					success, result = pcall(function()
-   						return TeleportHandler(3260590327,2,7)
-   					end)
-   					attemptIndex += 1
-   					if not success then
-   						task.wait(RETRY_DELAY)
-   					end
-   				until success or attemptIndex == ATTEMPT_LIMIT
-   				--TeleportHandler(3260590327,2,7)
-   				--TeleportService:Teleport(3260590327)
-   				--StratXLibrary.SignalMatchEnd:Disconnect()
+					attemptIndex += 1
+					if not success then
+						task.wait(RETRY_DELAY)
+					end
+				until success or attemptIndex == ATTEMPT_LIMIT
+				--TeleportHandler(3260590327,2,7)
+				--TeleportService:Teleport(3260590327)
+				--StratXLibrary.SignalMatchEnd:Disconnect()
 			end
 		end)
 	end)
@@ -1027,7 +1027,7 @@ Functions.Option = loadstring(game:HttpGet(MainLink.."TDS/Functions/Option.lua",
 
 Functions.MatchMaking = function()
 	local MapProps,Index
-	local SpecialMaps = {
+	local SpecialMap = {
 		"Pizza Party",
 		"Badlands II",
 		"Polluted Wastelands II",
@@ -1053,7 +1053,7 @@ Functions.MatchMaking = function()
 		return
 	end
 	task.wait(1)
-	if table.find(SpecialMaps, GetGameState():GetAttribute("MapName")) then
+	if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
 		return
 	end
 	local TroopsOwned = GetTowersInfo()
