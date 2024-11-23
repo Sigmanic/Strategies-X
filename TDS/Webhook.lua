@@ -1,7 +1,7 @@
 local SendRequest = http_request or request or HttpPost or syn.request
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver")
+local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
 local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 local Stats = Info.stats
 local Rewards = Info:WaitForChild("rewards")
@@ -19,7 +19,7 @@ local TimeFormat = function(string)
 	return Time
 end
 
-local GameInfo
+--[[local GameInfo
 local GetGameState = getgenv().GetGameState or function()
 	if GameInfo then
 		return GameInfo
@@ -33,7 +33,7 @@ local GetGameState = getgenv().GetGameState or function()
 		end
 		task.wait()
 	until GameInfo
-end
+end]]
 
 --[[local function CheckStatus()
    return MatchGui.banner.textLabel.Text
@@ -44,16 +44,16 @@ local function CheckReward()
 	local RewardAmount = "Nothing?" -- Rare Case
 	repeat task.wait() until Rewards[1] and Rewards[2]
 
-	for i , v in ipairs(Rewards:GetChildren()) do										
-		if v:IsA("Frame") then												
-			if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then												
-				if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://5870325376" then												
+	for i , v in ipairs(Rewards:GetChildren()) do
+		if v:IsA("Frame") then
+			if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then
+				if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://5870325376" then
 					RewardType = "Coins"
-					RewardAmount = tonumber(v.content.textLabel.Text)												
+					RewardAmount = tonumber(v.content.textLabel.Text)
 					break
-				else												
+				else
 					RewardType = "Gems"
-					RewardAmount = tonumber(v.content.textLabel.Text)												
+					RewardAmount = tonumber(v.content.textLabel.Text)
 				end
 			end
 		end
@@ -66,12 +66,12 @@ local function GetEXP()
 	local RewardAmount = "Nothing?" -- Rare Case
 	repeat task.wait() until Rewards[1] and Rewards[2]
 
-	for i , v in ipairs(Rewards:GetChildren()) do												
-		if v:IsA("Frame") then											
-			if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then												
-				if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://6794340240" then													
-					RewardAmount = v.content.textLabel.Text												
-					break											
+	for i , v in ipairs(Rewards:GetChildren()) do
+		if v:IsA("Frame") then
+			if v:WaitForChild("content"):FindFirstChild("icon"):IsA("ImageLabel") then
+				if v:WaitForChild("content"):FindFirstChild("icon").Image == "rbxassetid://6794340240" then
+					RewardAmount = v.content.textLabel.Text
+					break
 				end
 			end
 		end
@@ -103,7 +103,7 @@ local Data = {
 	["embeds"] = {
 		{
 			["title"] = `**Strategies X Webhook**`,
-			["color"] = CheckColor[GetGameState():GetAttribute("Won")], --decimal
+			["color"] = CheckColor[MatchGui:WaitForChild("banner"):WaitForChild("textLabel").Text], --decimal
 			["footer"] = {
 				["text"] = `{os.date("%X")} {os.date("%x")}`,
 			},
@@ -120,7 +120,7 @@ Math = tostring(Math)
 local WebhookData = {}
 if UtilitiesConfig.Webhook.UseNewFormat then
 	Data.embeds[1].fields = {}
-	WebhookData.PlayerInfo = if UtilitiesConfig.Webhook.PlayerInfo then 
+	WebhookData.PlayerInfo = if UtilitiesConfig.Webhook.PlayerInfo then
 		{
 			{
 				["name"] = "----------------- PLAYER INFO ---------------",
@@ -211,7 +211,7 @@ if UtilitiesConfig.Webhook.UseNewFormat then
 			},
 			{
 				["name"] = "Wave / Health:",
-				["value"] = GetGameState():GetAttribute("Wave").." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")",
+				["value"] = LocalPlayer.PlayerGui.ReactGameTopGameDisplay.Frame.wave.container.value.Text.." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")",
 				["inline"] = true
 			},
 			{
@@ -263,7 +263,7 @@ else
 	local GameInfo = if UtilitiesConfig.Webhook.GameInfo then
 		"**------------------ GAME INFO ----------------**"..
 		"\n**Map : ** "..ReplicatedStorage.State.Map.Value.."** | Mode : **"..ReplicatedStorage.State.Difficulty.Value..
-		"\n**Wave : **" ..GetGameState():GetAttribute("Wave").."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
+		"\n**Wave : **" ..LocalPlayer.PlayerGui.ReactGameTopGameDisplay.Frame.wave.container.value.Text.."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
 		"\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:"..
 		"\n**Won Candy Corn : **"..Math.."\n"
 	    else ""
