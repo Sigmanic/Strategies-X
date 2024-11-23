@@ -1,4 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteFunction") else SpoofEvent
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
 --[[{
@@ -8,28 +10,29 @@ local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("Remote
 }]]
 return function(self, p1)
     local tableinfo = p1--ParametersPatch("Skip",...)
-    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false 
+    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false
     if not CheckPlace() then
         return
     end
+    local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
     SetActionInfo("Skip","Total")
     task.spawn(function()
         if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
             return
         end
         local SkipCheck
-        if not GetVoteState():GetAttribute("Enabled") then
-            repeat 
+        if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+            repeat
                 task.wait()
-            until GetVoteState():GetAttribute("Enabled")
+            until VoteGUI:WaitForChild("count").Text == "0/1 Required"
         end
-        if GetVoteState():GetAttribute("Title") == "Skip Cutscene?" then
+        if VoteGUI:WaitForChild("prompt").Text == "Skip Cutscene?" then
             task.wait(3)
         end
         repeat
             SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
             task.wait()
-        until SkipCheck or not GetVoteState():GetAttribute("Enabled")
+        until SkipCheck or not VoteGUI:WaitForChild("count").Text == "0/1 Required"
         SetActionInfo("Skip")
         ConsoleInfo(`Skipped Wave {Wave} (Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)
