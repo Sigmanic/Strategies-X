@@ -2,9 +2,14 @@ local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local State = ReplicatedStorage.State
 local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteFunction") else SpoofEvent
 local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteEvent") else SpoofEvent
+local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- Current game's timer
+local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore check
+local RSDifficulty = ReplicatedStorage:WaitForChild("State"):WaitForChild("Difficulty") -- Survival's gamemodes
+local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
+local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
+local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- currennt wave you are on
 
 getgenv().WriteFile = function(check,name,location,str)
     if not check then
@@ -125,7 +130,7 @@ function SetStatus(string)
     Recorder.Status.Text = string
 end
 
-local GameInfo
+--[[local GameInfo
 getgenv().GetGameInfo = function()
     if GameInfo then
         return GameInfo
@@ -154,7 +159,7 @@ getgenv().GetVoteState = function()
         end
         task.wait()
     until VoteState
-end
+end]]
 
 function ConvertTimer(number : number)
    return math.floor(number/60), number % 60
@@ -164,21 +169,21 @@ local TimerCheck = false
 function CheckTimer(bool)
     return (bool and TimerCheck) or true
 end
-local TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
-   if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
-      TimerCheck = true
-   elseif object:GetAttribute("Duration") and object:GetAttribute("Duration") > 5 then
-      TimerCheck = false
-   end
+RSTimer.Changed:Connect(function(time)
+    if time == 5 then
+        TimerCheck = true
+    elseif time and time > 5 then
+        TimerCheck = false
+    end
 end)
 
 function GetTimer()
-    local Min, Sec = ConvertTimer(ReplicatedStorage.State.Timer.Time.Value)
-    return {tonumber(GetGameInfo():GetAttribute("Wave")), Min, Sec + Recorder.SecondMili, tostring(TimerCheck)}
+    local Min, Sec = ConvertTimer(RSTimer.Value)
+    return {tonumber(GameWave.Text), Min, Sec + Recorder.SecondMili, tostring(TimerCheck)}
 end
 
 Recorder.SecondMili = 0
-State.Timer.Time:GetPropertyChangedSignal("Value"):Connect(function()
+RSTimer.Changed:Connect(function()
     Recorder.SecondMili = 0
     for i = 1,9 do
         task.wait(0.09)
@@ -272,30 +277,26 @@ local GenerateFunction = {
 }
 
 local Skipped = false
-GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()  
+VoteGUI:WaitForChild("prompt").Changed:Connect(function(property)
     repeat task.wait() until mainwindow.flags.autoskip
-    if Skipped or not GetVoteState():GetAttribute("Enabled") then
+    if Skipped or not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
         return
     end
-    if GetVoteState():GetAttribute("Title") == "Skip Wave?" then
-        Skipped = true
-        local Timer = GetTimer()
-        task.spawn(GenerateFunction["Skip"], true, Timer)
-        ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-        task.wait(2.5)
-        Skipped = false
+    if property == "Text" then
+        local currentPrompt = VoteGUI:WaitForChild("prompt").Text
+        if currentPrompt == "Skip Wave?" then
+            Skipped = true
+            local Timer = GetTimer()
+            task.spawn(GenerateFunction["Skip"], true, Timer)
+            ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+            task.wait(2.5)
+            Skipped = false
+        end
     end
 end)
 
 task.spawn(function()
-    local StateReplicatorPath = nil
-    for i,v in pairs(ReplicatedStorage.StateReplicators:GetChildren()) do
-        if v:GetAttribute("Wave") then
-            StateReplicatorPath = v
-            break
-        end
-    end
-    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Wait()
+    GameWave:GetPropertyChangedSignal("Text"):Wait()
     local FinalWaveAtDifferentMode = {
         ["Easy"] = 25,
         ["Normal"] = 40,
@@ -303,9 +304,9 @@ task.spawn(function()
         ["Fallen"] = 40,
         ["Hardcore"] = 50
     }
-    local FinalWave = FinalWaveAtDifferentMode[ReplicatedStorage.State.Difficulty.Value]
-    StateReplicatorPath:GetAttributeChangedSignal("Wave"):Connect(function()
-        if StateReplicatorPath:GetAttribute("Wave") == FinalWave then
+    local FinalWave = FinalWaveAtDifferentMode[RSDifficulty.Value]
+    GameWave:GetPropertyChangedSignal("Text"):Connect(function()
+        if tonumber(GameWave.Text) == FinalWave then
             repeat task.wait() until mainwindow.flags.autosellfarms
             for i,v in ipairs(game.Workspace.Towers:GetChildren()) do
                 if v.Owner.Value == LocalPlayer.UserId and v:WaitForChild("TowerReplicator"):GetAttribute("Type") == "Farm" then
@@ -327,7 +328,7 @@ for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Ses
 end
 writestrat("getgenv().StratCreditsAuthor = \"Optional\"")
 appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
-State.Map.Value.."\", true, \""..State.Mode.Value.."\")\nTDS:Loadout({\""..
+RSMap.Value.."\", true, \""..RSMode.Value.."\")\nTDS:Loadout({\""..
     table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
     table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"
 )
@@ -338,12 +339,12 @@ task.spawn(function()
         ["Intermediate"] = "Intermediate",
         ["Fallen"] = "Fallen"
     }
-    repeat task.wait() until GetMode ~= nil or State.Difficulty.Value ~= ""
+    repeat task.wait() until GetMode ~= nil or RSDifficulty.Value ~= ""
     if GetMode then
-        repeat task.wait() until GetMode == State.Difficulty.Value
+        repeat task.wait() until GetMode == RSDifficulty.Value
         appendstrat(`TDS:Mode("{GetMode}")`)
-    elseif DiffTable[State.Difficulty.Value] then
-        appendstrat(`TDS:Mode("{DiffTable[State.Difficulty.Value]}")`)
+    elseif DiffTable[RSDifficulty] then
+        appendstrat(`TDS:Mode("{DiffTable[RSDifficulty.Value]}")`)
     end
 end)
 
