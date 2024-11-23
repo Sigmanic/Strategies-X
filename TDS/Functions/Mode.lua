@@ -13,11 +13,13 @@ return function(self, p1)
     local ModeName = DiffTable[p1.Name] or p1.Name
     task.spawn(function()
         local Mode
+        local HasDifficultyVotedGUIPath = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("ReactGameDifficulty"):WaitForChild("Frame"):WaitForChild("buttons")
         repeat
             Mode = RemoteFunction:InvokeServer("Difficulty", "Vote", ModeName)
-            task.wait() 
+            task.wait()
         until Mode
-        if not GetGameState():GetAttribute("HasDifficultyVoteCompleted") then
+        local ModeNameFormatted = string.sub(ModeName, 1, 1):lower() .. string.sub(ModeName, 2)
+        if HasDifficultyVotedGUIPath:WaitForChild(ModeNameFormatted.."Button"):WaitForChild("button"):WaitForChild("content"):WaitForChild("count"):WaitForChild("textLabel").Text ~= 0 then
             RemoteFunction:InvokeServer("Difficulty", "Ready")
         end
         ConsoleInfo("Mode Selected: "..p1.Name)
