@@ -6,14 +6,14 @@ if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
 	end
 end
 
-local Version = "Version: 0.3.19 [Alpha]"
+local Version = "Version: 0.3.20 [Alpha]"
 local Items = {
 	Enabled = true,
 	Name = "CandyCorn"
 }
 
 local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -92,6 +92,33 @@ if GameSpoof then
 	end
 end
 
+--[[function ggc(arg)
+    for i, v in pairs(getgc(true)) do
+        if type(v) == 'table' then
+            if rawget(v, arg) then
+                if arg == "IsPrivateServer" then
+                    if v[arg] ~= 0 then
+                        return true
+                    else
+                        return false
+                    end
+                end
+                if arg == "Enabled" then
+                    -- Check if any 'v[arg]' equals true
+                    if v[arg] == true then
+                        return true
+                    else
+                        return false
+                    end
+                end
+                -- For other arguments, return the value directly
+                return v[arg]
+            end
+        end
+    end
+    return nil  -- Return nil if no valid value was found
+end]]
+
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -105,12 +132,12 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
 	if type(...) == "table" and #{...} == 1 then --select("#",...)
 		return ...
@@ -248,7 +275,7 @@ end
 
 loadstring(game:HttpGet(MainLink.."TDS/LowGraphics.lua", true))()
 
-local GameInfo
+--[[local GameInfo
 getgenv().GetGameState = function()
 	if not CheckPlace() then
 		return
@@ -266,6 +293,7 @@ getgenv().GetGameState = function()
 		task.wait()
 	until GameInfo
 end
+
 local VoteState
 getgenv().GetVoteState = function()
 	if not CheckPlace() then
@@ -284,6 +312,7 @@ getgenv().GetVoteState = function()
 		task.wait()
 	until VoteState
 end
+
 local PlayerState
 getgenv().GetPlayerState = function()
 	if not CheckPlace() then
@@ -301,7 +330,8 @@ getgenv().GetPlayerState = function()
 		end
 		task.wait()
 	until PlayerState
-end
+end]]
+
 local TimerCheck = false
 function CheckTimer(bool)
 	return (bool and TimerCheck) or true
@@ -359,26 +389,29 @@ function ConvertTimer(number : number)
 end
 
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-	if Debug or GetGameState():GetAttribute("Wave") > Wave and not GetGameState():GetAttribute("GameOver") then
+	local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- Current wave you are on
+    local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
+	local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- Current game's timer
+	if Debug or tonumber(GameWave.Text) > Wave and not MatchGui.Visible then
 		return true
 	end
 	local CurrentCount = StratXLibrary.CurrentCount
-	repeat 
+	repeat
 		task.wait()
-		if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
+		if MatchGui.Visible or CurrentCount ~= StratXLibrary.RestartCount then
 			return false
 		end
-	until tonumber(GetGameState():GetAttribute("Wave")) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
-	if ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) < -1 then
+	until tonumber(GameWave.Text) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
+	if RSTimer.Value - TotalSec(Min,Sec) < -1 then
 		return true
 	end
 	local Timer = 0
-	repeat 
+	repeat
 		task.wait()
-		if GetGameState():GetAttribute("GameOver") or CurrentCount ~= StratXLibrary.RestartCount then
+		if MatchGui.Visible or CurrentCount ~= StratXLibrary.RestartCount then
 			return false
 		end
-		Timer = ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec) --math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
+		Timer = RSTimer.Value - TotalSec(Min,Sec) --math.abs(ReplicatedStorage.State.Timer.Time.Value - TotalSec(Min,Sec))
 	until Timer <= 1
 	--until (ReplicatedStorage.State.Timer.Time.Value + 1 == TotalSec(Min,Sec) or ReplicatedStorage.State.Timer.Time.Value == TotalSec(Min,Sec))
 	task.wait(TimePrecise(Sec))
@@ -479,6 +512,15 @@ UtilitiesTab = UI.UtilitiesTab
 
 --InGame Core
 if CheckPlace() then
+	local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value").Text -- Current wave you are on
+    local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- Current game's timer
+    local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore check
+    local RSDifficulty = ReplicatedStorage:WaitForChild("State"):WaitForChild("Difficulty") -- Survival's gamemodes
+    local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
+    local RSHealthCurrent = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Current") -- your current base hp
+    local RSHealthMax = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Max") -- your max hp
+    local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
+    local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
 	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
@@ -488,7 +530,7 @@ if CheckPlace() then
 		local Success, Skip
 		task.delay(10,function()
 			if not Success then
-				ConsoleError(`Auto Skip [VIP] Check Errored`)
+				ConsoleError(`Auto Skip [VIP] Check Failed`)
 				Skip = true
 			end
 		end)
@@ -504,47 +546,51 @@ if CheckPlace() then
 	end)
 
 	--Check if InWave or not
-	StratXLibrary.TimerConnection = ReplicatedStorage.StateReplicators.ChildAdded:Connect(function(object)
-		if object:GetAttribute("Duration") and object:GetAttribute("Duration") == 5 then
+	StratXLibrary.TimerConnection = RSTimer.Changed:Connect(function(time)
+		if time == 5 then
 			TimerCheck = true
-		elseif object:GetAttribute("Duration") and object:GetAttribute("Duration") > 5 then
+		elseif time and time > 5 then
 			TimerCheck = false
 		end
 	end)
-	if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event Solo
+	if VoteGUI:WaitForChild("prompt").Text == "Ready?" then --Hardcore/Event Solo
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
 			RemoteFunction:InvokeServer("Voting", "Skip")
+			prints("Ready Signal Fired")
 		end)
 	end
 	StratXLibrary.ReadyState = false
-	StratXLibrary.VoteState = GetVoteState():GetAttributeChangedSignal("Enabled"):Connect(function()
-		if not GetVoteState():GetAttribute("Enabled") then
+	StratXLibrary.VoteState = VoteGUI:WaitForChild("prompt").Changed:Connect(function(property)
+		if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
 			return
 		end
-		if GetVoteState():GetAttribute("Title") == "Ready?" then --Hardcore/Event GameMode
-			task.wait(2)
-            --[[if not UtilitiesConfig.RestartMatch then
-                repeat task.wait() until UtilitiesConfig.RestartMatch
-            end]]
-			RemoteFunction:InvokeServer("Voting", "Skip")
-			StratXLibrary.ReadyState = true
-			prints("Ready Signal Fired")
-			return
-		end
-		if not UtilitiesConfig.AutoSkip then
-			repeat
-				task.wait()
-				if not GetVoteState():GetAttribute("Enabled") then
-					return
-				end
-			until UtilitiesConfig.AutoSkip
-		end
-		if GetVoteState():GetAttribute("Title") == "Skip Wave?" then
-			RemoteFunction:InvokeServer("Voting", "Skip")
-			SetActionInfo("Skip","Total")
-			SetActionInfo("Skip")
-			ConsoleInfo(`Skipped Wave {GetGameState():GetAttribute("Wave")}`)
+		if property == "Text" then
+			local currentPrompt = VoteGUI:WaitForChild("prompt").Text
+       		if currentPrompt == "Ready?" then --Hardcore/Event GameMode
+       			task.wait(2)
+                --[[if not UtilitiesConfig.RestartMatch then
+                    repeat task.wait() until UtilitiesConfig.RestartMatch
+                end]]
+       			RemoteFunction:InvokeServer("Voting", "Skip")
+       			StratXLibrary.ReadyState = true
+       			prints("Ready Signal Fired")
+       			return
+       		end
+       		if not UtilitiesConfig.AutoSkip then
+       			repeat
+       				task.wait()
+       				if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+       					return
+       				end
+       			until UtilitiesConfig.AutoSkip
+       		end
+       		if currentPrompt == "Skip Wave?" then
+       			RemoteFunction:InvokeServer("Voting", "Skip")
+       			SetActionInfo("Skip","Total")
+       			SetActionInfo("Skip")
+       			ConsoleInfo(`Skipped Wave {tonumber(GameWave.Text)}`)
+       		end
 		end
 	end)
 
@@ -576,12 +622,12 @@ if CheckPlace() then
 	task.spawn(function()
 		loadstring(game:HttpGet(MainLink.."TDS/FreeCam.lua", true))()
 
-		local ModeSection = maintab:Section("Mode: Voting")
+		local ModeSection = maintab:Section("GameMode: Voting")
 		task.spawn(function()
-			repeat task.wait() until GetGameState():GetAttribute("Difficulty")
-			ModeSection.Text = `Mode: {GetGameState():GetAttribute("Difficulty")}`
+			repeat task.wait() until RSDifficulty.Value
+			ModeSection.Text = `GameMode: {RSDifficulty.Value}`
 		end)
-		maintab:Section(`Map: {ReplicatedStorage.State.Map.Value}`)
+		maintab:Section(`Map: {RSMap.Value}`)
 		maintab:Section("Tower Info:")
 		StratXLibrary.TowerInfo = {}
 		for i,v in next, GetTowersInfo() do
@@ -636,7 +682,6 @@ if CheckPlace() then
 			end
 		end)
 		--End Of Match
-		local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver")
 		local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 		local Rewards = Info:WaitForChild("rewards")
 		function CheckReward()
@@ -673,10 +718,10 @@ if CheckPlace() then
 			return {RewardType, RewardAmount}
 		end
 		warn("Connected?")
-		StratXLibrary.SignalMatchEnd = GetGameState():GetAttributeChangedSignal("GameOver"):Connect(function()
+		StratXLibrary.SignalMatchEnd = MatchGui:GetPropertyChangedSignal("Visible"):Connect(function()
 			warn("Connection Ran!?")
 			prints("GameOver Changed")
-			if not GetGameState():GetAttribute("GameOver") then --true/false like Value,but not check this Attribute exists
+			if not MatchGui.Visible then --true/false like Value,but not check this Attribute exists
 				return
 			end
 			StratXLibrary.RestartCount += 1 --need to stop handler, timewavewait
@@ -701,7 +746,7 @@ if CheckPlace() then
 			end
 			prints(UtilitiesConfig.RestartMatch,StratXLibrary.RejoinLobby)
 			prints("GameOver Changed2")
-			if UtilitiesConfig.RestartMatch and GetGameState():GetAttribute("Health") == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
+			if UtilitiesConfig.RestartMatch and RSHealthCurrent.Value == 0 then --StratXLibrary.RestartCount <= UtilitiesConfig.RestartTimes
 				prints(`Match Lose. Strat Will Restart Shortly`)
 				StratXLibrary.ReadyState = false
 				task.wait(3)
@@ -733,11 +778,11 @@ if CheckPlace() then
 					until VoteCheck
 					prints("VoteCheck Passed")
 				end)
-				repeat task.wait() until StratXLibrary.ReadyState or GetGameState():GetAttribute("Wave") <= 1 or (GetGameState():GetAttribute("Health") == GetGameState():GetAttribute("MaxHealth"))
+				repeat task.wait() until StratXLibrary.ReadyState or tonumber(GameWave.Text) <= 1 or (RSHealthCurrent.Value == RSHealthMax.Value)
 				prints("Prepare Set All ListNum To 1")
 				StratXLibrary.CurrentCount = StratXLibrary.RestartCount
 				for i,v in ipairs(StratXLibrary.Strat) do
-					if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map == ReplicatedStorage.State.Map.Value then
+					if v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map == RSMap.Value then
 						StratXLibrary.Strat.ChosenID = i
 					end
 				end
@@ -750,7 +795,7 @@ if CheckPlace() then
 				task.wait(5)
 				getgenv().OldCorn = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Hexscape Event"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
-				if ReplicatedStorage.State.Difficulty.Value == "Hardcore" then
+				if RSDifficulty.Value == "Hardcore" then
 					return
 				end
 				local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
@@ -764,38 +809,38 @@ if CheckPlace() then
 					end
 				end
 			else
-				prints(`Match {if GetGameState():GetAttribute("Won") then "Won" else "Lose"}`)
+				prints(`Match {if MatchGui:WaitForChild("banner"):WaitForChild("textLabel").Text == "TRIUMPH!" then "Won" else "Lose"}`)
 				if AutoSkipCheck then
 					RemoteFunction:InvokeServer("Settings","Update","Auto Skip",true)
 				end
 				task.wait(0.5)
-				--if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
-				--	return
-				--end
-				--if WebSocket and WebSocket.connect then
-				--	pcall(function()
-				--		local WS = WebSocket.connect("ws://localhost:8126")
-				--		WS:Send("connect-to-vip-server")
-				--	end)
-				--	task.wait(12)
-				--end
-				prints("Rejoining To Lobby")
-				local attemptIndex = 0
-				local success, result
-				local ATTEMPT_LIMIT = 25
-				local RETRY_DELAY = 3
-				repeat
-					success, result = pcall(function()
-						return TeleportHandler(3260590327,2,7)
+				--[[if type(FeatureConfig) == "table" and FeatureConfig["JoinLessFeature"].Enabled then
+					return
+				end
+				if WebSocket and WebSocket.connect then
+					pcall(function()
+						local WS = WebSocket.connect("ws://localhost:8126")
+						WS:Send("connect-to-vip-server")
 					end)
-					attemptIndex += 1
-					if not success then
-						task.wait(RETRY_DELAY)
-					end
-				until success or attemptIndex == ATTEMPT_LIMIT
-				--TeleportHandler(3260590327,2,7)
-				--TeleportService:Teleport(3260590327)
-				--StratXLibrary.SignalMatchEnd:Disconnect()
+					task.wait(12)
+				end]]
+   				prints("Rejoining To Lobby")
+   				local attemptIndex = 0
+   				local success, result
+   				local ATTEMPT_LIMIT = 25
+   				local RETRY_DELAY = 3
+   				repeat
+   					success, result = pcall(function()
+   						return TeleportHandler(3260590327,2,7)
+   					end)
+   					attemptIndex += 1
+   					if not success then
+   						task.wait(RETRY_DELAY)
+   					end
+   				until success or attemptIndex == ATTEMPT_LIMIT
+   				--TeleportHandler(3260590327,2,7)
+   				--TeleportService:Teleport(3260590327)
+   				--StratXLibrary.SignalMatchEnd:Disconnect()
 			end
 		end)
 	end)
@@ -970,7 +1015,7 @@ task.spawn(function()
 	UI.PlayerInfo.Loses = PlayerInfoUI:Section(`Loses: {LocalPlayer:WaitForChild("Loses").Value}`)
 	UI.PlayerInfo.TimescaleTickets = PlayerInfoUI:Section(`TimescaleTickets: {LocalPlayer:WaitForChild("TimescaleTickets").Value}`)
 	UI.PlayerInfo.ReviveTickets = PlayerInfoUI:Section(`ReviveTickets: {LocalPlayer:WaitForChild("ReviveTickets").Value}`)
-	UI.PlayerInfo.SpinTickets = PlayerInfoUI:Section(`SpinTickets: {LocalPlayer:WaitForChild("SpinTickets").Value}`)			
+	UI.PlayerInfo.SpinTickets = PlayerInfoUI:Section(`SpinTickets: {LocalPlayer:WaitForChild("SpinTickets").Value}`)
 	UI.PlayerInfo.Property = {
 		["Level"] = LocalPlayer.Level.Value,
 		["Coins"] = LocalPlayer.Coins.Value,
@@ -1027,7 +1072,8 @@ Functions.Option = loadstring(game:HttpGet(MainLink.."TDS/Functions/Option.lua",
 
 Functions.MatchMaking = function()
 	local MapProps,Index
-	local SpecialMap = {
+    local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
+	local SpecialMaps = {
 		"Pizza Party",
 		"Badlands II",
 		"Polluted Wastelands II",
@@ -1053,13 +1099,14 @@ Functions.MatchMaking = function()
 		return
 	end
 	task.wait(1)
-	if table.find(SpecialMap, GetGameState():GetAttribute("MapName")) then
+	if table.find(SpecialMaps, RSMap.Value) then
 		return
 	end
 	local TroopsOwned = GetTowersInfo()
-	local CanChangeMap = GetGameState():GetAttribute("IsPrivateServer") or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
+	
+	local CanChangeMap = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
 	local CurrentMapList = {}
-	local UsedVecto
+	local UsedVeto
 	for i,v in next, Workspace[Lobby].Boards:GetChildren() do
 		table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
 	end
@@ -1101,9 +1148,10 @@ Functions.MatchMaking = function()
 				break
 			end
 		end
-		if not UsedVecto and not CanChangeMap then
-			UsedVecto = true
-			RemoteEvent:FireServer("LobbyVoting", "Vecto")
+		if not UsedVeto and not CanChangeMap then
+			UsedVeto = true
+            RemoteEvent:FireServer("LobbyVoting", "Veto")
+			prints("Veto Has Used")
 			task.wait(1)
 			table.clear(CurrentMapList)
 			for i,v in next, Workspace[Lobby].Boards:GetChildren() do
@@ -1237,7 +1285,7 @@ task.spawn(function()
 					if Strat[i].ListNum > #Strat[i].Lists then
 						repeat task.wait() until Strat[i].ListNum <= #Strat[i].Lists
 					end
-					if not Strat[i].Lists[Strat[i].ListNum] then 
+					if not Strat[i].Lists[Strat[i].ListNum] then
 						Strat[i].ListNum += 1 
 						continue
 					end
@@ -1250,7 +1298,7 @@ task.spawn(function()
 		StratsListNum += 1
 	end
 
-	if UtilitiesConfig.PreferMatchmaking or GetGameState():GetAttribute("IsPrivateServer") then
+	if UtilitiesConfig.PreferMatchmaking or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
 		prints("MatchMaking Enabled")
 		Functions.MatchMaking()
 	end
@@ -1260,7 +1308,8 @@ task.spawn(function()
 		repeat
 			task.wait()
 			for i,v in ipairs(StratXLibrary.Strat) do
-				if v.Map.Lists[#v.Map.Lists] and typeof(GetGameState():GetAttribute("MapName")) == "string" and v.Map.Lists[#v.Map.Lists].Map == GetGameState():GetAttribute("MapName") and not StratXLibrary.Strat.ChosenID then -- not apply same map dfferent mode
+				local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
+				if v.Map.Lists[#v.Map.Lists] and typeof(RSMap.Value) == "string" and v.Map.Lists[#v.Map.Lists].Map == RSMap.Value and not StratXLibrary.Strat.ChosenID then -- not apply same map dfferent mode
 					StratXLibrary.Strat.ChosenID = i
 					break
 				end
