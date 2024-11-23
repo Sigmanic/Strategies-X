@@ -63,9 +63,11 @@ return function(self, p1)
     MapGlobal.ChangeCheck = false
     task.spawn(function()
         if CheckPlace() then
-            repeat task.wait() until GetGameState():GetAttribute("MapName") and typeof(GetGameState():GetAttribute("MapName")) == "string" and GetGameState():GetAttribute("GameMode") --#ReplicatedStorage.State.Map.Value > 1
-            local GameMapName = GetGameState():GetAttribute("MapName")
-            local GameMode = GetGameState():GetAttribute("GameMode")
+            local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore check
+            local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
+            repeat task.wait() until RSMap.Value and typeof(RSMap.Value) == "string" and RSMode.Value --#ReplicatedStorage.State.Map.Value > 1
+            local GameMapName = RSMap.Value
+            local GameMode = RSMode.Value
             local MapTable = MapGlobal[GameMapName..":"..GameMode]
             if not MapTable then --or not StratXLibrary.Strat[MapTable.Index].Loadout.AllowTeleport then
                 print(MapGlobal[GameMapName..":"..GameMode],GameMode)
@@ -128,7 +130,7 @@ return function(self, p1)
                 end
                 prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
                 return
-            elseif UtilitiesConfig.PreferMatchmaking then
+            elseif UtilitiesConfig.PreferMatchmaking or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
                 UI.JoiningStatus.Text = `Matchmaking Enabled. Checking Loadout`
                 prints("Waiting Loadout Allowed")
                 local Strat = StratXLibrary.Strat
