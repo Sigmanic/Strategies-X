@@ -778,7 +778,7 @@ if CheckPlace() then
 					until VoteCheck
 					prints("VoteCheck Passed")
 				end)
-				repeat task.wait() until StratXLibrary.ReadyState or tonumber(GameWave.Text) <= 1 or (RSHealthCurrent.Value == RSHealthMax.Value)
+				repeat task.wait() until StratXLibrary.ReadyState or (tonumber(GameWave.Text) ~= nil and tonumber(GameWave.Text) <= 1) or (RSHealthCurrent.Value == RSHealthMax.Value)
 				prints("Prepare Set All ListNum To 1")
 				StratXLibrary.CurrentCount = StratXLibrary.RestartCount
 				for i,v in ipairs(StratXLibrary.Strat) do
@@ -932,7 +932,7 @@ if CheckPlace() then
 						game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0, Enum.EasingStyle.Linear), {CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)}):Play()
 						task.wait(.1)
 					end
-					if UtilitiesConfig.AutoPickups and Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
+					if Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
 						if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
 							repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 						end
