@@ -21,18 +21,18 @@ return function(self, p1)
             return
         end
         local SkipCheck
-        if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+        if not VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required` then
             repeat
                 task.wait()
-            until VoteGUI:WaitForChild("count").Text == "0/1 Required"
+            until VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required`
         end
-        if VoteGUI:WaitForChild("prompt").Text == "Skip Cutscene?" then
+        if VoteGUI:WaitForChild("prompt").Text == "Skip Cutscene" then
             task.wait(3)
         end
         repeat
             SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
             task.wait()
-        until SkipCheck or not VoteGUI:WaitForChild("count").Text == "0/1 Required"
+        until SkipCheck or not VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required`
         SetActionInfo("Skip")
         ConsoleInfo(`Skipped Wave {Wave} (Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)
