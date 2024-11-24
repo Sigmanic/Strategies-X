@@ -13,7 +13,7 @@ local Items = {
 }
 
 local LoadLocal = false
-local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/"
+local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/"
 
 local OldTime = os.clock()
 
@@ -132,12 +132,12 @@ local Mouse = LocalPlayer:GetMouse()
 local CurrentCamera = Workspace.CurrentCamera
 local OldCameraOcclusionMode = LocalPlayer.DevCameraOcclusionMode
 local VirtualUser = game:GetService("VirtualUser")
-local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/ROBLOX/main/WallyUI.lua", true))()
+local UILibrary = getgenv().UILibrary or loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/ROBLOX/main/WallyUI.lua", true))()
 UILibrary.options.toggledisplay = 'Fill'
 UI = StratXLibrary.UI
 UtilitiesConfig = StratXLibrary.UtilitiesConfig
 
-local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/ConvertFunc.lua", true))()
+local Patcher = loadstring(game:HttpGet(MainLink.."TDS/ConvertFunc.lua", true))()--loadstring(game:HttpGet("https://raw.githubusercontent.com/GurtThePig/Strategies-X/main/ConvertFunc.lua", true))()
 function ParametersPatch(FuncsName,...)
 	if type(...) == "table" and #{...} == 1 then --select("#",...)
 		return ...
@@ -562,12 +562,12 @@ if CheckPlace() then
 	end
 	StratXLibrary.ReadyState = false
 	StratXLibrary.VoteState = VoteGUI:WaitForChild("prompt").Changed:Connect(function(property)
-		if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+		if not VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required` then
 			return
 		end
 		if property == "Text" then
 			local currentPrompt = VoteGUI:WaitForChild("prompt").Text
-       		if currentPrompt == "Ready?" then --Hardcore/Event GameMode
+       		if currentPrompt == "Ready?" then --Event GameMode
        			task.wait(2)
                 --[[if not UtilitiesConfig.RestartMatch then
                     repeat task.wait() until UtilitiesConfig.RestartMatch
@@ -580,7 +580,7 @@ if CheckPlace() then
        		if not UtilitiesConfig.AutoSkip then
        			repeat
        				task.wait()
-       				if not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+       				if not VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required` then
        					return
        				end
        			until UtilitiesConfig.AutoSkip
@@ -1103,10 +1103,9 @@ Functions.MatchMaking = function()
 		return
 	end
 	local TroopsOwned = GetTowersInfo()
-	
 	local CanChangeMap = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
 	local CurrentMapList = {}
-	local UsedVeto
+	local VetoUsedOnce, CheckingForPrivateIntermission
 	for i,v in next, Workspace[Lobby].Boards:GetChildren() do
 		table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
 	end
@@ -1148,10 +1147,30 @@ Functions.MatchMaking = function()
 				break
 			end
 		end
-		if not UsedVeto and not CanChangeMap then
-			UsedVeto = true
-            RemoteEvent:FireServer("LobbyVoting", "Veto")
-			prints("Veto Has Used")
+		if not VetoUsedOnce and not CanChangeMap then
+			VetoUsedOnce = true
+			RemoteEvent:FireServer("LobbyVoting", "Veto")
+			prints("Veto Has Used Once")
+			if not CheckingForPrivateIntermission then
+				prints("Checking for Private Intermission")
+				local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
+				local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
+				if currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
+					CheckingForPrivateIntermission = true
+					for i,v in ipairs(StratXLibrary.Strat) do
+						if CheckingForPrivateIntermission then
+							prints("Checking finished, Start Overriding for Map")
+    						MapProps = v.Map.Lists[#v.Map.Lists]
+                			Index = v.Index
+                			prints("Overrided Map")
+                			RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+ 							break
+						end
+					end
+				elseif currentVeto.Text == `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
+					prints("Not Private Intermission")
+				end
+			end
 			task.wait(1)
 			table.clear(CurrentMapList)
 			for i,v in next, Workspace[Lobby].Boards:GetChildren() do
@@ -1298,7 +1317,9 @@ task.spawn(function()
 		StratsListNum += 1
 	end
 
-	if UtilitiesConfig.PreferMatchmaking or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
+	local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
+	local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
+	if UtilitiesConfig.PreferMatchmaking or currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
 		prints("MatchMaking Enabled")
 		Functions.MatchMaking()
 	end
@@ -1328,8 +1349,8 @@ task.spawn(function()
 				if Strat[i].ListNum > #Strat[i].Lists then
 					repeat task.wait() until Strat[i].ListNum <= #Strat[i].Lists
 				end
-				if not Strat[i].Lists[Strat[i].ListNum] then 
-					Strat[i].ListNum += 1 
+				if not Strat[i].Lists[Strat[i].ListNum] then
+					Strat[i].ListNum += 1
 					continue
 				end
 				Functions[i](Strat,Strat[i].Lists[Strat[i].ListNum])
