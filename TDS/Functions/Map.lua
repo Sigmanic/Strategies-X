@@ -130,7 +130,7 @@ return function(self, p1)
                 end
                 prints(`Using MatchMaking To Teleport To Special GameMode: {SpecialTable.mode}`)
                 return
-            elseif UtilitiesConfig.PreferMatchmaking or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
+            elseif UtilitiesConfig.PreferMatchmaking or Workspace:GetAttribute("IsPrivateServer") or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590) then
                 UI.JoiningStatus.Text = `Matchmaking Enabled. Checking Loadout`
                 prints("Waiting Loadout Allowed")
                 local Strat = StratXLibrary.Strat
