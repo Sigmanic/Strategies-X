@@ -30,7 +30,7 @@ local ElevatorSettings = {
     ["Hardcore"] = {Enabled = false, ChangeMap = true, JoinMap = true, WaitTimeToChange = 4.2, WaitTimeToJoin = 1.7},
     ["Tutorial"] = {Enabled = false},
     ["Halloween2024"] = {Enabled = false},
-    ["plsDonate"] = {Enabled = false},
+    ["PlsDonate"] = {Enabled = false},
     ["Event"] = {Enabled = false},
 }
 
