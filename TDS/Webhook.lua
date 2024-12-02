@@ -111,12 +111,6 @@ local Data = {
 	}
 }
 local Exp = GetEXP()
-local Before = getgenv().OldCorn
-local Now = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Hexscape Event"].text.Text
-Before = string.gsub(Before, "%D", "")
-Now = string.gsub(Now, "%D", "")
-local Math = Now - Before
-Math = tostring(Math)
 local WebhookData = {}
 if UtilitiesConfig.Webhook.UseNewFormat then
 	Data.embeds[1].fields = {}
@@ -228,12 +222,7 @@ if UtilitiesConfig.Webhook.UseNewFormat then
 				["name"] = "Won Experiences:",
 				["value"] = Exp.." :star:",
 				["inline"] = true
-			}, 
-			{
-				["name"] = "Won Candy Corn:",
-				["value"] = Math.." :candy:",
-				["inline"] = true
-			}, 
+			},
 		}
 		else {}
 	WebhookData.TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then
@@ -264,8 +253,7 @@ else
 		"**------------------ GAME INFO ----------------**"..
 		"\n**Map : ** "..ReplicatedStorage.State.Map.Value.."** | Mode : **"..ReplicatedStorage.State.Difficulty.Value..
 		"\n**Wave : **" ..LocalPlayer.PlayerGui.ReactGameTopGameDisplay.Frame.wave.container.value.Text.."** | Health : **"..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")".."** | Game Time : **" ..TimeFormat(Stats.duration.Text)..
-		"\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:"..
-		"\n**Won Candy Corn : **"..Math.."\n"
+		"\n**Won " ..GetReward[1]..": **" ..GetReward[2].."** | Won Experience : **" ..string.split(Rewards[1].content.textLabel.Text," XP")[1].." :star:\n"..
 	    else ""
 	local TroopsInfo = if UtilitiesConfig.Webhook.TroopsInfo then 
 		"**-------------- TROOPS INFO -----------------**".."```m\n"..CheckTower().."```"
