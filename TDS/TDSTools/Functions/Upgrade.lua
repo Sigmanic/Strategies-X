@@ -12,6 +12,7 @@ local RemoteEvent = if not GameSpoof then ReplicatedStorage:WaitForChild("Remote
 return function(self, p1)
     local tableinfo = p1--ParametersPatch("Upgrade",...)
     local Tower = tableinfo["TowerIndex"]
+    local Path = tableinfo["PathTarget"]
     local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false 
     if not CheckPlace() then
         return
@@ -35,7 +36,8 @@ return function(self, p1)
                 return
             end
             CheckUpgraded = RemoteFunction:InvokeServer("Troops","Upgrade","Set",{
-                ["Troop"] = TowersContained[Tower].Instance
+                ["Troop"] = TowersContained[Tower].Instance,
+                ["Path"] = Path
             })
             task.wait()
         until CheckUpgraded or SkipCheck

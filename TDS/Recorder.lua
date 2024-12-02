@@ -66,7 +66,7 @@ local writestrat = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return WriteFile(true,LocalPlayer.Name.."'s strat","StrategiesX/Recorder",tostring(Text).."\n")
+        return WriteFile(true,LocalPlayer.Name.."'s strat","StrategiesX/TDS/Recorder",tostring(Text).."\n")
     end)
 end
 local appendstrat = function(...)
@@ -82,7 +82,7 @@ local appendstrat = function(...)
         end
         local Text = table.concat(TableText, " ")
         print(Text)
-        return AppendFile(true,LocalPlayer.Name.."'s strat","StrategiesX/Recorder",tostring(Text).."\n")
+        return AppendFile(true,LocalPlayer.Name.."'s strat","StrategiesX/TDS/Recorder",tostring(Text).."\n")
     end)
 end
 getgenv().Recorder = {
@@ -216,20 +216,21 @@ local GenerateFunction = {
     end,
     Upgrade = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[4].Troop.Name;
+        local PathTarget = Args[4].Path
         if RemoteCheck ~= true then
             SetStatus(`Upgraded Failed ID: {TowerIndex}`)
-            print(`Upgraded Failed ID: {TowerIndex}`,RemoteCheck)
+            print(`Upgraded Failed ID: {TowerIndex}`, RemoteCheck)
             return
         end
         SetStatus(`Upgraded ID: {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
-        appendstrat(`TDS:Upgrade({TowerIndex}, {TimerStr})`)
+        appendstrat(`TDS:Upgrade({TowerIndex}, {TimerStr}, {PathTarget})`)
     end,
     Sell = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[3].Troop.Name;
         if not RemoteCheck or TowersList[tonumber(TowerIndex)].Instance:FindFirstChild("HumanoidRootPart") then
             SetStatus(`Sell Failed ID: {TowerIndex}`)
-            print(`Sell Failed ID: {TowerIndex}`,RemoteCheck)
+            print(`Sell Failed ID: {TowerIndex}`, RemoteCheck)
             return
         end
         SetStatus(`Sold TowerIndex {TowerIndex}`)
@@ -239,21 +240,50 @@ local GenerateFunction = {
     Target = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[4].Troop.Name
         local Target = Args[4].Target
+        if RemoteCheck ~= true then
+            SetStatus(`Target Failed ID: {TowerIndex}`)
+            print(`Target Failed ID: {TowerIndex}`, RemoteCheck)
+        end
         SetStatus(`Changed Target ID: {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Target({TowerIndex}, "{Target}", {TimerStr})`)
     end,
     Abilities = function(Args, Timer, RemoteCheck)
-        local TowerIndex = Args[4].Troop.Name;
+        local TowerIndex = Args[4].Troop.Name
         local AbilityName = Args[4].Name
+        local Data = Args[4].Data
+        if RemoteCheck ~= true then
+            SetStatus(`Ability Failed ID: {TowerIndex}`)
+            print(`Ability Failed ID: {TowerIndex}`, RemoteCheck)
+            return
+        end
+        local function formatData(Data)
+            local formattedData = {}
+            for key, value in pairs(Data) do
+                if key == "directionCFrame" then
+                    table.insert(formattedData, string.format('["%s"] = CFrame.new(%s)', key, tostring(value)))
+                elseif key == "position" then
+                    table.insert(formattedData, string.format('["%s"] = Vector3.new(%s)', key, tostring(value)))
+                else
+                    table.insert(formattedData, string.format('["%s"] = %s', key, tostring(value)))
+                end
+            end
+            return "{" .. table.concat(formattedData, ", ") .. "}"
+        end
+        local formattedData = formatData(Data)
         SetStatus(`Used Ability On TowerIndex {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
-        appendstrat(`TDS:Ability({TowerIndex}, "{AbilityName}", {TimerStr})`)
+        appendstrat(`TDS:Ability({TowerIndex}, "{AbilityName}", {TimerStr}, {formattedData})`)
     end,
     Option = function(Args, Timer, RemoteCheck)
         local TowerIndex = Args[4].Troop.Name;
         local OptionName = Args[4].Name
         local Value = Args[4].Value
+        if RemoteCheck ~= true then
+            SetStatus(`Option Failed ID; {TowerIndex}`)
+            print(`Option Failed ID: {TowerIndex}`, RemoteCheck)
+            return
+        end
         SetStatus(`Used Option On TowerIndex {TowerIndex}`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Option({TowerIndex}, "{OptionName}", "{Value}", {TimerStr})`)
@@ -277,21 +307,19 @@ local GenerateFunction = {
 }
 
 local Skipped = false
-VoteGUI:WaitForChild("prompt").Changed:Connect(function(property)
+VoteGUI:GetPropertyChangedSignal("Position"):Connect(function()
     repeat task.wait() until mainwindow.flags.autoskip
-    if Skipped or not VoteGUI:WaitForChild("count").Text == "0/1 Required" then
+    if Skipped or VoteGUI:WaitForChild("count").Text ~= "0/1 Required" then
         return
     end
-    if property == "Text" then
-        local currentPrompt = VoteGUI:WaitForChild("prompt").Text
-        if currentPrompt == "Skip Wave?" then
-            Skipped = true
-            local Timer = GetTimer()
-            task.spawn(GenerateFunction["Skip"], true, Timer)
-            ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
-            task.wait(2.5)
-            Skipped = false
-        end
+    local currentPrompt = VoteGUI:WaitForChild("prompt").Text
+    if currentPrompt == "Skip Wave?" and tonumber(GameWave.Text) ~= 0 then
+        Skipped = true
+        local Timer = GetTimer()
+        task.spawn(GenerateFunction["Skip"], true, Timer)
+        ReplicatedStorage.RemoteFunction:InvokeServer("Voting", "Skip")
+        task.wait(2.5)
+        Skipped = false
     end
 end)
 
@@ -327,7 +355,7 @@ for TowerName, Tower in next, ReplicatedStorage.RemoteFunction:InvokeServer("Ses
     end
 end
 writestrat("getgenv().StratCreditsAuthor = \"Optional\"")
-appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/MainSource.lua\", true))()\nTDS:Map(\""..
+appendstrat("local TDS = loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/TDS/MainSource.lua\", true))()\nTDS:Map(\""..
 RSMap.Value.."\", true, \""..RSMode.Value.."\")\nTDS:Loadout({\""..
     table.concat(Recorder.Troops, `", "`) .. if #Recorder.Troops.Golden ~= 0 then "\", [\"Golden\"] = {\""..
     table.concat(Recorder.Troops.Golden, `", "`).."\"}})" else "\"})"

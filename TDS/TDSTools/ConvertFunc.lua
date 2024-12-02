@@ -22,7 +22,7 @@ local Patcher = {
         end
         return TowerList
     end,
-    ["Place"] = function(troop, x, y, z, wave, min, sec,rotate, rotatex, rotatey, rotatez, inbetween)
+    ["Place"] = function(troop, x, y, z, wave, min, sec, rotate, rotatex, rotatey, rotatez, inbetween)
         return {
             ["TowerName"] = troop,
             ["TypeIndex"] = "",
@@ -34,7 +34,7 @@ local Patcher = {
             ["InBetween"] = type(inbetween) == "boolean" and inbetween or rotate or false,
         }
     end,
-    ["Upgrade"] = function(troop, wave, min, sec, inbetween)
+    ["Upgrade"] = function(troop, wave, min, sec, inbetween, pathtarget)
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
@@ -42,6 +42,7 @@ local Patcher = {
             ["Minute"] = min,
             ["Second"] = sec,
             ["InBetween"] = inbetween or false,
+            ["PathTarget"] = pathtarget or 1,
         }
     end,
     ["Sell"] = function(troop, wave, min, sec, inbetween)
@@ -66,7 +67,7 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
-    ["Ability"] = function(troop, nameability, wave, min, sec, inbetween)
+    ["Ability"] = function(troop, nameability, wave, min, sec, inbetween, data)
         return {
             ["TowerIndex"] = troop,
             ["TypeIndex"] = "",
@@ -75,6 +76,7 @@ local Patcher = {
             ["Minute"] = min,
             ["Second"] = sec,
             ["InBetween"] = inbetween or false,
+            ["Data"] = data,
         }
     end,
     ["Target"] = function(troop, target_wave, wave_target, min, sec, inbetween)
