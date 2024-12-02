@@ -151,11 +151,6 @@ if UtilitiesConfig.Webhook.UseNewFormat then
 				["inline"] = true
 			},
 			{
-				["name"] = "Candy Corn:",
-				["value"] = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Hexscape Event"].text.Text.." :candy:", --LocalPlayer.Gems.Value
-				["inline"] = true
-			},
-			{
 				["name"] = "Triumphs:",
 				["value"] = CommaText(PlayerInfo.Triumphs).." :trophy:", --LocalPlayer.Triumphs.Value
 				["inline"] = true
