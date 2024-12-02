@@ -343,7 +343,7 @@ task.spawn(function()
     if GetMode then
         repeat task.wait() until GetMode == RSDifficulty.Value
         appendstrat(`TDS:Mode("{GetMode}")`)
-    elseif DiffTable[RSDifficulty] then
+    elseif DiffTable[RSDifficulty.Value] then
         appendstrat(`TDS:Mode("{DiffTable[RSDifficulty.Value]}")`)
     end
 end)
