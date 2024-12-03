@@ -18,7 +18,6 @@
 
 * [Why did you make Strategies X?](#why-did-you-make-strategies-x)
 * [Goals](#goals)
-* [How To Use It?](#how-to-use-it)
 * [Requirements](#requirements)
 * [Features (WIP)](#features-wip)
 * [Contributors](#contributors)
@@ -36,21 +35,16 @@ Although I considered this as a hobby project, I spent a lot of time making this
 :hammer_and_wrench: Have better tools for strat makers.  
 :hammer_and_wrench: Faster and more stable.  
 
-## How To Use It?
-There are two ways to use Strategies X:
-1. ~~Enable Strategies X through StratLoader DevTest Version.~~
-2. Create a file in your executor's autoexec and paste this code below into that file:
-```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Sigmanic/Strategies-X/main/Loader.lua", true))()
-```
-
 ## Requirements
 Executors Supported:
-* Wave
-* Solara **(Partially)**
+* Wave (Working just fine)
 * Codex
 * Delta
 * Hydrogen
+* Synapse Z **(?)**
+* Xeno **(?)**
+* Atlantis **(?)**
+* Solara **(?)**
 
 Or any executors that support the following libraries/functions:
 * Filesystem Functions
@@ -61,21 +55,18 @@ Or any executors that support the following libraries/functions:
 ## Features (WIP)
 
 ## Contributors
-* **[wxzex](https://github.com/wxzex)**, for giving ideas, MatchMaking codes solutions.
+* **xeonise (or zxk2021)**, for giving ideas, MatchMaking codes solutions.
 * **Gurt**, for testing, reporting bugs, and giving me some solutions.
-* **ThanH**, for testing script.
 
 ## FAQ
 Where's the Discord server link?  
-[![](https://dcbadge.vercel.app/api/server/RWGUGV3YTj)](https://discord.gg/RWGUGV3YTj)  
+[![](https://dcbadge.vercel.app/api/server/RWGUGV3YTj)](https://discord.gg/RWGUGV3YTj)
+
 I found a bug, where do I report it?
 * You can report it in [Issues](https://github.com/Sigmanic/Strategies-X/issues).
 
 Can I get banned by using this script?
 * I will make sure that the detection will be low as possible, so you won't get banned.
-
-Can I use this with premium strat?
-* Maybe.
 
 Can you make the premium strat be free or cracked?
 * No. This script is **OPEN-SOURCED** under [MIT LICENSE](https://github.com/Sigmanic/Strategies-X/blob/main/LICENSE.md) meaning any cracking stuff is **NOT ALLOWED** here.
