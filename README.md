@@ -46,6 +46,7 @@ Executors Supported:
 * Atlantis **(?)**
 * Solara **(?)**
 * Swift **(?)**
+* AWP.GG **(?)**
 
 Or any executors that support the following libraries/functions:
 * Filesystem Functions
@@ -56,8 +57,9 @@ Or any executors that support the following libraries/functions:
 ## Features (WIP)
 
 ## Contributors
-* **xeonise (or zxk2021)**, for giving ideas, MatchMaking codes solutions.
-* **Gurt**, for testing, reporting bugs, and giving me some solutions.
+* **xeonise (or zxk2021)**, for giving ideas, codes solutions.
+* **SkremGah**, for a better Webhook management, ideal suggestions.
+* **Velarance**, for contributing the recorder.
 
 ## FAQ
 Where's the Discord server link?  
