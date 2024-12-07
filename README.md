@@ -41,10 +41,11 @@ Executors Supported:
 * Codex
 * Delta
 * Hydrogen
-* Synapse Z **(?)**
+* Synapse Z (Working just fine)
 * Xeno **(?)**
 * Atlantis **(?)**
 * Solara **(?)**
+* Swift **(?)**
 
 Or any executors that support the following libraries/functions:
 * Filesystem Functions
