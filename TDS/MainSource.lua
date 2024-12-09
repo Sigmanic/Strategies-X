@@ -74,6 +74,7 @@ StratXLibrary.UtilitiesConfig = {
 		TroopsInfo = true,
 		DisableCustomLog = true,
 	},
+	ClassicRejoinLobby = getgenv().ClassicRejoinLobby or false;
 }
 
 if not game:IsLoaded() then
@@ -879,24 +880,27 @@ if CheckPlace() then
    						task.wait(RETRY_DELAY)
    					end
    				until success or attemptIndex == ATTEMPT_LIMIT]]
-				prints("Starting a New Match")
-				for i,v in ipairs(StratXLibrary.Strat) do
-					local MapInStrat = v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map
-					if table.find(SpecialMaps, MapInStrat) then
-						local SpecialTable = SpecialGameMode[MapInStrat]
-    					if SpecialTable.mode == "halloween2024" then
-    						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+				if UtilitesConfig.ClassicRejoinLobby then
+					TeleportHandler(3260590327,2,7)
+				else
+					prints("Starting a New Match")
+					for i,v in ipairs(StratXLibrary.Strat) do
+						local MapInStrat = v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map
+						if table.find(SpecialMaps, MapInStrat) then
+							local SpecialTable = SpecialGameMode[MapInStrat]
+    						if SpecialTable.mode == "halloween2024" then
+    							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+    								["difficulty"] = SpecialTable.difficulty,
+    								["night"] = SpecialTable.night,
+    								["count"] = 1,
+    								["mode"] = SpecialTable.mode,
+    							})
+    						elseif SpecialTable.mode == "plsDonate" then
+    							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["difficulty"] = SpecialTable.difficulty,
-    							["night"] = SpecialTable.night,
     							["count"] = 1,
-    							["mode"] = SpecialTable.mode,
-    						})
-    					elseif SpecialTable.mode == "plsDonate" then
-    						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["difficulty"] = SpecialTable.difficulty,
-    						["count"] = 1,
-    						["mode"] = SpecialTable.mode,
-    						})
+	    						["mode"] = SpecialTable.mode,
+	    						})
     					elseif SpecialTable.mode == "Event" then
     						RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
 						else
@@ -906,20 +910,21 @@ if CheckPlace() then
     							["challenge"] = SpecialTable.challenge,
     						})
     					end
-    				else
-						local DiffTable = {
-    						["Easy"] = "Easy",
-    						["Normal"] = "Molten",
-    						["Intermediate"] = "Intermediate",
-    						["Fallen"] = "Fallen",
-    					}
-    					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
-    					RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["count"] = 1,
-    						["mode"] = string.lower(v.Map.Lists[1].Mode),
-    						["difficulty"] = DifficultyName,
-    					})
-    				end
+	    				else
+							local DiffTable = {
+	    						["Easy"] = "Easy",
+	    						["Normal"] = "Molten",
+	    						["Intermediate"] = "Intermediate",
+	    						["Fallen"] = "Fallen",
+	    					}
+	    					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
+	    					RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+	    						["count"] = 1,
+	    						["mode"] = string.lower(v.Map.Lists[1].Mode),
+	    						["difficulty"] = DifficultyName,
+	    					})
+	    				end
+				end
     			end
 				--TeleportHandler(3260590327,2,7)
    				--TeleportService:Teleport(3260590327)
