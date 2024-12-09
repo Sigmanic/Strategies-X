@@ -74,7 +74,6 @@ StratXLibrary.UtilitiesConfig = {
 		TroopsInfo = true,
 		DisableCustomLog = true,
 	},
-	ClassicRejoinLobby = getgenv().ClassicRejoinLobby or false;
 }
 
 if not game:IsLoaded() then
@@ -880,7 +879,8 @@ if CheckPlace() then
    						task.wait(RETRY_DELAY)
    					end
    				until success or attemptIndex == ATTEMPT_LIMIT]]
-				if UtilitesConfig.ClassicRejoinLobby then
+				if getgenv().ClassicRejoinLobby then
+					prints("ClassicRejoinLobby triggered")
 					TeleportHandler(3260590327,2,7)
 				else
 					prints("Starting a New Match")
