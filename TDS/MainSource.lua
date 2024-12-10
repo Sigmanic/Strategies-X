@@ -66,7 +66,7 @@ StratXLibrary.UtilitiesConfig = {
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
 	Webhook = {
 		Enabled = true,
-		Link = "",
+		Link = tostring(getgenv.WebhookLink) or "",
 		HideUser = false,
 		UseNewFormat = false,
 		PlayerInfo = true,
@@ -254,6 +254,9 @@ if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
 	if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 then
 		UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
 	end
+	if #tostring(getgenv().WebhookLink) ~= 0 then
+		UtilitiesConfig.Webhook.Link = tostring(getgenv().WebhookLink)
+	end
 	if type(getgenv().PotatoPC) == "boolean" then
 		UtilitiesConfig.LowGraphics = getgenv().PotatoPC
 	end
@@ -297,7 +300,7 @@ function SaveUtilitiesConfig()
 		Webhook = {
 			Enabled = WebSetting.flags.Enabled or false,
 			UseNewFormat = WebSetting.flags.UseNewFormat or false,
-			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or "",
+			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or tostring(getgenv().WebhookLink) or "",
 			HideUser = WebSetting.flags.HideUser or false,
 			PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
 			GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
