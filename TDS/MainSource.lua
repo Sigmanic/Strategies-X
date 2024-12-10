@@ -527,7 +527,7 @@ if not UtilitiesConfig.BypassGroup then
 			maintab:Section("Paradoxum Games Group")
 			local JoinButton = maintab:DropSection("Join The Group")
 			JoinButton:Button("Copy Link Group", function()
-				setclipboard("https://www.roblox.com/groups/4914494/Paradoxum-Games")
+				setclipboard("https://www.roblox.com/communities/4914494/Paradoxum-Games")
 			end)
 			JoinButton:Button("Continue To Use Script", function()
 				BypassGroup = true

@@ -6,7 +6,7 @@ local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 local Stats = Info.stats
 local Rewards = Info:WaitForChild("rewards")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Executor = identifyexecutor and identifyexecutor() or "???"
+local Executor = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "???"
 local UtilitiesConfig = StratXLibrary.UtilitiesConfig
 local PlayerInfo = StratXLibrary.UI.PlayerInfo.Property
 
