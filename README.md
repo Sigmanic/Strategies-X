@@ -36,15 +36,18 @@ Although I considered this as a hobby project, I spent a lot of time making this
 :hammer_and_wrench: Faster and more stable.  
 
 ## Requirements
-Executors Supported:
-* Wave (Working just fine)
+Executors Supported: **This does not mean they work with Recorder.lua**
+* Wave
 * Codex
 * Delta
 * Hydrogen
-* Synapse Z **(?)**
-* Xeno **(?)**
-* Atlantis **(?)**
-* Solara **(?)**
+* Synapse Z
+* Xeno **(Works)**
+* Zorara **(Works)**
+* Atlantis **(Works, always attach into roblox MENU)**
+* Solara **(Works, always attach into roblox MENU)**
+* Swift **(Works but Teleport Handler Broken)**
+* AWP.GG **(?)**
 
 Or any executors that support the following libraries/functions:
 * Filesystem Functions
@@ -55,8 +58,9 @@ Or any executors that support the following libraries/functions:
 ## Features (WIP)
 
 ## Contributors
-* **xeonise (or zxk2021)**, for giving ideas, MatchMaking codes solutions.
-* **Gurt**, for testing, reporting bugs, and giving me some solutions.
+* **xeonise (or zxk2021)**, for giving ideas, codes solutions.
+* **SkremGah**, for a better Webhook management, ideal suggestions.
+* **Velarance**, for contributing the recorder.
 
 ## FAQ
 Where's the Discord server link?  
