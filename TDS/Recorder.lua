@@ -327,8 +327,9 @@ task.spawn(function()
     GameWave:GetPropertyChangedSignal("Text"):Wait()
     local FinalWaveAtDifferentMode = {
         ["Easy"] = 25,
-        ["Normal"] = 40,
+        ["Casual"] = 30,
         ["Intermediate"] = 30,
+        ["Molten"] = 35,
         ["Fallen"] = 40,
         ["Hardcore"] = 50
     }
@@ -363,8 +364,9 @@ RSMap.Value.."\", true, \""..RSMode.Value.."\")\nTDS:Loadout({\""..
 task.spawn(function()
     local DiffTable = {
         ["Easy"] = "Easy",
-        ["Normal"] = "Molten",
+        ["Casual"] = "Casual",
         ["Intermediate"] = "Intermediate",
+        ["Molten"] = "Molten,
         ["Fallen"] = "Fallen"
     }
     repeat task.wait() until GetMode ~= nil or RSDifficulty.Value ~= ""
