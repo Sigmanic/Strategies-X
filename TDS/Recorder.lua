@@ -366,7 +366,7 @@ task.spawn(function()
         ["Easy"] = "Easy",
         ["Casual"] = "Casual",
         ["Intermediate"] = "Intermediate",
-        ["Molten"] = "Molten,
+        ["Molten"] = "Molten",
         ["Fallen"] = "Fallen"
     }
     repeat task.wait() until GetMode ~= nil or RSDifficulty.Value ~= ""
