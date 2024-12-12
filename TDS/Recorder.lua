@@ -330,7 +330,7 @@ task.spawn(function()
         ["Easy"] = 25,
         ["Casual"] = 30,
         ["Intermediate"] = 30,
-        ["Molten"] = 30,
+        ["Molten"] = 35,
         ["Fallen"] = 40,
         ["Hardcore"] = 50
     }

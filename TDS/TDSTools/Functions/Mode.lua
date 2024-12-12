@@ -6,8 +6,9 @@ return function(self, p1)
     end
     local DiffTable = {
         ["Easy"] = "Easy",
-        ["Molten"] = "Normal",
+        ["Casual"] = "Casual",
         ["Intermediate"] = "Intermediate",
+        ["Molten"] = "Molten",
         ["Fallen"] = "Fallen"
     }
     local ModeName = DiffTable[p1.Name] or p1.Name
