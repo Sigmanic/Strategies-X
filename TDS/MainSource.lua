@@ -66,7 +66,7 @@ StratXLibrary.UtilitiesConfig = {
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
 	Webhook = {
 		Enabled = true,
-		Link = tostring(getgenv().WebhookLink) or "",
+		Link = if (getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil) then tostring(getgenv().WebhookLink) else "",
 		HideUser = false,
 		UseNewFormat = false,
 		PlayerInfo = true,
@@ -254,7 +254,7 @@ if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
 	if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 then
 		UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
 	end
-	if #tostring(getgenv().WebhookLink) ~= 0 then
+	if getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil and type(tostring(getgenv().WebhookLink)) == "string" then
 		UtilitiesConfig.Webhook.Link = tostring(getgenv().WebhookLink)
 	end
 	if type(getgenv().PotatoPC) == "boolean" then
@@ -300,7 +300,7 @@ function SaveUtilitiesConfig()
 		Webhook = {
 			Enabled = WebSetting.flags.Enabled or false,
 			UseNewFormat = WebSetting.flags.UseNewFormat or false,
-			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or tostring(getgenv().WebhookLink) or "",
+			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or if #getgenv().WebhookLink ~= 0 then tostring(getgenv().WebhookLink) else "",
 			HideUser = WebSetting.flags.HideUser or false,
 			PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
 			GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
