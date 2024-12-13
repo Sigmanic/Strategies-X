@@ -300,7 +300,7 @@ function SaveUtilitiesConfig()
 		Webhook = {
 			Enabled = WebSetting.flags.Enabled or false,
 			UseNewFormat = WebSetting.flags.UseNewFormat or false,
-			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or if #getgenv().WebhookLink ~= 0 then tostring(getgenv().WebhookLink) else "",
+			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or if (getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil) then tostring(getgenv().WebhookLink) else "",
 			HideUser = WebSetting.flags.HideUser or false,
 			PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
 			GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
