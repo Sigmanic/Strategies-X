@@ -24,19 +24,19 @@ return function(self, p1)
         end
         for i,v in next, Tower do
             task.spawn(function()
-                local CheckSold
+                local SoldCheck
                 repeat
                     if not TowersCheckHandler(v) then
                         return
                     end
-                    CheckSold = RemoteFunction:InvokeServer("Troops","Sell",{
+                    SoldCheck = RemoteFunction:InvokeServer("Troops","Sell",{
                         ["Troop"] = TowersContained[v].Instance
                     })
                     task.wait()
-                until CheckSold or not TowersContained[v].Instance:FindFirstChild("HumanoidRootPart")
+                until SoldCheck or not TowersContained[v].Instance:FindFirstChild("HumanoidRootPart")
                 local TowerType = GetTypeIndex(tableinfo["TypeIndex"],v)
                 SetActionInfo("Sell")
-                ConsoleInfo((not CheckSold and "Already " or "").."Sold Tower Index: "..v..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+                ConsoleInfo((not SoldCheck and "Already " or "").."Sold Tower Index: "..v..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
             end)
         end
     end)

@@ -23,21 +23,31 @@ return function(self, p1)
         if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
             return
         end
-        if not TowersCheckHandler(Tower) then
-            return
-        end
-        if Ability == "Call Of Arms" and TowersContained[Tower].AutoChain then
-            local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
-            SetActionInfo("Ability")
-            ConsoleInfo("Skipped Ability (AutoChain Enabled) On Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
-            return
-        end
-        RemoteFunction:InvokeServer("Troops","Abilities","Activate",{
-            ["Troop"] = TowersContained[Tower].Instance,
-            ["Name"] = Ability,
-            ["Data"] = Data,
-        })
+        local AbilityCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
+        task.spawn(function()
+            task.wait(2)
+            while not (type(AbilityCheck) == "boolean" and AbilityCheck) do
+                ConsoleWarn(`Cannot Ability (Name: {Ability} On Tower Index: {Tower}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
+                task.wait(1)
+            end
+        end)
+        repeat
+            if not TowersCheckHandler(Tower) then
+                return
+            end
+            if Ability == "Call Of Arms" and TowersContained[Tower].AutoChain then
+                SetActionInfo("Ability")
+                ConsoleInfo("Skipped Ability (AutoChain Enabled) On Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
+                return
+            end
+            AbilityCheck = RemoteFunction:InvokeServer("Troops","Abilities","Activate",{
+                ["Troop"] = TowersContained[Tower].Instance,
+                ["Name"] = Ability,
+                ["Data"] = Data,
+            })
+            task.wait()
+        until type(AbilityCheck) == "boolean" and AbilityCheck
         SetActionInfo("Ability")
         ConsoleInfo("Used Ability On Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
     end)

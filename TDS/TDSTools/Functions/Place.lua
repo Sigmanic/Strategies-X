@@ -191,18 +191,18 @@ return function(self, p1)
             return
         end
         TowerTable.PassedTimer = true
-        local CheckPlaced, ErrorModel
+        local PlaceCheck, ErrorModel
         task.delay(45, function()
-            if typeof(CheckPlaced) ~= "Instance" then
-                if (type(CheckPlaced) == "string" and CheckPlaced == "Game is over!") or CurrentCount ~= StratXLibrary.RestartCount then
+            if typeof(PlaceCheck) ~= "Instance" then
+                if (type(PlaceCheck) == "string" and PlaceCheck == "Game is over!") or CurrentCount ~= StratXLibrary.RestartCount then
                     return
                 end
                 ConsoleError("Tower Index: "..TempNum..", Type: \""..Tower.."\" Hasn't Been Placed In The Last 45 Seconds. Check Again Its Arguments Or Order.")
-                ConsoleError(`Returned CheckPlaced Value: {CheckPlaced}`)
+                ConsoleError(`Returned PlaceCheck Value: {PlaceCheck}`)
             end
         end)
         repeat
-            if type(CheckPlaced) == "string" and CheckPlaced == "You cannot place here!" and not ErrorModel then
+            if type(PlaceCheck) == "string" and PlaceCheck == "You cannot place here!" and not ErrorModel then
                 ErrorModel = AddFakeTower(TowerTable.TowerName,"Error")
                 ErrorModel:PivotTo(CFrame.new(TowerTable.Position + Vector3.new(0,math.abs(TowerModel.PrimaryPart.HeightOffset.CFrame.Y),0)) * TowerTable.Rotation)
                 ErrorModel.Name = TempNum
@@ -216,19 +216,19 @@ return function(self, p1)
             if CurrentCount ~= StratXLibrary.RestartCount then
                 return
             end
-            CheckPlaced = RemoteFunction:InvokeServer("Troops","Place",Tower,{
+            PlaceCheck = RemoteFunction:InvokeServer("Troops","Place",Tower,{
                 ["Position"] = TowerTable.Position,
                 ["Rotation"] = TowerTable.Rotation
             })
             task.wait()
-        until typeof(CheckPlaced) == "Instance" --return instance
-        CheckPlaced.Name = TempNum
+        until typeof(PlaceCheck) == "Instance" --return instance
+        PlaceCheck.Name = TempNum
         local TowerInfo = StratXLibrary.TowerInfo[Tower]
         TowerInfo[2] += 1
-        CheckPlaced:SetAttribute("TypeIndex", Tower.." "..tostring(TowerInfo[2]))
+        PlaceCheck:SetAttribute("TypeIndex", Tower.." "..tostring(TowerInfo[2]))
         TowerInfo[1].Text = Tower.." : "..tostring(TowerInfo[2])
-        TowerTable.Instance = CheckPlaced
-        TowerTable.TypeIndex = CheckPlaced:GetAttribute("TypeIndex")
+        TowerTable.Instance = PlaceCheck
+        TowerTable.TypeIndex = PlaceCheck:GetAttribute("TypeIndex")
         TowerTable.Placed = true
         TowerTable.Target = "First"
         TowerTable.Upgrade = 0
@@ -246,6 +246,6 @@ return function(self, p1)
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],TempNum)
         SetActionInfo("Place")
         local StackingCheck = (TowerTable.Position - TowerTable.OldPosition).magnitude > 1
-        ConsoleInfo(`Placed {Tower} Index: {CheckPlaced.Name}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave}, Time Error: {ReplicatedStorage.State.Timer.Time.Value - Min*60+Sec}) {if StackingCheck then ", Stacked Position" else ", Original Position"}`)
+        ConsoleInfo(`Placed {Tower} Index: {PlaceCheck.Name}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave}, Time Error: {ReplicatedStorage.State.Timer.Time.Value - Min*60+Sec}) {if StackingCheck then ", Stacked Position" else ", Original Position"}`)
     end)
 end

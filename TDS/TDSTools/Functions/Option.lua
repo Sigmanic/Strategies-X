@@ -15,7 +15,7 @@ return function(self, p1)
     local Tower = tableinfo["TowerIndex"]
     local OptName = tableinfo["Name"]
     local OptValue = tableinfo["Value"]
-    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false 
+    local Wave,Min,Sec,InWave = tableinfo["Wave"] or 0, tableinfo["Minute"] or 0, tableinfo["Second"] or 0, tableinfo["InBetween"] or false
     if not CheckPlace() then
         return
     end
@@ -24,11 +24,11 @@ return function(self, p1)
         if not TimeWaveWait(Wave, Min, Sec, InWave, tableinfo["Debug"]) then
             return
         end
-        local RemoteCheck
+        local OptionCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         task.spawn(function()
             task.wait(2)
-            while not (type(RemoteCheck) == "boolean" and RemoteCheck) do
+            while not (type(OptionCheck) == "boolean" and OptionCheck) do
                 ConsoleWarn(`Cannot Set Option (Name: {OptName}, Value: {OptValue}) On Tower Index: {Tower}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
                 task.wait(1)
             end
@@ -37,13 +37,13 @@ return function(self, p1)
             if not TowersCheckHandler(Tower) then
                 return
             end
-            RemoteCheck = RemoteFunction:InvokeServer("Troops","Option","Set",{
+            OptionCheck = RemoteFunction:InvokeServer("Troops","Option","Set",{
                 ["Troop"] = TowersContained[Tower].Instance, 
                 ["Name"] = OptName,
                 ["Value"] = OptValue,
             })
             task.wait()
-        until type(RemoteCheck) == "boolean" and RemoteCheck
+        until type(OptionCheck) == "boolean" and OptionCheck
         SetActionInfo("Option")
         ConsoleInfo(`Set Option (Name: {OptName}, Value: {OptValue}) On Tower Index: {Tower}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)

@@ -26,7 +26,7 @@ return function(self, p1)
         end
         --prints(TimerCheck)
         --prints("Upgrade",Wave, Min, Sec, InWave, StratXLibrary.CurrentCount, tableinfo["Debug"])
-        local CheckUpgraded, SkipCheck
+        local UpgradeCheck, SkipCheck
         task.delay(50, function()
             SkipCheck = true
         end)
@@ -35,21 +35,21 @@ return function(self, p1)
                 prints("End Upgrade",Wave, Min, Sec, InWave)
                 return
             end
-            CheckUpgraded = RemoteFunction:InvokeServer("Troops","Upgrade","Set",{
+            UpgradeCheck = RemoteFunction:InvokeServer("Troops","Upgrade","Set",{
                 ["Troop"] = TowersContained[Tower].Instance,
                 ["Path"] = Path
             })
             task.wait()
-        until CheckUpgraded or SkipCheck
+        until UpgradeCheck or SkipCheck
         local TowerType = GetTypeIndex(tableinfo["TypeIndex"],Tower)
         if CurrentCount ~= StratXLibrary.RestartCount then
             return
         end
-        if SkipCheck and not CheckUpgraded then
-            ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", SkipCheck: "..tostring(SkipCheck))
+        if SkipCheck and not UpgradeCheck then
+            ConsoleError("Failed To Upgrade Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") UpgradeCheck: "..tostring(UpgradeCheck)..", SkipCheck: "..tostring(SkipCheck))
             return
         end
         SetActionInfo("Upgrade")
-        ConsoleInfo("Upgraded Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") CheckUpgraded: "..tostring(CheckUpgraded)..", SkipCheck: "..tostring(SkipCheck))
+        ConsoleInfo("Upgraded Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..") UpgradeCheck: "..tostring(UpgradeCheck)..", SkipCheck: "..tostring(SkipCheck))
     end)
 end
