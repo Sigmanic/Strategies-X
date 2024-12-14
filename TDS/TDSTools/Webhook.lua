@@ -54,6 +54,9 @@ local Identifier = {
 	["rbxassetid://7610093373"] = "Winter Storm",
 	["rbxassetid://5870325376"] = "Coins",
 	["rbxassetid://5870383867"] = "Gems",
+	["rbxassetid://18493073533"] = "Spin Tickets",
+	["rbxassetid://17447507910"] = "Timescale Tickets",
+	["rbxassetid://18557179994"] = "Revive Tickets",
 }
 
 function NewWebhook(Link)
@@ -243,7 +246,7 @@ for i , v in next, Rewards:GetChildren() do
 			local icon = v:WaitForChild("content"):FindFirstChild("icon")
 			if icon:IsA("ImageLabel") then
 				if Identifier[icon.Image] == nil then
-					Embed.AddField("Won Unidentified Item:", "1x "..icon.Image)
+					Embed.AddField("Won Unidentified Item:", "1x "..TextLabel.Text, icon.Image)
 				else
 					Embed.AddField("Won "..Identifier[icon.Image]..":", TextLabel.Text)
 				end
