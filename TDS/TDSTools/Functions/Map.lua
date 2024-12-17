@@ -15,6 +15,7 @@ local SpecialGameMode = {
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
     ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
     ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"},
+    ["Outpost 32"] = {mode = "frostInvasion", difficulty = "Hard" },
     --Temporary Special Maps ^^^^^^
     ["Classic Candy Cane Lane"] = {mode = "Event", part = "ClassicRobloxPart1"},
     ["Classic Winter"] = {mode = "Event", part = "ClassicRobloxPart2"},
@@ -112,6 +113,12 @@ return function(self, p1)
                         ["night"] = SpecialTable.night,
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
+                    })
+                elseif SpecialTable.mode == "frostInvasion" then
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                        ["difficulty"] = SpecialTable.difficulty,
+                        ["mode"] = SpecialTable.mode,
+                        ["count"] = 1,
                     })
                 elseif SpecialTable.mode == "plsDonate" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
