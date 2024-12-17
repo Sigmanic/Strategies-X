@@ -9,7 +9,7 @@ end
 local Version = "Version: 0.3.21 [Alpha]"
 local Items = {
 	Enabled = true,
-	Name = "Bell"
+	Name = {"Bell", "Lorebook"}
 }
 
 local LoadLocal = false
@@ -1018,7 +1018,7 @@ if CheckPlace() then
 						game:GetService("TweenService"):Create(LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), TweenInfo.new(0, Enum.EasingStyle.Linear), {CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)}):Play()
 						task.wait(.1)
 					end
-					if Object:IsA("MeshPart") and string.find(Object.Name:lower(),Items.Name:lower()) and Object.CFrame.Y < 200 then
+					if Object:IsA("MeshPart") and table.find(Items.Name, Object.Name) and Object.CFrame.Y < 200 then
 						if not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
 							repeat task.wait() until LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 						end
