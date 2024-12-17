@@ -8,8 +8,8 @@ end
 
 local Version = "Version: 0.3.21 [Alpha]"
 local Items = {
-	Enabled = false,
-	Name = "CandyCorn"
+	Enabled = true,
+	Name = "Bell"
 }
 
 local LoadLocal = false
