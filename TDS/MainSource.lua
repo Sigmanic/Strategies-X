@@ -9,7 +9,6 @@ end
 local Version = "Version: 0.3.21 [Alpha]"
 local Items = {
 	Enabled = true,
-	Name = "Bell"
 	Name = {"Bell", "Lorebook"}
 }
 
