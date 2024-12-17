@@ -33,6 +33,7 @@ local ElevatorSettings = {
     ["Halloween2024"] = {Enabled = false},
     ["PlsDonate"] = {Enabled = false},
     ["Event"] = {Enabled = false},
+    ["FrostInvasion"] = {Enabled = false}
 }
 
 return function(self, p1)
