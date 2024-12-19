@@ -66,7 +66,7 @@ StratXLibrary.UtilitiesConfig = {
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
 	Webhook = {
 		Enabled = true,
-		Link = if (getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil) then tostring(getgenv().WebhookLink) else "",
+		Link = if getgenv().WebhookLink and tostring(getgenv().WebhookLink) then tostring(getgenv().WebhookLink) else "",
 		HideUser = false,
 		UseNewFormat = false,
 		PlayerInfo = true,
@@ -254,7 +254,7 @@ if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
 	if tonumber(getgenv().DefaultCam) and tonumber(getgenv().DefaultCam) <= 3 then
 		UtilitiesConfig.Camera = tonumber(getgenv().DefaultCam)
 	end
-	if getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil and type(tostring(getgenv().WebhookLink)) == "string" then
+	if getgenv().WebhookLink and type(tostring(getgenv().WebhookLink)) == "string" then
 		UtilitiesConfig.Webhook.Link = tostring(getgenv().WebhookLink)
 	end
 	if type(getgenv().PotatoPC) == "boolean" then
@@ -266,7 +266,7 @@ if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
 	if type(getgenv().AutoBuyMissing) == "boolean" then
 		UtilitiesConfig.AutoBuyMissing = getgenv().BuyMissingTowers
 	end
-	if type(getgenv().RestartMatch) == "boolean" then
+	if type(getgenv().AutoRestart) == "boolean" then
 		UtilitiesConfig.RestartMatch = getgenv().AutoRestart
 	end
 	if type(getgenv().Debug) == "boolean" then
@@ -286,7 +286,7 @@ end
 
 function SaveUtilitiesConfig()
 	UtilitiesTab = UI.UtilitiesTab
-	local WebSetting = UI.WebSetting
+	local WebhookSetting = UI.WebhookSetting
 	StratXLibrary.UtilitiesConfig = {
 		Camera = tonumber(getgenv().DefaultCam) or 2,
 		LowGraphics = UtilitiesTab.flags.LowGraphics,
@@ -298,14 +298,14 @@ function SaveUtilitiesConfig()
 		UseTimeScale = UtilitiesTab.flags.UseTimeScale,
 		PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
 		Webhook = {
-			Enabled = WebSetting.flags.Enabled or false,
-			UseNewFormat = WebSetting.flags.UseNewFormat or false,
-			Link = (#WebSetting.flags.Link ~= 0 and WebSetting.flags.Link) or if (getgenv().WebhookLink and tostring(getgenv().WebhookLink) ~= nil) then tostring(getgenv().WebhookLink) else "",
-			HideUser = WebSetting.flags.HideUser or false,
-			PlayerInfo = if type(WebSetting.flags.PlayerInfo) == "boolean" then WebSetting.flags.PlayerInfo else true,
-			GameInfo = if type(WebSetting.flags.GameInfo) == "boolean" then WebSetting.flags.GameInfo else true,
-			TroopsInfo = if type(WebSetting.flags.TroopsInfo) == "boolean" then WebSetting.flags.TroopsInfo else true,
-			DisableCustomLog = if type(WebSetting.flags.DisableCustomLog) == "boolean" then WebSetting.flags.DisableCustomLog else true,
+			Enabled = WebhookSetting.flags.Enabled or false,
+			UseNewFormat = WebhookSetting.flags.UseNewFormat or false,
+			Link = (#WebhookSetting.flags.Link ~= 0 and WebhookSetting.flags.Link) or if (getgenv().WebhookLink and tostring(getgenv().WebhookLink)) then tostring(getgenv().WebhookLink) else "",
+			HideUser = WebhookSetting.flags.HideUser or false,
+			PlayerInfo = if type(WebhookSetting.flags.PlayerInfo) == "boolean" then WebhookSetting.flags.PlayerInfo else true,
+			GameInfo = if type(WebhookSetting.flags.GameInfo) == "boolean" then WebhookSetting.flags.GameInfo else true,
+			TroopsInfo = if type(WebhookSetting.flags.TroopsInfo) == "boolean" then WebhookSetting.flags.TroopsInfo else true,
+			DisableCustomLog = if type(WebhookSetting.flags.DisableCustomLog) == "boolean" then WebhookSetting.flags.DisableCustomLog else true,
 		},
 	}
 	UtilitiesConfig = StratXLibrary.UtilitiesConfig
@@ -567,6 +567,7 @@ if CheckPlace() then
 	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
+
 	--Disable Auto Skip Feature
 	local AutoSkipCheck
 	task.spawn(function()
@@ -596,6 +597,8 @@ if CheckPlace() then
 			TimerCheck = false
 		end
 	end)
+
+	--AutoSkip & Auto Start Game
 	if VoteGUI:WaitForChild("prompt").Text == "Ready?" then --Event GameMode
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
@@ -641,6 +644,7 @@ if CheckPlace() then
    		end
 	end)
 
+	--Platform Stand
 	task.spawn(function()
 		--repeat task.wait() until Workspace.Map:FindFirstChild("Environment"):FindFirstChild("SpawnLocation")
 		local Part = Instance.new("Part")
@@ -664,6 +668,9 @@ if CheckPlace() then
 		LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 3.5, 0)
 	end)
 
+	getgenv().OldPickups = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Operation I.C.E"):WaitForChild("text").Text
+
+	--Game Cores
 	task.spawn(function()
 		loadstring(game:HttpGet(MainLink.."TDSTools/FreeCam.lua", true))()
 
@@ -842,7 +849,7 @@ if CheckPlace() then
 				if RSDifficulty.Value == "Hardcore" then
 					return
 				end
-				local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
+				--[[local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
 				if UtilitiesConfig.UseTimeScale then
 					if TimeScaleUI:FindFirstChild("Lock") then
        					task.spawn(function()
@@ -851,7 +858,7 @@ if CheckPlace() then
        						ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
        					end)
 					end
-				end
+				end]]
 			else
 				prints(`Match {if MatchGui:WaitForChild("banner"):WaitForChild("textLabel").Text == "TRIUMPH!" then "Won" else "Lose"}`)
 				if AutoSkipCheck then
@@ -888,20 +895,20 @@ if CheckPlace() then
 					if table.find(SpecialMaps, MapInStrat) then
 						local SpecialTable = SpecialGameMode[MapInStrat]
     					if SpecialTable.mode == "halloween2024" then
-    						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["difficulty"] = SpecialTable.difficulty,
     							["night"] = SpecialTable.night,
     							["count"] = 1,
     							["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "plsDonate" then
-    						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["difficulty"] = SpecialTable.difficulty,
-    						["count"] = 1,
-    						["mode"] = SpecialTable.mode,
+							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+         						["difficulty"] = SpecialTable.difficulty,
+         						["count"] = 1,
+         						["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "Event" then
-    						RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
+							RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
 						else
     						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["count"] = 1,
@@ -917,7 +924,7 @@ if CheckPlace() then
     						["Fallen"] = "Fallen",
     					}
     					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
-    					RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     						["count"] = 1,
     						["mode"] = string.lower(v.Map.Lists[1].Mode),
     						["difficulty"] = DifficultyName,
@@ -991,7 +998,7 @@ if CheckPlace() then
 	end)
 	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
+	--[[UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
 		if (bool and ReplicatedStorage.State.Difficulty.Value == "Hardcore") or (bool and Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby") then
 			prints("Timescale Is Not Supported In Hardcore!")
 			return
@@ -1007,7 +1014,7 @@ if CheckPlace() then
      		    end)
 		    end
 		end
-	end)
+	end)]]
 
 	if Items.Enabled then
 		task.spawn(function()
@@ -1061,19 +1068,19 @@ if CheckPlace() then
 	end)
 end
 
-UI.WebSetting = UtilitiesTab:DropSection("Webhook Settings")
-local WebSetting = UI.WebSetting
-WebSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
-WebSetting:Toggle("Apply New Format", {default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
-WebSetting:Section("Webhook Link:                             ")
-WebSetting:TypeBox("Webhook Link", {default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
+UI.WebhookSetting = UtilitiesTab:DropSection("Webhook Settings")
+local WebhookSetting = UI.WebhookSetting
+WebhookSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
+WebhookSetting:Toggle("Apply New Format", {default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
+WebhookSetting:Section("Webhook Link:                             ")
+WebhookSetting:TypeBox("Webhook Link", {default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
 if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
-	WebSetting:Toggle("Disable SL's Custom Log", {default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
+	WebhookSetting:Toggle("Disable SL's Custom Log", {default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
 end
-WebSetting:Toggle("Hide Username", {default = UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
-WebSetting:Toggle("Player Info", {default = UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
-WebSetting:Toggle("Game Info", {default = UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
-WebSetting:Toggle("Troops Info", {default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
+WebhookSetting:Toggle("Hide Username", {default = UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
+WebhookSetting:Toggle("Player Info", {default = UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
+WebhookSetting:Toggle("Game Info", {default = UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
+WebhookSetting:Toggle("Troops Info", {default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
 UtilitiesTab:Section("Universal Settings")
 UtilitiesTab:Toggle("Prefer Matchmaking", {flag = "PreferMatchmaking", default = UtilitiesConfig.PreferMatchmaking})
@@ -1159,7 +1166,7 @@ Functions.SellAllFarms = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/S
 Functions.Option = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/Option.lua", true))()
 
 Functions.MatchMaking = function()
-	local MapProps, Index
+	local MapProps, Index, VetoUsedOnce, CheckingForPrivateIntermission
     local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
 	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
@@ -1173,9 +1180,8 @@ Functions.MatchMaking = function()
 	local TroopsOwned = GetTowersInfo()
 	local CanChangeMap = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
 	local CurrentMapList = {}
-	local VetoUsedOnce, CheckingForPrivateIntermission
-	for i,v in next, Workspace[Lobby].Boards:GetChildren() do
-		table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
+	for i,v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
+		table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
 	end
 	task.wait(3)
 	while not MapProps do
@@ -1203,7 +1209,7 @@ Functions.MatchMaking = function()
 			if MapProps then
 				break
 			end
-			if table.find(CurrentMapList,v.Map.Lists[1].Map) then
+			if table.find(CurrentMapList, v.Map.Lists[1].Map) then
 				MapProps = v.Map.Lists[#v.Map.Lists]
 				Index = v.Index
 				break
@@ -1213,45 +1219,41 @@ Functions.MatchMaking = function()
 				prints("Overrided Map")
 				RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
 				break
-			end
+		    elseif not VetoUsedOnce and not CanChangeMap and not table.find(CurrentMapList, v.Map.Lists[1].Map) then
+           		VetoUsedOnce = true
+               	RemoteEvent:FireServer("LobbyVoting", "Veto")
+           		prints("Veto Has Used Once")
+           		task.wait(3)
+           		if not CheckingForPrivateIntermission then
+           			CheckingForPrivateIntermission = true
+           			prints("Checking for Private Intermission")
+           			local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
+           			local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
+           			if currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
+             			prints("Checking finished, Start Overriding for Map")
+                		MapProps = v.Map.Lists[#v.Map.Lists]
+                        Index = v.Index
+             			RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+                        prints("Overrided for Map")
+       					break
+           			elseif currentVeto.Text == `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
+           		        prints("Not Private Intermission")
+              		end
+           		end
+			    break
+       	    end
 		end
-		if not VetoUsedOnce and not CanChangeMap then
-			VetoUsedOnce = true
-			RemoteEvent:FireServer("LobbyVoting", "Veto")
-			prints("Veto Has Used Once")
-			task.wait(3)
-			if not CheckingForPrivateIntermission then
-				prints("Checking for Private Intermission")
-				local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
-				local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
-				if currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
-					CheckingForPrivateIntermission = true
-					for i,v in ipairs(StratXLibrary.Strat) do
-						if CheckingForPrivateIntermission then
-							prints("Checking finished, Start Overriding for Map")
-    						MapProps = v.Map.Lists[#v.Map.Lists]
-                			Index = v.Index
-							RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-                			prints("Overrided for Map")
- 							break
-						end
-					end
-				elseif currentVeto.Text == `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
-					prints("Not Private Intermission")
-				end
-			end
-			task.wait(1)
-			table.clear(CurrentMapList)
-			for i,v in next, Workspace[Lobby].Boards:GetChildren() do
-				table.insert(CurrentMapList, v.Hitboxes.Bottom.MapDisplay.Title.Text)
-			end
-			task.delay(5,function()
-				if not MapProps then
-					TeleportHandler(3260590327,2,7)
-				end
-			end)
+		task.wait(1)
+      	table.clear(CurrentMapList)
+      	for i,v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
+			table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
 		end
-	end
+      	task.delay(5,function()
+      		if not MapProps then
+      			TeleportHandler(3260590327,2,7)
+      		end
+      	end)
+    end
 	RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
 	RemoteEvent:FireServer("LobbyVoting", "Vote", MapProps.Map, LocalPlayer.Character.HumanoidRootPart.Position)
 	RemoteEvent:FireServer("LobbyVoting","Ready")

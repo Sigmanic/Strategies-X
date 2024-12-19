@@ -21,21 +21,18 @@ return function(self, p1)
             return
         end
         local SkipCheck
-        if VoteGUI:WaitForChild("count").Text ~= `0/{#Players:GetChildren()} Required` then
+        if VoteGUI:WaitForChild("count").Text ~= `0/{#Players:GetChildren()} Required` or VoteGUI.Position ~= UDim2.new(0.5, 0, 0.5, 0) then
             repeat
                 task.wait()
-            until VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required`
+            until VoteGUI:WaitForChild("count").Text == `0/{#Players:GetChildren()} Required` or VoteGUI.Position == UDim2.new(0.5, 0, 0.5, 0)
         end
-        if VoteGUI.Position ~= UDim2.new(0.5, 0, 0.5, 0) then --UDim2.new(scale_x, offset_x, scale_y, offset_y)
+        if VoteGUI:WaitForChild("prompt").Text ~= "Skip Wave?" or Wave == 0 then
             return
         end
         repeat
-            if VoteGUI:WaitForChild("prompt").Text ~= "Skip Wave?" then
-                return
-            end
             SkipCheck = RemoteFunction:InvokeServer("Voting", "Skip")
             task.wait()
-        until SkipCheck or VoteGUI:WaitForChild("count").Text ~= `0/{#Players:GetChildren()} Required`
+        until (type(SkipCheck) == "boolean" and SkipCheck) or VoteGUI:WaitForChild("count").Text ~= `0/{#Players:GetChildren()} Required`
         SetActionInfo("Skip")
         ConsoleInfo(`Skipped Wave {Wave} (Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)

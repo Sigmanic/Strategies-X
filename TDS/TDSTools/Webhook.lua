@@ -6,9 +6,19 @@ local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 local Stats = Info.stats
 local Rewards = Info:WaitForChild("rewards")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Executor = (identifyexecutor and identifyexecutor()) or (getexecutorname and getexecutorname()) or "???"
+local Executor = identifyexecutor and identifyexecutor() or getexecutor and getexecutor() or"???"
 local UtilitiesConfig = StratXLibrary.UtilitiesConfig
 local PlayerInfo = StratXLibrary.UI.PlayerInfo.Property
+
+--Pickups Stuff
+
+local OldPickups = getgenv().OldPickups
+local CurrentPickups = LocalPlayer.PlayerGui.ReactOverridesTopBar.Frame.items["Operation I.C.E"].text.Text
+OldPickups = string.gsub(OldPickups, "%D", "")
+CurrentPickups = string.gsub(CurrentPickups, "%D", "")
+local WonPickups = CurrentPickups - OldPickups
+
+--Text Formatters
 
 local CommaText = function(string)
 	local String = tostring(string):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
@@ -35,29 +45,28 @@ local CheckColor = {
 }
 
 local Identifier = {
-	["rbxassetid://17429548305"] = "Supply Drop",
-	["rbxassetid://17448596007"] = "Airstrike",
-	["rbxassetid://17429541513"] = "Barricade",
-	["rbxassetid://17429537022"] = "Blizzard Bomb",
-	["rbxassetid://17438487774"] = "Cooldown Flag",
-	["rbxassetid://17438486138"] = "Damage Flag",
 	["rbxassetid://17430416205"] = "Flash Bang",
 	["rbxassetid://17429533728"] = "Grenade",
 	["rbxassetid://17437703262"] = "Molotov",
-	["rbxassetid://17448596749"] = "Napalm Strike",
-	["rbxassetid://17430415569"] = "Nuke",
-	["rbxassetid://124568805305441"] = "Pumpkin Bomb",
+	["rbxassetid://17429541513"] = "Barricade",
+	["rbxassetid://17448596007"] = "Airstrike",
+	["rbxassetid://17429548305"] = "Supply Drop",
+	["rbxassetid://17448597451"] = "UAV",
+	["rbxassetid://17438487774"] = "Cooldown Flag",
+	["rbxassetid://17438486138"] = "Damage Flag",
 	["rbxassetid://17438486690"] = "Range Flag",
+	["rbxassetid://17448596749"] = "Napalm Strike",
+	["rbxassetid://17429537022"] = "Blizzard Bomb",
+	["rbxassetid://17430415569"] = "Nuke",
+	["rbxassetid://7610093373"] = "Winter Storm",
+	["rbxassetid://124568805305441"] = "Pumpkin Bomb",
 	["rbxassetid://114595010548022"] = "Sugar Rush",
 	["rbxassetid://128078447476652"] = "Turkey Leg",
-	["rbxassetid://17448597451"] = "UAV",
-	["rbxassetid://7610093373"] = "Winter Storm",
 	["rbxassetid://5870325376"] = "Coins",
 	["rbxassetid://5870383867"] = "Gems",
-	["rbxassetid://18493073533"] = "Spin Tickets",
-	["rbxassetid://17447507910"] = "Timescale Tickets",
-	["rbxassetid://18557179994"] = "Revive Tickets",
 }
+
+--Webhook Functions
 
 function NewWebhook(Link)
 	local Data = {
@@ -212,6 +221,7 @@ function NewWebhook(Link)
 	return Webhook
 end
 
+--Main
 
 local Link = UtilitiesConfig.Webhook.Link
 local Webhook = NewWebhook(Link)
@@ -228,6 +238,7 @@ Embed.AddField("Map:",ReplicatedStorage.State.Map.Value)
 Embed.AddField("Mode:",ReplicatedStorage.State.Difficulty.Value)
 Embed.AddField("Wave / Health:",LocalPlayer.PlayerGui.ReactGameTopGameDisplay.Frame.wave.container.value.Text.." / "..tostring(ReplicatedStorage.State.Health.Current.Value).." ("..tostring(ReplicatedStorage.State.Health.Max.Value)..")")
 Embed.AddField("Game Time:",TimeFormat(Stats.duration.Text))
+Embed.AddField("Won Bells:",WonPickups)
 
 repeat
 	task.wait()
@@ -268,6 +279,7 @@ Embed.AddField("Exp:", CommaText(PlayerInfo.Experience).." :star:")
 Embed.AddField("Spin Tickets:", CommaText(PlayerInfo.SpinTickets).." :tickets:")
 Embed.AddField("Revive Tickets:", CommaText(PlayerInfo.ReviveTickets).." :ticket:")
 Embed.AddField("Timescale Tickets:", CommaText(PlayerInfo.TimescaleTickets).." :tickets:")
+Embed.AddField("Total Bells:", CurrentPickups.. " :bell:")
 Embed.AddField("----------------- TROOPS INFO ---------------", "```m\n"..CheckTower().."```", false)
 
 if #UtilitiesConfig.Webhook.Link ~= 0 then
