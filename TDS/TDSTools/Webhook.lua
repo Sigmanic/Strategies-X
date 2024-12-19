@@ -279,7 +279,7 @@ Embed.AddField("Exp:", CommaText(PlayerInfo.Experience).." :star:")
 Embed.AddField("Spin Tickets:", CommaText(PlayerInfo.SpinTickets).." :tickets:")
 Embed.AddField("Revive Tickets:", CommaText(PlayerInfo.ReviveTickets).." :ticket:")
 Embed.AddField("Timescale Tickets:", CommaText(PlayerInfo.TimescaleTickets).." :tickets:")
-Embed.AddField("Total Bells:", CurrentPickups.. " :bell:")
+Embed.AddField("Total Bells:", CommaText(CurrentPickups).. " :bell:")
 Embed.AddField("----------------- TROOPS INFO ---------------", "```m\n"..CheckTower().."```", false)
 
 if #UtilitiesConfig.Webhook.Link ~= 0 then
