@@ -845,6 +845,7 @@ if CheckPlace() then
 				end
 				prints("Set All ListNum To 1")
 				task.wait(5)
+				getgenv().OldPickups = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Operation I.C.E"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
 				if RSDifficulty.Value == "Hardcore" then
 					return

@@ -43,7 +43,7 @@ return function(self, p1)
                 ["Value"] = OptValue,
             })
             task.wait()
-        until type(OptionCheck) == "boolean" and OptionCheck
+        until typeof(OptionCheck) == "boolean" and OptionCheck
         SetActionInfo("Option")
         ConsoleInfo(`Set Option (Name: {OptName}, Value: {OptValue}) On Tower Index: {Tower}, Type: \"{TowerType}\", (Wave {Wave}, Min: {Min}, Sec: {Sec}, InBetween: {InWave})`)
     end)

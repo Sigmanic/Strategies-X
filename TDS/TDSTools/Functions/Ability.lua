@@ -47,7 +47,7 @@ return function(self, p1)
                 ["Data"] = Data,
             })
             task.wait()
-        until type(AbilityCheck) == "boolean" and AbilityCheck
+        until typeof(AbilityCheck) == "boolean" and AbilityCheck
         SetActionInfo("Ability")
         ConsoleInfo("Used Ability On Tower Index: "..Tower..", Type: \""..TowerType.."\", (Wave "..Wave..", Min: "..Min..", Sec: "..Sec..", InBetween: "..tostring(InWave)..")")
     end)
