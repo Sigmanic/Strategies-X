@@ -899,20 +899,20 @@ if CheckPlace() then
 							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["difficulty"] = SpecialTable.difficulty,
     							["night"] = SpecialTable.night,
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "plsDonate" then
 							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
          						["difficulty"] = SpecialTable.difficulty,
-         						["count"] = 1,
+         						["count"] = tonumber(#getgenv().playerNames) or 1,
          						["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "Event" then
 							RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
 						else
     						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     							["challenge"] = SpecialTable.challenge,
     						})
@@ -926,7 +926,7 @@ if CheckPlace() then
     					}
     					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
 						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["count"] = 1,
+    						["count"] = tonumber(#getgenv().playerNames) or 1,
     						["mode"] = string.lower(v.Map.Lists[1].Mode),
     						["difficulty"] = DifficultyName,
     					})
