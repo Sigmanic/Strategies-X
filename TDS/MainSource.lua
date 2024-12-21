@@ -564,7 +564,7 @@ if CheckPlace() then
     local RSHealthMax = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Max") -- your max hp
     local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
     local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
-	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false and not getgenv().playerNames then
+	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
 
@@ -899,20 +899,20 @@ if CheckPlace() then
 							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["difficulty"] = SpecialTable.difficulty,
     							["night"] = SpecialTable.night,
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "plsDonate" then
 							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
          						["difficulty"] = SpecialTable.difficulty,
-         						["count"] = 1,
+         						["count"] = tonumber(#getgenv().playerNames) or 1,
          						["mode"] = SpecialTable.mode,
     						})
     					elseif SpecialTable.mode == "Event" then
 							RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
 						else
     						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     							["challenge"] = SpecialTable.challenge,
     						})
@@ -924,21 +924,12 @@ if CheckPlace() then
     						["Intermediate"] = "Intermediate",
     						["Fallen"] = "Fallen",
     					}
-					if getgenv().playerNames then 
     					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
 						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["count"] = tonumber(#getgenv().playerNames),
+    						["count"] = tonumber(#getgenv().playerNames) or 1,
     						["mode"] = string.lower(v.Map.Lists[1].Mode),
     						["difficulty"] = DifficultyName,
     					})
-					else
-					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
-						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["count"] = 1,
-    						["mode"] = string.lower(v.Map.Lists[1].Mode),
-    						["difficulty"] = DifficultyName,
-    					})
-					end
     				end
     			end
 				--TeleportHandler(3260590327,2,7)
