@@ -305,6 +305,11 @@ local GenerateFunction = {
         GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
     end,
+    SelectLoadout = function(Args)
+        local Name = Args[1]
+        SetStatus(`SelectLoadout Picked`)
+        appendstrat('TDS:SelectLoadout({'..Name..'})')
+    end,
 }
 
 local Skipped = false
@@ -393,6 +398,8 @@ OldNamecall = hookmetamethod(game, '__namecall', function(...)
             coroutine.resume(thread, RemoteFired)
         end)(Args)
         return coroutine.yield()
+    elseif getnamecallmethod() == "FireServer" and GenerateFunction[Self.name] then
+        GenerateFunction[Self.name](Args)
     end
     return OldNamecall(...,unpack(Args))
 end)
