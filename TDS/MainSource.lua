@@ -1290,16 +1290,6 @@ Functions.MatchMaking = function()
 	ConsoleInfo(`Map Selected: {MapProps.Map}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
 end
 
-Functions.SelectLoadout = function(self,p1)
-    if not CheckPlace() then
-        return
-    end
-    local Name = p1[1]
-    local RemoteCheck
-    RemoteCheck = ReplicatedStorage.Network.PlayerManager.SelectLoadout:FireServer(Name)
-    ConsoleInfo("SelectLoadout Picked: "..Name)
-end
-
 --Side modes that aren't main ones
 function Tutorial()
 	loadstring(game:HttpGet(MainLink.."TDSTools/Tutorial.lua", true))()
