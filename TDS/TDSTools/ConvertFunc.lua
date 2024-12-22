@@ -121,6 +121,11 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
+    ["SelectLoadout"] = function(gamesetloadout)
+        return {
+            ["GameSetLoadout"] = gamesetloadout
+        }
+    end,
     --[[[""] = function()
         return
     end,]]

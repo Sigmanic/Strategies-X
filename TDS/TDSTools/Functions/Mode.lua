@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RemoteFunction = if not GameSpoof then ReplicatedStorage:WaitForChild("RemoteFunction") else SpoofEvent
+
 return function(self, p1)
     if not CheckPlace() then
         return

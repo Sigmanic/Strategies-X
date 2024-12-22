@@ -289,6 +289,9 @@ local GenerateFunction = {
         appendstrat(`TDS:Option({TowerIndex}, "{OptionName}", "{Value}", {TimerStr})`)
     end,
     Skip = function(Args, Timer, RemoteCheck)
+        if tonumber(GameWave.Text) == 0 then
+            return
+        end
         SetStatus(`Skipped Wave`)
         local TimerStr = table.concat(Timer, ", ")
         appendstrat(`TDS:Skip({TimerStr})`)
@@ -304,6 +307,11 @@ local GenerateFunction = {
         }
         GetMode = DiffTable[Difficulty] or Difficulty
         SetStatus(`Vote {GetMode}`)
+    end,
+    SelectLoadout = function(Args, Timer, RemoteCheck)
+        local LoadoutName = Args[1]
+        SetStatus(`Loadout Selected`)
+        appendstrat(`TDS:SelectLoadout("{LoadoutName}")`)
     end,
 }
 
@@ -393,6 +401,8 @@ OldNamecall = hookmetamethod(game, '__namecall', function(...)
             coroutine.resume(thread, RemoteFired)
         end)(Args)
         return coroutine.yield()
+    elseif getnamecallmethod() == "FireServer" and GenerateFunction[Self.name] then
+        GenerateFunction[Self.name](Args)
     end
     return OldNamecall(...,unpack(Args))
 end)

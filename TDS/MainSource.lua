@@ -127,8 +127,11 @@ local SpecialMaps = {
 	"Failed Gateway",
 	"The Nightmare Realm",
 	"Containment",
+	--Halloween 2024 Maps ^^^^^^
 	"Pls Donate",
-	--Temporary Special Maps ^^^^^^
+	--Pls Donate Collaboration Map
+	"Outpost 32",
+	--Frost Invasion 2024 Map
 	"Classic Candy Cane Lane",
 	"Classic Winter",
 	"Classic Forest Camp",
@@ -142,12 +145,13 @@ local SpecialMaps = {
 local SpecialGameMode = {
     ["Pizza Party"] = {mode = "halloween", challenge = "PizzaParty"},
     ["Badlands II"] = {mode = "badlands", challenge = "Badlands"},
-    ["Polluted Wastelands II"] = {mode = "polluted", challenge = "PollutedWasteland"},
+    ["Polluted Wasteland II"] = {mode = "polluted", challenge = "PollutedWasteland"},
     --Current Special Maps ^^^^^^
     ["Failed Gateway"] = {mode = "halloween2024", difficulty = "Act1", night = 1},
     ["The Nightmare Realm"] = {mode = "halloween2024", difficulty = "Act2", night = 2},
     ["Containment"] = {mode = "halloween2024", difficulty = "Act3", night = 3},
     ["Pls Donate"] = {mode = "plsDonate", difficulty = "PlsDonateHard"},
+    ["Outpost 32"] = {mode = "frostInvasion", difficulty = "Hard" },
     --Temporary Special Maps ^^^^^^
     ["Classic Candy Cane Lane"] = {mode = "Event", part = "ClassicRobloxPart1"},
     ["Classic Winter"] = {mode = "Event", part = "ClassicRobloxPart2"},
@@ -157,6 +161,15 @@ local SpecialGameMode = {
     --The Classic Event Maps ^^^^^^ [STILL EXIST IN GAME FILES]
     ["Huevous Hunt"] = {""},
     --The Hunt Event Maps [NO LONGER EXIST IN GAME FILES]
+}
+
+local WeeklyChallenge = {
+    "BackToBasics",
+    --[["JailedTowers",
+    "Juggernaut",
+    "Legion",
+    "OopsAllSlimes",
+    "Vanguard"]]
 }
 
 local Workspace = game:GetService("Workspace")
@@ -850,7 +863,7 @@ if CheckPlace() then
 				if RSDifficulty.Value == "Hardcore" then
 					return
 				end
-				--[[local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
+				local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
 				if UtilitiesConfig.UseTimeScale then
 					if TimeScaleUI:FindFirstChild("Lock") then
        					task.spawn(function()
@@ -859,7 +872,7 @@ if CheckPlace() then
        						ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
        					end)
 					end
-				end]]
+				end
 			else
 				prints(`Match {if MatchGui:WaitForChild("banner"):WaitForChild("textLabel").Text == "TRIUMPH!" then "Won" else "Lose"}`)
 				if AutoSkipCheck then
@@ -908,6 +921,18 @@ if CheckPlace() then
          						["count"] = 1,
          						["mode"] = SpecialTable.mode,
     						})
+						elseif SpecialTable.mode == "frostInvasion" then
+							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+								["difficulty"] = if getgenv().EventEasyMode then "Easy" else "Hard",
+								["mode"] = SpecialTable.mode,
+								["count"] = 1,
+							})
+						elseif getgenv().WeeklyChallenge then
+							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+								["mode"] = "weeklyChallengeMap",
+								["count"] = 1,
+								["challenge"] = WeeklyChallenge,
+							})
     					elseif SpecialTable.mode == "Event" then
 							RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
 						else
@@ -999,7 +1024,7 @@ if CheckPlace() then
 	end)
 	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	--[[UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
+	UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
 		if (bool and ReplicatedStorage.State.Difficulty.Value == "Hardcore") or (bool and Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby") then
 			prints("Timescale Is Not Supported In Hardcore!")
 			return
@@ -1015,7 +1040,7 @@ if CheckPlace() then
      		    end)
 		    end
 		end
-	end)]]
+	end)
 
 	if Items.Enabled then
 		task.spawn(function()
@@ -1165,6 +1190,7 @@ Functions.Target = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/Target.
 Functions.AutoChain = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/AutoChain.lua", true))()
 Functions.SellAllFarms = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/SellAllFarms.lua", true))()
 Functions.Option = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/Option.lua", true))()
+Functions.SelectLoadout = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/SelectLoadout.lua", true))()
 
 Functions.MatchMaking = function()
 	local MapProps, Index, VetoUsedOnce, CheckingForPrivateIntermission

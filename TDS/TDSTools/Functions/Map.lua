@@ -26,6 +26,7 @@ local SpecialGameMode = {
     ["Huevous Hunt"] = {""},
     --The Hunt Event Maps [NO LONGER EXIST IN GAME FILES]
 }
+
 local ElevatorSettings = {
     ["Survival"] = {Enabled = false, ChangeMap = true, JoinMap = true, WaitTimeToChange = .1, WaitTimeToJoin = .25},
     ["Hardcore"] = {Enabled = false, ChangeMap = true, JoinMap = true, WaitTimeToChange = 4.2, WaitTimeToJoin = 1.7},
@@ -34,6 +35,15 @@ local ElevatorSettings = {
     ["PlsDonate"] = {Enabled = false},
     ["Event"] = {Enabled = false},
     ["FrostInvasion"] = {Enabled = false}
+}
+
+local WeeklyChallenge = {
+    "BackToBasics",
+    --[["JailedTowers",
+    "Juggernaut",
+    "Legion",
+    "OopsAllSlimes",
+    "Vanguard"]]
 }
 
 return function(self, p1)
@@ -65,7 +75,7 @@ return function(self, p1)
     MapGlobal.ChangeCheck = false
     task.spawn(function()
         if CheckPlace() then
-            local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore check
+            local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore
             local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
             repeat task.wait() until RSMap.Value and typeof(RSMap.Value) == "string" and RSMode.Value --#ReplicatedStorage.State.Map.Value > 1
             local GameMapName = RSMap.Value
@@ -115,20 +125,26 @@ return function(self, p1)
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
-                elseif SpecialTable.mode == "frostInvasion" then
+                elseif SpecialTable.mode == "plsDonate" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["difficulty"] = SpecialTable.difficulty,
+                        ["count"] = 1,
+                        ["mode"] = SpecialTable.mode,
+                    })
+                elseif SpecialTable.mode == "frostInvasion" then
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                        ["difficulty"] = if getgenv().EventEasyMode then "Easy" else SpecialTable.difficulty,
                         ["mode"] = SpecialTable.mode,
                         ["count"] = 1,
                     })
-                elseif SpecialTable.mode == "plsDonate" then
-                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                    ["difficulty"] = SpecialTable.difficulty,
-                    ["count"] = 1,
-                    ["mode"] = SpecialTable.mode,
-                    })
                 elseif SpecialTable.mode == "Event" then
                     RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
+                elseif getgenv().WeeklyChallenge then
+                    RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+                        ["mode"] = "weeklyChallengeMap",
+                        ["count"] = 1,
+                        ["challenge"] = WeeklyChallenge,
+                    })
                 else
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["count"] = 1,
@@ -181,7 +197,8 @@ return function(self, p1)
 			end)
 			if not Passed then
 				ElevatorType = if v:GetAttribute("Level") == 50 then "Hardcore" else "Survival"
-			end
+			end]]
+            local ElevatorType = v:GetAttribute("Type")
 			if not Elevators[ElevatorType] then
 				Elevators[ElevatorType] = {}
 			end
@@ -191,18 +208,7 @@ return function(self, p1)
 				["Time"] = v:GetAttribute("Timer"),
 				["Playing"] = v:GetAttribute("Players"),
 				["Mode"] = ElevatorType,
-			})]]
-            local ElevatorType = v:GetAttribute("Type")
-            if not Elevators[ElevatorType] then
-                Elevators[ElevatorType] = {}
-            end
-            table.insert(Elevators[ElevatorType],{
-				["Object"] = v,
-				["Map"] = v:GetAttribute("Map"),
-				["Timer"] = v:GetAttribute("Timer"),
-				["Players"] = v:GetAttribute("Players"),
-				["Mode"] = ElevatorType,
-            })
+			})
         end
         --prints("Found",#Elevators,"Elevators")
         for i,v in next, Elevators do
@@ -230,7 +236,7 @@ return function(self, p1)
                             local MapElevator = v["Object"]:GetAttribute("Map")
                             local PlayersElevator = v["Object"]:GetAttribute("Players")
                             local TimerElevator = v["Object"]:GetAttribute("Timer")
-                            local MapTableName = MapElevator..":"..ModeElevator
+                            local MapTableName = MapName..":"..Mode
                             if not MapGlobal[MapTableName] and PlayersElevator == 0 and not MapGlobal.JoiningCheck then
                                 MapGlobal.ChangeCheck = true
                                 prints("Changing Elevator",i)
@@ -259,8 +265,8 @@ return function(self, p1)
                             local TimerElevator = v["Object"]:GetAttribute("Timer")
                             UI.MapFind.Text = "Map: "..MapElevator
                             UI.CurrentPlayer.Text = "Player Joined: "..PlayersElevator
-                            prints("Checking Elevator",i,"Info [ Map:","\""..MapElevator.."\"",", Player Joined:",PlayersElevator,"]")
-                            local MapTableName = MapElevator..":"..ModeElevator
+                            prints("Checking Elevator",i,"Info [ Map:","\""..MapElevator.."\"",", Players Joined:","\""..PlayersElevator.."\"",", Mode:",ModeElevator,"]")
+                            local MapTableName = MapName..":"..Mode
                             local MapTable = MapGlobal[MapTableName]
                             if MapTable and TimerElevator > 5 and PlayersElevator < 4 then
                                 if MapTable.Solo and PlayersElevator ~= 0 then
@@ -311,7 +317,7 @@ return function(self, p1)
                                         local Text = (not MapGlobal[MapTableName] and "Map Has Been Changed") or ((MapGlobal[MapTableName].Solo and PlayersElevator > 1) and "Someone Has Joined") or "Error"
                                         ElevatorLeave:InvokeServer()
                                         UI.JoiningStatus.Text = Text..", Leaving Elevator "..tostring(i)
-                                        prints(Text..", Leaving Elevator",i,"Map:","\""..MapElevator.."\"",", Player Joined:",PlayersElevator)
+                                        prints(Text..", Leaving Elevator",i,"Map:","\""..MapElevator.."\"",", Players Joined:","\""..PlayersElevator.."\"",", Mode:",ModeElevator)
                                         UI.TimerLeft.Text = "Time Left: NaN"
                                         MapGlobal.JoiningCheck = false
                                         return
