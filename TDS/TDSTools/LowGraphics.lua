@@ -50,10 +50,10 @@ Folder.Name = "Map"
 StratXLibrary.LowGraphics = function(bool)
     local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-    local Location = if not CheckPlace() then "Environment" elseif Workspace:FindFirstChild(Lobby) then "Environment" else "Map"
+    local Location = if not CheckPlace() then "Lobby" elseif Workspace:FindFirstChild(Lobby) then "Environment" else "Map"
     if Location == "Environment" then
         if Workspace:FindFirstChild(Lobby) then
-            if not Workspace:FindFirstChild(Lobby):FindFirstChild(Location) then 
+            if not Workspace:FindFirstChild(Lobby):FindFirstChild(Location) then
                 prints("Waiting Map Loaded to Use LowGraphics")
                 repeat
                     task.wait()
@@ -61,7 +61,7 @@ StratXLibrary.LowGraphics = function(bool)
                 task.wait(1)
             end
         elseif not Workspace:FindFirstChild(Lobby) then
-            if not Workspace.NewLobby:FindFirstChild(Location) then 
+            if not Workspace.NewLobby:FindFirstChild(Location) then
                 prints("Waiting Map Loaded to Use LowGraphics")
                 repeat
                     task.wait()
