@@ -11,6 +11,9 @@ local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map'
 local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
 local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- currennt wave you are on
 
+local function FE_FUNC(l) if not isfolder(l) then makefolder(l) print("+") end end --FolderExists
+FE_FUNC("StrategiesX");FE_FUNC("StrategiesX/TDS");FE_FUNC("StrategiesX/TDS/Recorder")
+
 getgenv().WriteFile = function(check,name,location,str)
     if not check then
         return
