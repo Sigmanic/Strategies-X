@@ -52,22 +52,20 @@ StratXLibrary.LowGraphics = function(bool)
 	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
     local Location = if not CheckPlace() then "Lobby" elseif Workspace:FindFirstChild(Lobby) then "Environment" else "Map"
     if Location == "Environment" then
-        if Workspace:FindFirstChild(Lobby) then
-            if not Workspace:FindFirstChild(Lobby):FindFirstChild(Location) then
-                prints("Waiting Map Loaded to Use LowGraphics")
-                repeat
-                    task.wait()
-                until Workspace:FindFirstChild(Lobby):FindFirstChild(Location)
-                task.wait(1)
-            end
-        elseif not Workspace:FindFirstChild(Lobby) then
-            if not Workspace.NewLobby:FindFirstChild(Location) then
-                prints("Waiting Map Loaded to Use LowGraphics")
-                repeat
-                    task.wait()
-                until Workspace.NewLobby:FindFirstChild(Location)
-                task.wait(1)
-            end
+        if not Workspace:FindFirstChild(Lobby):FindFirstChild(Location) then
+            prints("Waiting Map Loaded to Use LowGraphics")
+            repeat
+                task.wait()
+            until Workspace:FindFirstChild(Lobby):FindFirstChild(Location)
+            task.wait(1)
+        end
+    elseif Location == "Lobby" then
+        if not Workspace:WaitForChild("NewLobby"):FindFirstChild(Location) then
+            prints("Waiting Map Loaded to Use LowGraphics")
+            repeat
+                task.wait()
+            until Workspace:WaitForChild("NewLobby"):FindFirstChild(Location)
+            task.wait(1)
         end
     elseif Location == "Map" then
         if not Workspace:FindFirstChild(Location) then
