@@ -77,20 +77,34 @@ StratXLibrary.LowGraphics = function(bool)
         end
     end
     if bool then
-        if CheckPlace() and not Workspace:FindFirstChild(Lobby) then
-            for i,v in next, Workspace:FindFirstChild(Location):GetChildren() do
-                if Location == "Map" and v.Name == "Paths" then
+        if Location == "Lobby" and not CheckPlace() then
+            for i,v in next, Workspace:WaitForChild("NewLobby")[Location]:GetChildren() do
+                v.Parent = Folder
+            end
+        elseif Location == "Map" and CheckPlace() then
+            for i,v in next, Workspace[Location]:GetChildren() do
+                if v.Name == "Paths" then
                     continue
                 end
                 v.Parent = Folder
             end
-        elseif CheckPlace() and Workspace:FindFirstChild(Lobby) then
-            for i,v in next, Folder:GetChildren() do
-                v.Parent = Workspace:FindFirstChild(Lobby)[Location]
+        elseif Location == "Environment" and CheckPlace() then
+            for i,v in next, Workspace:WaitForChild(Lobby)[Location]:GetChildren() do
+                v.Parent = Folder
             end
-        elseif not CheckPlace() and getgenv().DefaultCam ~= 1 then
+        end
+    else
+        if Location == "Lobby" and not CheckPlace() then
             for i,v in next, Folder:GetChildren() do
-                v.Parent = Workspace.NewLobby[Location]
+                v.Parent = Workspace:WaitForChild("NewLobby")[Location]
+            end
+        elseif Location == "Map" and CheckPlace() then
+            for i,v in next, Folder:GetChildren() do
+                v.Parent = Workspace[Location]
+            end
+        elseif Location == "Environment" and CheckPlace() then
+            for i,v in next, Folder:GetChildren() do
+                v.Parent = Workspace:WaitForChild(Lobby)[Location]
             end
         end
     end
