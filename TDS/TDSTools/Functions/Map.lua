@@ -122,32 +122,32 @@ return function(self, p1)
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["difficulty"] = if getgenv().EventEasyMode then `{SpecialTable.difficulty}..Easy` else SpecialTable.difficulty,
                         ["night"] = SpecialTable.night,
-                        ["count"] = tonumber(#getgenv().playerNames) or 1,
+                        ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
                 elseif SpecialTable.mode == "plsDonate" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["difficulty"] = if getgenv().EventEasyMode then "PlsDonate" else SpecialTable.difficulty,
-                        ["count"] = tonumber(#getgenv().playerNames) or 1,
+                        ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
                 elseif SpecialTable.mode == "frostInvasion" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["difficulty"] = if getgenv().EventEasyMode then "Easy" else SpecialTable.difficulty,
                         ["mode"] = SpecialTable.mode,
-                        ["count"] = tonumber(#getgenv().playerNames) or 1,
+                        ["count"] = 1,
                     })
                 elseif SpecialTable.mode == "Event" then
                     RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
                 elseif getgenv().WeeklyChallenge then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
                         ["mode"] = "weeklyChallengeMap",
-                        ["count"] = tonumber(#getgenv().playerNames) or 1,
+                        ["count"] = 1,
                         ["challenge"] = WeeklyChallenge,
                     })
                 else
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                        ["count"] = tonumber(#getgenv().playerNames) or 1,
+                        ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                         ["challenge"] = SpecialTable.challenge,
                     })
@@ -185,7 +185,7 @@ return function(self, p1)
                 UI.JoiningStatus.Text = `Teleporting to Matchmaking Place`
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
                 RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                    ["count"] = tonumber(#getgenv().playerNames) or 1,
+                    ["count"] = 1,
                     ["mode"] = string.lower(MapProps.Mode),
                     ["difficulty"] = DifficultyName,
                 })
