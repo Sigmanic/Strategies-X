@@ -120,14 +120,14 @@ return function(self, p1)
                 RemoteFunction:InvokeServer("Multiplayer","single_create")
                 if SpecialTable.mode == "halloween2024" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                        ["difficulty"] = SpecialTable.difficulty,
+                        ["difficulty"] = if getgenv().EventEasyMode then `{SpecialTable.difficulty}..Easy` else SpecialTable.difficultySpecialTable.difficulty,
                         ["night"] = SpecialTable.night,
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
                 elseif SpecialTable.mode == "plsDonate" then
                     RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-                        ["difficulty"] = SpecialTable.difficulty,
+                        ["difficulty"] = if getgenv().EventEasyMode then `{SpecialTable.difficulty}..Easy` else SpecialTable.difficultySpecialTable.difficult,
                         ["count"] = 1,
                         ["mode"] = SpecialTable.mode,
                     })
