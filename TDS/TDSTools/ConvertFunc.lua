@@ -67,6 +67,14 @@ local Patcher = {
             ["InBetween"] = inbetween or false,
         }
     end,
+    ["LeaveOn"] = function(wave, min, sec, inbetween)
+        return {
+            ["Wave"] = wave,
+            ["Minute"] = min,
+            ["Second"] = sec,
+            ["InBetween"] = inbetween or false,
+        }
+    end,
     ["Ability"] = function(troop, nameability, wave, min, sec, inbetween, data)
         return {
             ["TowerIndex"] = troop,
