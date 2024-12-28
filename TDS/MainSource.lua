@@ -600,10 +600,7 @@ if CheckPlace() then
     local RSHealthMax = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Max") -- your max hp
     local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
     local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
-	--[[if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
-		TeleportService:Teleport(3260590327, LocalPlayer)
-	end]]
-	if #Players:GetChildren() > 1 and not getgenv().playerNames then
+	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
 
