@@ -600,7 +600,10 @@ if CheckPlace() then
     local RSHealthMax = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Max") -- your max hp
     local VoteGUI = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesVote"):WaitForChild("Frame"):WaitForChild("votes"):WaitForChild("vote") -- it is what it is
     local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
-	if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
+	--[[if #Players:GetChildren() > 1 and getgenv().Multiplayer["Enabled"] == false then
+		TeleportService:Teleport(3260590327, LocalPlayer)
+	end]]
+	if #Players:GetChildren() > 1 and not getgenv().playerNames then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
 
@@ -936,14 +939,14 @@ if CheckPlace() then
 							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["difficulty"] = if getgenv().EventEasyMode then `{SpecialTable.difficulty}..Easy`else SpecialTable.difficulty,
     							["night"] = SpecialTable.night,
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     						})
 							SafeTeleport(Remote)
     					elseif SpecialTable.mode == "plsDonate" then
 							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
          						["difficulty"] = if getgenv().EventEasyMode then "PlsDonateHard" else SpecialTable.difficulty,
-         						["count"] = 1,
+         						["count"] = tonumber(#getgenv().playerNames) or 1,
          						["mode"] = SpecialTable.mode,
     						})
 							SafeTeleport(Remote)
@@ -951,13 +954,13 @@ if CheckPlace() then
 							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
 								["difficulty"] = if getgenv().EventEasyMode then "Easy" else "Hard",
 								["mode"] = SpecialTable.mode,
-								["count"] = 1,
+								["count"] = tonumber(#getgenv().playerNames) or 1,
 							})
 							SafeTeleport(Remote)
 						elseif getgenv().WeeklyChallenge then
 							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
 								["mode"] = "weeklyChallengeMap",
-								["count"] = 1,
+								["count"] = tonumber(#getgenv().playerNames) or 1,
 								["challenge"] = WeeklyChallenge,
 							})
 							SafeTeleport(Remote)
@@ -966,7 +969,7 @@ if CheckPlace() then
 							SafeTeleport(Remote)
 						else
     						Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    							["count"] = 1,
+    							["count"] = tonumber(#getgenv().playerNames) or 1,
     							["mode"] = SpecialTable.mode,
     							["challenge"] = SpecialTable.challenge,
     						})
@@ -982,7 +985,7 @@ if CheckPlace() then
     					}
     					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
 						Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    						["count"] = 1,
+    						["count"] = tonumber(#getgenv().playerNames) or 1,
     						["mode"] = string.lower(v.Map.Lists[1].Mode),
     						["difficulty"] = DifficultyName,
     					})
