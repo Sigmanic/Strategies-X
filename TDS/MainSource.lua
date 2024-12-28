@@ -17,15 +17,20 @@ local MainLink = LoadLocal and "" or "https://raw.githubusercontent.com/Sigmanic
 
 local OldTime = os.clock()
 
-if not isfolder("StrategiesX/TDS") then
-	makefolder("StrategiesX/TDS")
-	makefolder("StrategiesX/TDS/UserLogs")
-	makefolder("StrategiesX/TDS/UserConfig")
-elseif not isfolder("StrategiesX/TDS/UserLogs") then
-	makefolder("StrategiesX/TDS/UserLogs")
-elseif not isfolder("StrategiesX/TDS/UserConfig") then
-	makefolder("StrategiesX/TDS/UserConfig")
+-- // Folder Stuffs
+
+local function CheckFolderExists(folder_path)
+    if not isfolder(folder_path) then
+		makefolder(folder_path)
+    end
 end
+
+local LocalFolder = "StrategiesX/TDS/"
+CheckFolderExists("StrategiesX")
+CheckFolderExists(LocalFolder)
+CheckFolderExists(LocalFolder.."UserConfig")
+CheckFolderExists(LocalFolder.."UserLogs")
+CheckFolderExists(LocalFolder.."Recorder")
 
 local StratXLibrary = {Functions = {}}
 getgenv().StratXLibrary = StratXLibrary
@@ -42,9 +47,10 @@ StratXLibrary["ActionInfo"] = {
 	["Skip"] = {0,0},
 	["Ability"] = {0,0},
 	["Target"] = {0,0},
+	["Option"] = {0,0},
+	["LeaveOn"] = {0,0},
 	["AutoChain"] = {0,0},
 	["SellAllFarms"] = {0,0},
-	["Option"] = {0,0},
 }
 StratXLibrary.UI = {}
 StratXLibrary.RestartCount = 0
@@ -54,7 +60,7 @@ StratXLibrary.CurrentCount = StratXLibrary.RestartCount
 getgenv().GameSpoof = "Lobby"]]
 
 StratXLibrary.UtilitiesConfig = {
-	Camera = tonumber(getgenv().DefaultCam) or 2,
+	Camera = (getgenv().DefaultCam and tonumber(getgenv().DefaultCam)) or 2,
 	LowGraphics = getgenv().PotatoPC or false,
 	BypassGroup = getgenv().GroupBypass or false,
 	AutoBuyMissing = getgenv().BuyMissingTowers or false,
@@ -65,8 +71,8 @@ StratXLibrary.UtilitiesConfig = {
 	UseTimeScale = getgenv().UseTimeScale or false,
 	PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking or false,
 	Webhook = {
-		Enabled = true,
-		Link = if getgenv().WebhookLink and tostring(getgenv().WebhookLink) then tostring(getgenv().WebhookLink) else "",
+		WebhookEnabled = true,
+		Link = (getgenv().WebhookLink and tostring(getgenv().WebhookLink)) or "",
 		HideUser = false,
 		UseNewFormat = false,
 		PlayerInfo = true,
@@ -122,7 +128,7 @@ end]]
 local SpecialMaps = {
 	"Pizza Party",
 	"Badlands II",
-	"Polluted Wastelands II",
+	"Polluted Wasteland II",
 	--Current Special Maps ^^^^^^
 	"Failed Gateway",
 	"The Nightmare Realm",
@@ -221,7 +227,7 @@ function ConsoleWarn(...)
 end]]
 loadstring(game:HttpGet(MainLink.."TDSTools/JoinLessServer.lua", true))()
 
---Part of Place function
+-- // Part of Place function
 local PreviewHolder = Instance.new("Folder")
 PreviewHolder.Parent = ReplicatedStorage
 PreviewHolder.Name = "PreviewHolder"
@@ -257,9 +263,9 @@ getgenv().output = function(Text,Color)
 	ConsolePrint(Color,"Info",Text)
 end
 
-if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
+if isfile(LocalFolder.."UserConfig/UtilitiesConfig.txt") then
 	local Check, GetConfig = pcall(function()
-		return game:GetService("HttpService"):JSONDecode(readfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt"))
+		return game:GetService("HttpService"):JSONDecode(readfile(LocalFolder.."UserConfig/UtilitiesConfig.txt"))
 	end)
 	if Check then
 		UtilitiesConfig = GetConfig
@@ -292,14 +298,15 @@ if isfile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt") then
 		UtilitiesConfig.PreferMatchmaking = getgenv().PreferMatchmaking or getgenv().Matchmaking
 	end
 else
-	writefile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
+	writefile(LocalFolder.."UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
 
 --ConsolePrint("WHITE","Table",UtilitiesConfig)
 
 function SaveUtilitiesConfig()
 	UtilitiesTab = UI.UtilitiesTab
-	local WebhookSetting = UI.WebhookSetting
+	local Webhook = UI.Webhook
+	local RejoinSetting = UI.RejoinSetting
 	StratXLibrary.UtilitiesConfig = {
 		Camera = tonumber(getgenv().DefaultCam) or 2,
 		LowGraphics = UtilitiesTab.flags.LowGraphics,
@@ -311,18 +318,18 @@ function SaveUtilitiesConfig()
 		UseTimeScale = UtilitiesTab.flags.UseTimeScale,
 		PreferMatchmaking = UtilitiesTab.flags.PreferMatchmaking,
 		Webhook = {
-			Enabled = WebhookSetting.flags.Enabled or false,
-			UseNewFormat = WebhookSetting.flags.UseNewFormat or false,
-			Link = (#WebhookSetting.flags.Link ~= 0 and WebhookSetting.flags.Link) or if (getgenv().WebhookLink and tostring(getgenv().WebhookLink)) then tostring(getgenv().WebhookLink) else "",
-			HideUser = WebhookSetting.flags.HideUser or false,
-			PlayerInfo = if type(WebhookSetting.flags.PlayerInfo) == "boolean" then WebhookSetting.flags.PlayerInfo else true,
-			GameInfo = if type(WebhookSetting.flags.GameInfo) == "boolean" then WebhookSetting.flags.GameInfo else true,
-			TroopsInfo = if type(WebhookSetting.flags.TroopsInfo) == "boolean" then WebhookSetting.flags.TroopsInfo else true,
-			DisableCustomLog = if type(WebhookSetting.flags.DisableCustomLog) == "boolean" then WebhookSetting.flags.DisableCustomLog else true,
+			WebhookEnabled = Webhook.flags.WebhookEnabled or false,
+			UseNewFormat = Webhook.flags.UseNewFormat or false,
+			Link = (#Webhook.flags.Link ~= 0 and Webhook.flags.Link) or (getgenv().WebhookLink and tostring(getgenv().WebhookLink)) or "",
+			HideUser = Webhook.flags.HideUser or false,
+			PlayerInfo = if type(Webhook.flags.PlayerInfo) == "boolean" then Webhook.flags.PlayerInfo else true,
+			GameInfo = if type(Webhook.flags.GameInfo) == "boolean" then Webhook.flags.GameInfo else true,
+			TroopsInfo = if type(Webhook.flags.TroopsInfo) == "boolean" then Webhook.flags.TroopsInfo else true,
+			DisableCustomLog = if type(Webhook.flags.DisableCustomLog) == "boolean" then Webhook.flags.DisableCustomLog else true,
 		},
 	}
 	UtilitiesConfig = StratXLibrary.UtilitiesConfig
-	writefile("StrategiesX/TDS/UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
+	writefile(LocalFolder.."UserConfig/UtilitiesConfig.txt", game:GetService("HttpService"):JSONEncode(UtilitiesConfig))
 end
 
 function CheckPlace()
@@ -444,10 +451,26 @@ function ConvertTimer(number : number)
 	return math.floor(number/60), number % 60
 end
 
+function SafeTeleport(Remote)
+    local attemptIndex = 0
+    local success, result
+    local ATTEMPT_LIMIT = 25
+    local RETRY_DELAY = 5
+    repeat
+        success, result = pcall(function()
+            return Remote
+        end)
+        attemptIndex += 1
+        if not success then
+            task.wait(RETRY_DELAY)
+        end
+    until success or attemptIndex == ATTEMPT_LIMIT
+end
+
 function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
-	local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- Current wave you are on
-    local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- end result
-	local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- Current game's timer
+	local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- // Current wave you are on
+    local MatchGui = LocalPlayer.PlayerGui:WaitForChild("ReactGameRewards"):WaitForChild("Frame"):WaitForChild("gameOver") -- // end result
+	local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- // Current game's timer
 	if Debug or tonumber(GameWave.Text) > Wave and not MatchGui.Visible then
 		return true
 	end
@@ -457,7 +480,7 @@ function TimeWaveWait(Wave,Min,Sec,InWave,Debug)
 		if MatchGui.Visible or CurrentCount ~= StratXLibrary.RestartCount then
 			return false
 		end
-	until tonumber(GameWave.Text) == Wave and CheckTimer(InWave) --CheckTimer will return true when in wave and false when not in wave
+	until tonumber(GameWave.Text) == Wave and CheckTimer(InWave) -- // CheckTimer will return true when in wave and false when not in wave
 	if RSTimer.Value - TotalSec(Min,Sec) < -1 then
 		return true
 	end
@@ -519,7 +542,7 @@ function GetTowersInfo()
 	return GetResult
 end
 
---Main Ui Setup
+-- // Main Ui Setup
 StratXLibrary.UI.maintab = UILibrary:CreateWindow("Strategies X")
 maintab = StratXLibrary.UI.maintab
 local BypassGroup
@@ -536,8 +559,8 @@ if not UtilitiesConfig.BypassGroup then
 	until Success ~= nil or UtilitiesConfig.BypassGroup
 	if not (UtilitiesConfig.BypassGroup or IsPlayerInGroup) then
 		if CheckPlace() then
-			maintab:Section("[WARN] Extra Money Not Actived")
-			maintab:Section("Strat May Broken Due To This")
+			maintab:Section("[WARN] Extra Money Not Activated")
+			maintab:Section("Strat May Break Due To This")
 		else
 			maintab:Section("You Need To Join")
 			maintab:Section("Paradoxum Games Group")
@@ -566,11 +589,11 @@ maintab:Section(`Current Place: {CheckPlace() and "Ingame" or "Lobby"}`)
 UI.UtilitiesTab = UILibrary:CreateWindow("Utilities")
 UtilitiesTab = UI.UtilitiesTab
 
---InGame Core
+-- // InGame Core
 if CheckPlace() then
 	local GameWave = LocalPlayer.PlayerGui:WaitForChild("ReactGameTopGameDisplay"):WaitForChild("Frame"):WaitForChild("wave"):WaitForChild("container"):WaitForChild("value") -- Current wave you are on
     local RSTimer = ReplicatedStorage:WaitForChild("State"):WaitForChild("Timer"):WaitForChild("Time") -- Current game's timer
-    local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Main Modes
+    local RSMode = ReplicatedStorage:WaitForChild("State"):WaitForChild("Mode") -- Survival or Hardcore or Event types
     local RSDifficulty = ReplicatedStorage:WaitForChild("State"):WaitForChild("Difficulty") -- Survival's gamemodes
     local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
     local RSHealthCurrent = ReplicatedStorage:WaitForChild("State"):WaitForChild("Health"):WaitForChild("Current") -- your current base hp
@@ -581,7 +604,7 @@ if CheckPlace() then
 		TeleportService:Teleport(3260590327, LocalPlayer)
 	end
 
-	--Disable Auto Skip Feature
+	-- // Disable InGame Auto Skip Feature
 	local AutoSkipCheck
 	task.spawn(function()
 		local Success, Skip
@@ -602,7 +625,7 @@ if CheckPlace() then
 		end
 	end)
 
-	--Check if InWave or not
+	-- // Check if InWave or not
 	StratXLibrary.TimerConnection = RSTimer.Changed:Connect(function(time)
 		if time == 5 then
 			TimerCheck = true
@@ -611,7 +634,7 @@ if CheckPlace() then
 		end
 	end)
 
-	--AutoSkip & Auto Start Game
+	-- // AutoSkip & Auto Start Game
 	if VoteGUI:WaitForChild("prompt").Text == "Ready?" then --Event GameMode
 		task.spawn(function()
 			repeat task.wait() until StratXLibrary.Executed
@@ -631,7 +654,7 @@ if CheckPlace() then
 		end
 		local currentPrompt = VoteGUI:WaitForChild("prompt").Text
    		if currentPrompt == "Ready?" or currentPrompt == "Skip Cutscene?" then --Event GameMode
-   			task.wait(2)
+		task.wait(0.5)
    			RemoteFunction:InvokeServer("Voting", "Skip")
    			StratXLibrary.ReadyState = true
 			if currentPrompt == "Ready?" then
@@ -657,7 +680,7 @@ if CheckPlace() then
    		end
 	end)
 
-	--Platform Stand
+	-- // Platform Stand InGame
 	task.spawn(function()
 		--repeat task.wait() until Workspace.Map:FindFirstChild("Environment"):FindFirstChild("SpawnLocation")
 		local Part = Instance.new("Part")
@@ -683,7 +706,7 @@ if CheckPlace() then
 
 	getgenv().OldPickups = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Operation I.C.E"):WaitForChild("text").Text
 
-	--Game Cores
+	-- // Game Cores
 	task.spawn(function()
 		loadstring(game:HttpGet(MainLink.."TDSTools/FreeCam.lua", true))()
 
@@ -746,7 +769,7 @@ if CheckPlace() then
 				task.wait(.8)
 			end
 		end)
-		--End Of Match
+		-- // End Of Match
 		local Info = MatchGui:WaitForChild("content"):WaitForChild("info")
 		local Rewards = Info:WaitForChild("rewards")
 		function CheckReward()
@@ -798,7 +821,7 @@ if CheckPlace() then
 			--[[for i,v in next, PlayerInfo.Property do
 				PlayerInfo[i].Text = `{i}: {v}`
 			end]]
-			if UtilitiesConfig.Webhook.Enabled then
+			if UtilitiesConfig.Webhook.WebhookEnabled then
 				task.spawn(function()
 					loadstring(game:HttpGet(MainLink.."TDSTools/Webhook.lua", true))()
 					repeat task.wait() until type(getgenv().SendCheck) == "table"
@@ -860,7 +883,7 @@ if CheckPlace() then
 				task.wait(5)
 				getgenv().OldPickups = LocalPlayer.PlayerGui:WaitForChild("ReactOverridesTopBar"):WaitForChild("Frame"):WaitForChild("items"):WaitForChild("Operation I.C.E"):WaitForChild("text").Text
 				StratXLibrary.ReadyState = false
-				if RSDifficulty.Value == "Hardcore" then
+				if RSMode.Value == "Hardcore" or not LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):FindFirstChild("timescale") then
 					return
 				end
 				local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
@@ -893,7 +916,7 @@ if CheckPlace() then
    				local attemptIndex = 0
    				local success, result
    				local ATTEMPT_LIMIT = 25
-   				local RETRY_DELAY = 3
+   				local RETRY_DELAY = 5
    				repeat
    					success, result = pcall(function()
    						return TeleportHandler(3260590327,2,7)
@@ -906,55 +929,64 @@ if CheckPlace() then
 				prints("Starting a New Match")
 				for i,v in ipairs(StratXLibrary.Strat) do
 					local MapInStrat = v.Map.Lists[#v.Map.Lists] and v.Map.Lists[#v.Map.Lists].Map
+					local Remote
 					if table.find(SpecialMaps, MapInStrat) then
 						local SpecialTable = SpecialGameMode[MapInStrat]
     					if SpecialTable.mode == "halloween2024" then
-							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-    							["difficulty"] = SpecialTable.difficulty,
+							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+    							["difficulty"] = if getgenv().EventEasyMode then `{SpecialTable.difficulty}..Easy`else SpecialTable.difficulty,
     							["night"] = SpecialTable.night,
     							["count"] = 1,
     							["mode"] = SpecialTable.mode,
     						})
+							SafeTeleport(Remote)
     					elseif SpecialTable.mode == "plsDonate" then
-							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
-         						["difficulty"] = SpecialTable.difficulty,
+							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+         						["difficulty"] = if getgenv().EventEasyMode then "PlsDonateHard" else SpecialTable.difficulty,
          						["count"] = 1,
          						["mode"] = SpecialTable.mode,
     						})
+							SafeTeleport(Remote)
 						elseif SpecialTable.mode == "frostInvasion" then
-							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
 								["difficulty"] = if getgenv().EventEasyMode then "Easy" else "Hard",
 								["mode"] = SpecialTable.mode,
 								["count"] = 1,
 							})
+							SafeTeleport(Remote)
 						elseif getgenv().WeeklyChallenge then
-							RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+							Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
 								["mode"] = "weeklyChallengeMap",
 								["count"] = 1,
 								["challenge"] = WeeklyChallenge,
 							})
+							SafeTeleport(Remote)
     					elseif SpecialTable.mode == "Event" then
-							RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
+							Remote = RemoteFunction:InvokeServer("EventMissions","Start", SpecialTable.part)
+							SafeTeleport(Remote)
 						else
-    						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+    						Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     							["count"] = 1,
     							["mode"] = SpecialTable.mode,
     							["challenge"] = SpecialTable.challenge,
     						})
+							SafeTeleport(Remote)
     					end
     				else
 						local DiffTable = {
     						["Easy"] = "Easy",
     						["Normal"] = "Molten",
     						["Intermediate"] = "Intermediate",
+							["Molten"] = "Molten",
     						["Fallen"] = "Fallen",
     					}
     					local DifficultyName = v.Mode.Lists[1] and DiffTable[v.Mode.Lists[1].Name]
-						RemoteFunction:InvokeServer("Multiplayer","v2:start",{
+						Remote = RemoteFunction:InvokeServer("Multiplayer","v2:start",{
     						["count"] = 1,
     						["mode"] = string.lower(v.Map.Lists[1].Mode),
     						["difficulty"] = DifficultyName,
     					})
+						SafeTeleport(Remote)
     				end
     			end
 				--TeleportHandler(3260590327,2,7)
@@ -968,6 +1000,31 @@ end
 --UI Setup
 --getgenv().PlayersSection = {}
 if not CheckPlace() then
+
+	-- // Platform Stand InLobby
+	task.spawn(function()
+		--repeat task.wait() until Workspace.Map:FindFirstChild("Environment"):FindFirstChild("SpawnLocation")
+		local Part = Instance.new("Part")
+		Part.Size = Vector3.new(10, 2, 10)
+		Part.CFrame = CFrame.new(0, 104, 0) --Workspace.Map.Environment:FindFirstChild("SpawnLocation").CFrame + Vector3.new(0, 30, 0)
+		Part.Anchored = true
+		Part.CanCollide = true
+		Part.Transparency = 1
+		Part.Parent = Workspace
+		Part.Name = "PlatformPart"
+		StratXLibrary.PlatformPart = Part
+
+		local OutlineBox = Instance.new("SelectionBox")
+		OutlineBox.Parent = Part
+		OutlineBox.Adornee = Part
+		OutlineBox.LineThickness = 0.05
+
+		repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid")
+		LocalPlayer.Character.Humanoid.PlatformStand = true
+		LocalPlayer.Character.HumanoidRootPart.Anchored = true
+		LocalPlayer.Character.HumanoidRootPart.CFrame = Part.CFrame + Vector3.new(0, 3.5, 0)
+	end)
+
 	ReplicatedStorage:WaitForChild("Network"):WaitForChild("DailySpin"):WaitForChild("RedeemReward"):InvokeServer()
 
 	UI.EquipStatus = maintab:DropSection("Troops Loadout Status")
@@ -1020,27 +1077,27 @@ if CheckPlace() then
 	end)
 
 	UtilitiesTab:Button("Teleport Back To Platform",function()
-		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame +  Vector3.new(0, 3.3, 0)
+		LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = StratXLibrary.PlatformPart.CFrame + Vector3.new(0, 3.3, 0)
 	end)
-	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
-	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
-		if (bool and ReplicatedStorage.State.Difficulty.Value == "Hardcore") or (bool and Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby") then
-			prints("Timescale Is Not Supported In Hardcore!")
-			return
-		end
-		local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
-		prints(`{if bool then "Enabled" else "Disabled"} Timescale`)
-      	if TimeScaleUI.Visible and bool then
-		    if TimeScaleUI:FindFirstChild("Lock") then
-     		    task.spawn(function()
-     			    ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
-     			task.wait(0.5)
-     				ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
-     		    end)
-		    end
-		end
-	end)
+  	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
+  	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
+  	UtilitiesTab:Toggle("Use Timescale", {flag = "UseTimeScale", default = UtilitiesConfig.UseTimeScale}, function(bool)
+  		if (bool and ReplicatedStorage.State.Mode.Value == "Hardcore") or (bool and Workspace:FindFirstChild(Lobby) == "HardcoreIntermissionLobby") then
+  			prints("Timescale Is Not Supported In Hardcore!")
+  			return
+  		end
+  		local TimeScaleUI = LocalPlayer.PlayerGui:WaitForChild("ReactUniversalHotbar"):WaitForChild("Frame"):WaitForChild("timescale")
+  		prints(`{if bool then "Enabled" else "Disabled"} Timescale`)
+        if TimeScaleUI.Visible and bool then
+  		    if TimeScaleUI:FindFirstChild("Lock") then
+       		    task.spawn(function()
+       			    ReplicatedStorage.RemoteFunction:InvokeServer("TicketsManager", "UnlockTimeScale")
+       			task.wait(0.5)
+       				ReplicatedStorage.RemoteEvent:FireServer("TicketsManager", "CycleTimeScale")
+       		    end)
+  		    end
+  		end
+  	end)
 
 	if Items.Enabled then
 		task.spawn(function()
@@ -1094,19 +1151,19 @@ if CheckPlace() then
 	end)
 end
 
-UI.WebhookSetting = UtilitiesTab:DropSection("Webhook Settings")
-local WebhookSetting = UI.WebhookSetting
-WebhookSetting:Toggle("Enabled",{default = UtilitiesConfig.Webhook.Enabled or false, flag = "Enabled"})
-WebhookSetting:Toggle("Apply New Format", {default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
-WebhookSetting:Section("Webhook Link:                             ")
-WebhookSetting:TypeBox("Webhook Link", {default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
+UI.Webhook = UtilitiesTab:DropSection("Webhook Settings")
+local Webhook = UI.Webhook
+Webhook:Toggle("Enabled", {default = UtilitiesConfig.Webhook.WebhookEnabled or false, flag = "WebhookEnabled"})
+Webhook:Toggle("Apply New Format", {default = UtilitiesConfig.Webhook.UseNewFormat or false, flag = "UseNewFormat"})
+Webhook:Section("Webhook Link:                             ")
+Webhook:TypeBox("Webhook Link", {default = UtilitiesConfig.Webhook.Link, cleartext = false, flag = "Link"})
 if getgenv().FeatureConfig and getgenv().FeatureConfig.CustomLog then
-	WebhookSetting:Toggle("Disable SL's Custom Log", {default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
+	Webhook:Toggle("Disable SL's Custom Log", {default = UtilitiesConfig.Webhook.DisableCustomLog or false, flag = "DisableCustomLog"})
 end
-WebhookSetting:Toggle("Hide Username", {default = UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
-WebhookSetting:Toggle("Player Info", {default = UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
-WebhookSetting:Toggle("Game Info", {default = UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
-WebhookSetting:Toggle("Troops Info", {default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
+Webhook:Toggle("Hide Username", {default = UtilitiesConfig.Webhook.HideUser or false, flag = "HideUser"})
+Webhook:Toggle("Player Info", {default = UtilitiesConfig.Webhook.PlayerInfo or false, flag = "PlayerInfo"})
+Webhook:Toggle("Game Info", {default = UtilitiesConfig.Webhook.GameInfo or false, flag = "GameInfo"})
+Webhook:Toggle("Troops Info", {default = UtilitiesConfig.Webhook.TroopsInfo or false, flag = "TroopsInfo"})
 
 UtilitiesTab:Section("Universal Settings")
 UtilitiesTab:Toggle("Prefer Matchmaking", {flag = "PreferMatchmaking", default = UtilitiesConfig.PreferMatchmaking})
@@ -1190,6 +1247,7 @@ Functions.Target = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/Target.
 Functions.AutoChain = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/AutoChain.lua", true))()
 Functions.SellAllFarms = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/SellAllFarms.lua", true))()
 Functions.Option = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/Option.lua", true))()
+Functions.LeaveOn = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/LeaveOn.lua", true))()
 Functions.SelectLoadout = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/SelectLoadout.lua", true))()
 
 Functions.MatchMaking = function()
@@ -1246,7 +1304,7 @@ Functions.MatchMaking = function()
 				prints("Overrided Map")
 				RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
 				break
-		    elseif not VetoUsedOnce and not CanChangeMap and not table.find(CurrentMapList, v.Map.Lists[1].Map) then
+		    elseif not (VetoUsedOnce and CanChangeMap and table.find(CurrentMapList, v.Map.Lists[1].Map)) then
            		VetoUsedOnce = true
                	RemoteEvent:FireServer("LobbyVoting", "Veto")
            		prints("Veto Has Used Once")
@@ -1294,6 +1352,7 @@ end
 function Tutorial()
 	loadstring(game:HttpGet(MainLink.."TDSTools/Tutorial.lua", true))()
 end
+
 prints("Loaded Functions")
 
 --[[local GetConnects = getconnections or get_signal_cons
