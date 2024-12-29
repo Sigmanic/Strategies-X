@@ -1295,15 +1295,30 @@ Functions.MatchMaking = function()
 				break
 			end
 			if table.find(CurrentMapList, v.Map.Lists[1].Map) then
-				MapProps = v.Map.Lists[#v.Map.Lists]
-				Index = v.Index
-				break
+			    MapProps = v.Map.Lists[#v.Map.Lists]
+			    Index = v.Index
+			    break
 			elseif CanChangeMap then
-				MapProps = v.Map.Lists[#v.Map.Lists]
-				Index = v.Index
-				prints("Overrided Map")
-				RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-				break
+			    if getgenv().playerNames then
+			        -- Check if player's name is the first in the playerNames list
+			        if getgenv().playerNames[1] == game.Players.LocalPlayer.Name then
+			            -- Override if the player's name matches the first in playerNames
+			            MapProps = v.Map.Lists[#v.Map.Lists]
+			            Index = v.Index
+			            prints("Overrided Map")
+			            RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+			            break
+			        end
+			    else
+			        -- If playerNames doesn't exist, just change the map
+			        MapProps = v.Map.Lists[#v.Map.Lists]
+			        Index = v.Index
+			        prints("Overrided Map")
+			        RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+			        break
+			    end
+			end
+
 		    elseif not (VetoUsedOnce and CanChangeMap and table.find(CurrentMapList, v.Map.Lists[1].Map)) then
            		VetoUsedOnce = true
                	RemoteEvent:FireServer("LobbyVoting", "Veto")
