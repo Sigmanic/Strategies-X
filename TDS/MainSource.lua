@@ -1251,117 +1251,144 @@ Functions.LeaveOn = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/LeaveO
 Functions.SelectLoadout = loadstring(game:HttpGet(MainLink.."TDSTools/Functions/SelectLoadout.lua", true))()
 
 Functions.MatchMaking = function()
-	local MapProps, Index, VetoUsedOnce, CheckingForPrivateIntermission
-    local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") --map's Name
-	local GameMode = if Workspace:FindFirstChild("IntermissionLobby") then "Survival" else "Hardcore"
-	local Lobby = if GameMode == "Survival" then "IntermissionLobby" else "HardcoreIntermissionLobby"
-	if not Workspace:FindFirstChild(Lobby) then
-		return
-	end
-	task.wait(1)
-	if table.find(SpecialMaps, RSMap.Value) then
-		return
-	end
-	local TroopsOwned = GetTowersInfo()
-	local CanChangeMap = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
-	local CurrentMapList = {}
-	for i,v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
-		table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
-	end
-	task.wait(3)
-	while not MapProps do
-		task.wait(.1)
-		if #StratXLibrary.Strat == 0 then
-			continue
-		end
-		for i,v in ipairs(StratXLibrary.Strat) do
-			if typeof(v.Loadout.Lists[1]) ~= "table" or #v.Loadout.Lists[1] == 0 then
-				continue
-			end
-			if not (v.Map.Lists[1] and v.Map.Lists[1].Mode == GameMode) then
-				continue
-			end
-			if not v.Loadout.AllowTeleport then
-				v.Loadout.AllowTeleport = true
-				for Index, Name in ipairs(v.Loadout.Lists[1]) do
-					if not TroopsOwned[Name] then
-						prints("Missing:",Name)
-						v.Loadout.AllowTeleport = false
-						continue
-					end
-				end
-			end
-			if MapProps then
-				break
-			end
-			if table.find(CurrentMapList, v.Map.Lists[1].Map) then
-			    MapProps = v.Map.Lists[#v.Map.Lists]
-			    Index = v.Index
-			    break
-			elseif CanChangeMap then
-			    if getgenv().playerNames then
-			        -- Check if player's name is the first in the playerNames list
-			        if getgenv().playerNames[1] == game.Players.LocalPlayer.Name then
-			            -- Override if the player's name matches the first in playerNames
-			            MapProps = v.Map.Lists[#v.Map.Lists]
-			            Index = v.Index
-			            prints("Overrided Map")
-			            RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-			            break
-			        end
-			    else
-			        -- If playerNames doesn't exist, just change the map
-			        MapProps = v.Map.Lists[#v.Map.Lists]
-			        Index = v.Index
-			        prints("Overrided Map")
-			        RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-			        break
-			    end
-			end
-
-		    elseif not (VetoUsedOnce and CanChangeMap and table.find(CurrentMapList, v.Map.Lists[1].Map)) then
-           		VetoUsedOnce = true
-               	RemoteEvent:FireServer("LobbyVoting", "Veto")
-           		prints("Veto Has Used Once")
-           		task.wait(3)
-           		if not CheckingForPrivateIntermission then
-           			CheckingForPrivateIntermission = true
-           			prints("Checking for Private Intermission")
-           			local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
-           			local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
-           			if currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
-             			prints("Checking finished, Start Overriding for Map")
-                		MapProps = v.Map.Lists[#v.Map.Lists]
-                        Index = v.Index
-             			RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-                        prints("Overrided for Map")
-       					break
-           			elseif currentVeto.Text == `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
-           		        prints("Not Private Intermission")
-              		end
-           		end
-			    break
-       	    end
-		end
-		task.wait(1)
-      	table.clear(CurrentMapList)
-      	for i,v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
-			table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
-		end
-      	task.delay(5,function()
-      		if not MapProps then
-      			TeleportHandler(3260590327,2,7)
-      		end
-      	end)
+    local MapProps, Index, VetoUsedOnce, CheckingForPrivateIntermission
+    local RSMap = ReplicatedStorage:WaitForChild("State"):WaitForChild("Map") -- map's Name
+    local GameMode = Workspace:FindFirstChild("IntermissionLobby") and "Survival" or "Hardcore"
+    local Lobby = GameMode == "Survival" and "IntermissionLobby" or "HardcoreIntermissionLobby"
+    
+    if not Workspace:FindFirstChild(Lobby) then
+        return
     end
-	RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
-	RemoteEvent:FireServer("LobbyVoting", "Vote", MapProps.Map, LocalPlayer.Character.HumanoidRootPart.Position)
-	RemoteEvent:FireServer("LobbyVoting","Ready")
-	prints(`Picked Map: "{MapProps.Map}", Id Strat: {Index}`)
-	task.wait(6)
-	StratXLibrary.Strat.ChosenID = Index
-	ConsoleInfo(`Map Selected: {MapProps.Map}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
+    
+    task.wait(1)
+    
+    if table.find(SpecialMaps, RSMap.Value) then
+        return
+    end
+    
+    local TroopsOwned = GetTowersInfo()
+    local CanChangeMap = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 10518590)
+    local CurrentMapList = {}
+    
+    for _, v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
+        table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
+    end
+    
+    task.wait(3)
+    
+    while not MapProps do
+        task.wait(0.1)
+        
+        if #StratXLibrary.Strat == 0 then
+            continue
+        end
+        
+        for _, v in ipairs(StratXLibrary.Strat) do
+            if typeof(v.Loadout.Lists[1]) ~= "table" or #v.Loadout.Lists[1] == 0 then
+                continue
+            end
+            
+            if not (v.Map.Lists[1] and v.Map.Lists[1].Mode == GameMode) then
+                continue
+            end
+            
+            if not v.Loadout.AllowTeleport then
+                v.Loadout.AllowTeleport = true
+                for Index, Name in ipairs(v.Loadout.Lists[1]) do
+                    if not TroopsOwned[Name] then
+                        prints("Missing:", Name)
+                        v.Loadout.AllowTeleport = false
+                        continue
+                    end
+                end
+            end
+            
+            if MapProps then
+                break
+            end
+            
+            if table.find(CurrentMapList, v.Map.Lists[1].Map) then
+                MapProps = v.Map.Lists[#v.Map.Lists]
+                Index = v.Index
+                break
+            elseif CanChangeMap then
+                if getgenv().playerNames then
+                    if getgenv().playerNames[1] == game.Players.LocalPlayer.Name then
+                        MapProps = v.Map.Lists[#v.Map.Lists]
+                        Index = v.Index
+                        prints("Overrided Map")
+                        RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+                        break
+                    else
+                        while true do 
+                            task.wait(0.2)
+                            prints('Waiting for the first player from getgenv().playerNames to select map...')
+                            if table.find(CurrentMapList, v.Map.Lists[1].Map) then
+                                MapProps = v.Map.Lists[#v.Map.Lists]
+                                Index = v.Index
+                                break
+                            end
+                        end
+                    end
+                else
+                    MapProps = v.Map.Lists[#v.Map.Lists]
+                    Index = v.Index
+                    prints("Overrided Map")
+                    RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+                    break
+                end
+            end
+        end
+        
+        if not (VetoUsedOnce and CanChangeMap and table.find(CurrentMapList, v.Map.Lists[1].Map)) then
+            VetoUsedOnce = true
+            RemoteEvent:FireServer("LobbyVoting", "Veto")
+            prints("Veto Has Used Once")
+            task.wait(3)
+            
+            if not CheckingForPrivateIntermission then
+                CheckingForPrivateIntermission = true
+                prints("Checking for Private Intermission")
+                local IntermissionButtons = LocalPlayer.PlayerGui:WaitForChild("ReactGameIntermission"):WaitForChild("Frame"):WaitForChild("buttons")
+                local currentVeto = IntermissionButtons:WaitForChild("veto"):WaitForChild("value")
+                
+                if currentVeto.Text ~= `Veto ({#Players:GetChildren()}/{#Players:GetChildren()})` then
+                    prints("Checking finished, Start Overriding for Map")
+                    MapProps = v.Map.Lists[#v.Map.Lists]
+                    Index = v.Index
+                    RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+                    prints("Overrided for Map")
+                    break
+                else
+                    prints("Not Private Intermission")
+                end
+            end
+            break
+        end
+        
+        task.wait(1)
+        
+        table.clear(CurrentMapList)
+        for _, v in next, Workspace:WaitForChild(Lobby):WaitForChild("Boards"):GetChildren() do
+            table.insert(CurrentMapList, v:WaitForChild("Hitboxes"):WaitForChild("Bottom"):WaitForChild("MapDisplay"):WaitForChild("Title").Text)
+        end
+        
+        task.delay(5, function()
+            if not MapProps then
+                TeleportHandler(3260590327, 2, 7)
+            end
+        end)
+    end
+    
+    RemoteFunction:InvokeServer("LobbyVoting", "Override", MapProps.Map)
+    RemoteEvent:FireServer("LobbyVoting", "Vote", MapProps.Map, LocalPlayer.Character.HumanoidRootPart.Position)
+    RemoteEvent:FireServer("LobbyVoting", "Ready")
+    prints(`Picked Map: "{MapProps.Map}", Id Strat: {Index}`)
+    task.wait(6)
+    StratXLibrary.Strat.ChosenID = Index
+    ConsoleInfo(`Map Selected: {MapProps.Map}, Mode: {MapProps.Mode}, Solo Only: {MapProps.Solo}`)
 end
+
 
 --Side modes that aren't main ones
 function Tutorial()
