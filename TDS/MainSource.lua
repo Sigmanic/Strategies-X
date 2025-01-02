@@ -1,7 +1,7 @@
 local easyBlackList = {
-	"ItsLorenzoXD"
+	"676865455"
 }
-if table.find(easyBlackList, game:GetService("Players").LocalPlayer) then return end
+if table.find(easyBlackList, game:GetService("Players").LocalPlayer.UserId) then return end
 if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
 	if StratXLibrary.Strat[#StratXLibrary.Strat].Active then
 		return Strat.new()
