@@ -1,3 +1,7 @@
+local easyBlackList = {
+	"ItsLorenzoXD"
+}
+if table.find(easyBlackList, game:GetService("Players").LocalPlayer) then return end
 if getgenv().StratXLibrary and getgenv().StratXLibrary.Executed then
 	if StratXLibrary.Strat[#StratXLibrary.Strat].Active then
 		return Strat.new()
