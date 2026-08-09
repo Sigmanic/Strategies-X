@@ -1,9 +1,9 @@
 <br/>
 <p align="center">
-  <h3 align="center">Strategies X [Alpha]</h3>
+  <h3 align="center">Strategies X [LEGACY]</h3>
 
   <p align="center">
-    A version inspired By MoneyMaker's AutoStrat, that aims to be fully open-sourced and more customizable.
+    TDS AutoStrat Toolkit - inspired by MoneyMaker's AutoStrat, that aims to be fully open-sourced and advanced tool.
     <br/>
     <br/>
     <a href="https://github.com/Sigmanic/Strategies-X/issues">Report a Bug</a>
@@ -29,6 +29,8 @@ I started to use AutoStrat, after it got released in 2022. It provides an automa
 
 Although I considered this as a hobby project, I spent a lot of time making this project work. Also, it took me more than 6 months to release this project due to the loss of motivation and studying to prepare for university. With lots **(IF NOT ALL)** things that have been changed, added, or remade compared to the original one, I decided to rename this project to **"Strategies X"**.
 
+This Project has been stopped development after 2025 TDS Banwave Incident and I'm also focusing on my career now.
+
 ## Goals
 :white_check_mark:  Support all current strats (even premium strats).  
 :hammer_and_wrench: Support Multiplayer.  
@@ -37,11 +39,7 @@ Although I considered this as a hobby project, I spent a lot of time making this
 
 ## Requirements
 Executors Supported: **This does not mean they work with Recorder.lua**
-* Wave
-* Codex
-* Delta
-* Hydrogen
-* Synapse Z
+* Whatever you want
 
 Or any executors that support the following libraries/functions:
 * Filesystem Functions
